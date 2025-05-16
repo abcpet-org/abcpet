@@ -1,0 +1,828 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>ABC Pet - Cuenta Activada</title>
+    <style>
+        /* Variables para consistencia del diseño */
+        :root {
+            --primary-color: #0b8a00;
+            --secondary-color: #000000;
+            --success-color: #43a047;
+            --text-color: #333333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+            --border-radius: 5px;
+        }
+        
+        /* Reseteo básico y estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            font-size: 15px;
+            color: var(--text-color);
+            background-color: var(--light-gray);
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Tarjeta de éxito */
+        .success-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: slide-up 0.8s ease-out;
+        }
+        
+        /* Efecto de confeti */
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f2d74e;
+            opacity: 0;
+            animation: confetti 5s ease-in-out infinite;
+        }
+        
+        .confetti:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+            background-color: #f2d74e;
+        }
+        
+        .confetti:nth-child(2) {
+            left: 20%;
+            animation-delay: 0.2s;
+            background-color: #95c3de;
+        }
+        
+        .confetti:nth-child(3) {
+            left: 30%;
+            animation-delay: 0.4s;
+            background-color: #ff9a91;
+        }
+        
+        .confetti:nth-child(4) {
+            left: 40%;
+            animation-delay: 0.6s;
+            background-color: #f2d74e;
+        }
+        
+        .confetti:nth-child(5) {
+            left: 50%;
+            animation-delay: 0.8s;
+            background-color: #95c3de;
+        }
+        
+        .confetti:nth-child(6) {
+            left: 60%;
+            animation-delay: 1s;
+            background-color: #ff9a91;
+        }
+        
+        .confetti:nth-child(7) {
+            left: 70%;
+            animation-delay: 1.2s;
+            background-color: #f2d74e;
+        }
+        
+        .confetti:nth-child(8) {
+            left: 80%;
+            animation-delay: 1.4s;
+            background-color: #95c3de;
+        }
+        
+        .confetti:nth-child(9) {
+            left: 90%;
+            animation-delay: 1.6s;
+            background-color: #ff9a91;
+        }
+        
+        /* Animación para el círculo de éxito */
+        .success-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .success-circle::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: white;
+            z-index: 1;
+        }
+        
+        .circle-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid var(--success-color);
+            border-top-color: transparent;
+            animation: circle-spin 2s linear, circle-complete 0.3s 2s forwards;
+            box-sizing: border-box;
+        }
+        
+        .checkmark {
+            color: var(--success-color);
+            font-size: 50px;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0);
+            animation: check-pop 0.5s 2.3s forwards;
+        }
+
+        /* Título y subtítulo */
+        .title {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: 600;
+            opacity: 0;
+            animation: fade-in 0.5s 0.5s forwards;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: var(--dark-gray);
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 300;
+            opacity: 0;
+            animation: fade-in 0.5s 0.8s forwards;
+        }
+        
+        .highlight {
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        /* Botón de inicio de sesión */
+        .login-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-speed);
+            margin-top: 20px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fade-in 0.5s 1.1s forwards;
+        }
+        
+        .login-button:hover {
+            background-color: #222;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .login-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .login-button i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Temporizador */
+        .countdown-container {
+            margin-top: 30px;
+            opacity: 0;
+            animation: fade-in 0.5s 1.4s forwards;
+        }
+        
+        .countdown-text {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+        
+        .countdown {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px 0;
+        }
+        
+        .countdown-number {
+            font-size: 28px;
+            font-weight: 700;
+            background-color: var(--secondary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: pulse 1s infinite alternate;
+        }
+        
+        .countdown-label {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Logo */
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 120px;
+            height: auto;
+            animation: fade-in 0.5s;
+        }
+
+        /* Fases de configuración */
+        .setup-phases {
+            margin: 20px 0 30px;
+            opacity: 0;
+            animation: fade-in 0.5s 1.1s forwards;
+        }
+        
+        .phase-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .phase-label {
+            flex: 1;
+            font-size: 14px;
+            color: var(--dark-gray);
+            padding: 5px 10px;
+            position: relative;
+        }
+        
+        .phase-status {
+            width: 100px;
+            text-align: right;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .phase-bar {
+            height: 5px;
+            background-color: var(--medium-gray);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .phase-progress {
+            height: 100%;
+            width: 0;
+            background-color: var(--success-color);
+            border-radius: 3px;
+        }
+        
+        .phase-complete .phase-label {
+            color: var(--text-color);
+        }
+        
+        .phase-complete .phase-status {
+            color: var(--success-color);
+        }
+        
+        .phase-complete .phase-progress {
+            width: 100%;
+        }
+        
+        .phase-loading .phase-progress {
+            animation: loading-bar 1.5s infinite linear;
+            background: linear-gradient(90deg, var(--success-color) 25%, #4caf50 50%, #66bb6a 75%, var(--success-color) 100%);
+            background-size: 200% 100%;
+        }
+        
+        /* Pet animation */
+        .pet-container {
+            position: absolute;
+            bottom: -30px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            opacity: 0;
+            animation: fade-in 1s 3s forwards, bounce 2s 4s infinite;
+            z-index: 3;
+        }
+        
+        .pet {
+            width: 100%;
+            height: 100%;
+            background-image: url('{% static "abcpet_app/images/dog_icon.png" %}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform: rotate(10deg);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            top: -60px;
+            right: 20px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 14px;
+            opacity: 0;
+            animation: fade-in 1s 5s forwards;
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        /* Decoraciones adicionales */
+        .decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .decoration-1 {
+            background-color: var(--success-color);
+            top: -100px;
+            right: -50px;
+            animation: float 10s infinite alternate;
+        }
+        
+        .decoration-2 {
+            background-color: var(--primary-color);
+            bottom: -100px;
+            left: -50px;
+            animation: float 12s infinite alternate-reverse;
+        }
+        
+        .sparkle {
+            position: absolute;
+            font-size: 20px;
+            color: #ffd700;
+            animation: twinkle 2s infinite;
+        }
+        
+        .sparkle:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .sparkle:nth-child(2) {
+            top: 20%;
+            right: 20%;
+            animation-delay: 0.5s;
+        }
+        
+        .sparkle:nth-child(3) {
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+        
+        .sparkle:nth-child(4) {
+            bottom: 25%;
+            left: 15%;
+            animation-delay: 1.5s;
+        }
+
+        /* Progress bar para el temporizador */
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background-color: var(--medium-gray);
+            border-radius: 2.5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--success-color);
+            border-radius: 2.5px;
+            animation: progress-shrink 10s linear forwards;
+        }
+
+        /* Animaciones */
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes circle-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes circle-complete {
+            from { border-top-color: transparent; }
+            to { border-top-color: var(--success-color); }
+        }
+        
+        @keyframes check-pop {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(20px); }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes progress-shrink {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+        
+        @keyframes loading-bar {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(10deg); }
+            40% { transform: translateY(-20px) rotate(5deg); }
+            60% { transform: translateY(-10px) rotate(15deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .success-card {
+                padding: 30px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+            
+            .success-circle {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .success-circle::before {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .checkmark {
+                font-size: 40px;
+            }
+            
+            .pet-container {
+                width: 80px;
+                height: 80px;
+                bottom: -20px;
+                right: -10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 25px;
+            }
+            
+            .logo {
+                max-width: 100px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .countdown-number {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+            
+            .phase-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .phase-status {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+    <meta http-equiv="refresh" content="10;url={% url 'login' %}">
+</head>
+<body>
+    <!-- Confeti -->
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    
+    <div class="container">
+        <!-- Logo -->
+        <img class="logo" src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo ABC Pet">
+        
+        <!-- Decoraciones de fondo -->
+        <div class="decoration decoration-1"></div>
+        <div class="decoration decoration-2"></div>
+        
+        <!-- Estrellas brillantes -->
+        <div class="sparkle"><i class="fas fa-star"></i></div>
+        <div class="sparkle"><i class="fas fa-star"></i></div>
+        <div class="sparkle"><i class="fas fa-star"></i></div>
+        <div class="sparkle"><i class="fas fa-star"></i></div>
+        
+        <div class="success-card">
+            <!-- Círculo animado con marca de verificación -->
+            <div class="success-circle">
+                <div class="circle-animation"></div>
+                <div class="checkmark"><i class="fas fa-check"></i></div>
+            </div>
+            
+            <!-- Texto principal -->
+            <h1 class="title">¡Cuenta <span class="highlight">Activada</span> Exitosamente!</h1>
+            
+            <p class="subtitle">
+                Tu correo electrónico ha sido verificado y estamos configurando tu cuenta ABCPet para brindarte la mejor experiencia posible para el cuidado de tu mascota.
+            </p>
+            
+            <!-- Estado de configuración de la cuenta -->
+            <div class="setup-phases">
+                <div class="phase-container phase-complete">
+                    <div class="phase-label"><i class="fas fa-check-circle"></i> Verificación de email</div>
+                    <div class="phase-status">Completado</div>
+                </div>
+                <div class="phase-bar">
+                    <div class="phase-progress"></div>
+                </div>
+                
+                <div class="phase-container phase-complete">
+                    <div class="phase-label"><i class="fas fa-check-circle"></i> Inicialización de perfil</div>
+                    <div class="phase-status">Completado</div>
+                </div>
+                <div class="phase-bar">
+                    <div class="phase-progress"></div>
+                </div>
+                
+                <div class="phase-container phase-complete">
+                    <div class="phase-label"><i class="fas fa-check-circle"></i> Configuración de seguridad</div>
+                    <div class="phase-status">Completado</div>
+                </div>
+                <div class="phase-bar">
+                    <div class="phase-progress"></div>
+                </div>
+                
+                <div class="phase-container phase-loading">
+                    <div class="phase-label"><i class="fas fa-cog fa-spin"></i> Personalización de servicios</div>
+                    <div class="phase-status">En proceso</div>
+                </div>
+                <div class="phase-bar">
+                    <div class="phase-progress"></div>
+                </div>
+            </div>
+            
+            <!-- Botón de inicio de sesión -->
+            <a href="{% url 'login' %}" class="login-button">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </a>
+            
+            <!-- Temporizador de redirección -->
+            <div class="countdown-container">
+                <p class="countdown-text">Redirigiendo automáticamente en</p>
+                <div class="countdown">
+                    <div class="countdown-number" id="countdown-number">10</div>
+                </div>
+                <div class="countdown-label">segundos</div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+            
+            <!-- Mascota animada -->
+            <div class="pet-container">
+                <div class="speech-bubble">¡Bienvenido a ABCPet!</div>
+                <div class="pet"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación del contador
+            const countdownEl = document.getElementById('countdown-number');
+            let secondsLeft = 10;
+            
+            const countdownInterval = setInterval(() => {
+                secondsLeft -= 1;
+                if (secondsLeft >= 0) {
+                    countdownEl.textContent = secondsLeft;
+                    
+                    // Añadir efecto especial al contador cuando quede poco tiempo
+                    if (secondsLeft <= 3) {
+                        countdownEl.style.color = '#ff5252';
+                        countdownEl.style.transform = 'scale(1.1)';
+                    }
+                }
+                
+                if (secondsLeft === 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+            
+            // Crear confeti adicional para más efecto visual
+            createExtraConfetti();
+            
+            // Animación de las fases de configuración
+            setTimeout(() => {
+                animateSetupPhases();
+            }, 2000);
+        });
+        
+        // Función para animar las fases de configuración
+        function animateSetupPhases() {
+            const phases = document.querySelectorAll('.phase-container');
+            const bars = document.querySelectorAll('.phase-progress');
+            
+            // Animar las barras de progreso de fases completadas
+            for (let i = 0; i < phases.length - 1; i++) {
+                setTimeout(() => {
+                    bars[i].style.width = '100%';
+                }, i * 400);
+            }
+            
+            // Animar la barra de progreso en proceso
+            setTimeout(() => {
+                bars[bars.length - 1].style.width = '60%';
+            }, (phases.length - 1) * 400);
+        }
+        
+        // Función para generar confeti extra
+        function createExtraConfetti() {
+            const container = document.querySelector('.container');
+            const colors = ['#f2d74e', '#95c3de', '#ff9a91', '#43a047', '#f48fb1'];
+            
+            for (let i = 0; i < 70; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Posición aleatoria
+                confetti.style.left = Math.random() * 100 + 'vw';
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                // Color aleatorio
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Retraso aleatorio en la animación
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                
+                // Duración aleatoria de la animación
+                confetti.style.animationDuration = Math.random() * 3 + 3 + 's';
+                
+                // Forma aleatoria
+                const shapes = ['circle', 'square', 'triangle', 'heart', 'paw'];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                if (shape === 'circle') {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape === 'triangle') {
+                    confetti.style.width = '0';
+                    confetti.style.height = '0';
+                    confetti.style.backgroundColor = 'transparent';
+                    confetti.style.borderLeft = size/2 + 'px solid transparent';
+                    confetti.style.borderRight = size/2 + 'px solid transparent';
+                    confetti.style.borderBottom = size + 'px solid ' + colors[Math.floor(Math.random() * colors.length)];
+                } else if (shape === 'heart') {
+                    confetti.style.backgroundColor = 'transparent';
+                    confetti.innerHTML = '<i class="fas fa-heart" style="color:' + colors[Math.floor(Math.random() * colors.length)] + '; font-size:' + size + 'px;"></i>';
+                } else if (shape === 'paw') {
+                    confetti.style.backgroundColor = 'transparent';
+                    confetti.innerHTML = '<i class="fas fa-paw" style="color:' + colors[Math.floor(Math.random() * colors.length)] + '; font-size:' + size + 'px;"></i>';
+                }
+                
+                container.appendChild(confetti);
+            }
+            
+            // Añadir efecto de burbujas flotantes
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'confetti';
+                
+                const size = Math.random() * 30 + 10;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.borderRadius = '50%';
+                bubble.style.border = '2px solid rgba(255, 255, 255, 0.7)';
+                bubble.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                bubble.style.left = Math.random() * 100 + 'vw';
+                bubble.style.animationDuration = Math.random() * 10 + 10 + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(bubble);
+            }
+        }
+    </script>
+</body>
+</html>

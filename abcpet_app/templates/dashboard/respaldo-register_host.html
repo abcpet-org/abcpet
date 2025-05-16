@@ -1,0 +1,38 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Campo para cargar múltiples imágenes del álbum del anfitrión -->
+    <label for="album_host_images">Álbum Fotográfico del Anfitrión:</label>
+    <div id="image-container">
+        <input type="file" id="album_host_images" name="album_host_images" accept="image/*" multiple>
+    </div>
+
+    <!-- Campos para cargar otras imágenes -->
+    <label for="foto_perfil">Foto de Perfil:</label>
+    <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
+    
+    <label for="foto_identificacion">Foto de Identificación:</label>
+    <input type="file" id="foto_identificacion" name="foto_identificacion" accept="image/*">
+    
+    <label for="comprobante_domicilio">Comprobante de Domicilio:</label>
+    <input type="file" id="comprobante_domicilio" name="comprobante_domicilio" accept="image/*">
+    
+    <label for="fotos_casa">Fotos de la Casa:</label>
+    <input type="file" id="fotos_casa" name="fotos_casa" accept="image/*">
+
+    <button type="button" onclick="addImageField()">Agregar otra imagen</button>
+    <button type="submit">Guardar</button>
+</form>
+
+<script>
+    function addImageField() {
+        var container = document.getElementById('image-container');
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'album_host_images';
+        input.accept = 'image/*';
+        input.multiple = true;
+        container.appendChild(input);
+    }
+</script>

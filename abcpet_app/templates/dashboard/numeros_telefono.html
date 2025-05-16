@@ -1,0 +1,39 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+  <div class="container mt-2">
+    <div class="card p-4">
+      <h2 class="card-title mb-4" style="font-size: 1.5em;">Confirma tu número de teléfono</h2>
+
+      <form method="post" class="formulario-numero-telefono">
+        {% csrf_token %}
+
+        <!-- Campo de entrada de teléfono con intl-tel-input -->
+        <div class="form-group mb-3">
+          {{ form.phone_number }}
+        </div>
+
+        <!-- Selector de país con bandera -->
+        <div id="country-selector" class="mb-3"></div>
+
+        <!-- Opción para recibir mensajes de texto promocionales -->
+        <div class="form-check mb-3">
+          {{ form.promotional_texts }}
+          <label class="form-check-label" for="{{ form.promotional_texts.id_for_label }}">Sí, envíame mensajes de texto promocionales de ABCPet (Opcional)</label>
+        </div>
+
+        <!-- Botón azul de guardar -->
+        <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+      </form>
+
+      <!-- Información adicional -->
+      <div class="info-adicional mt-4">
+        <p class="small-text">Al agregar tu número de teléfono, aceptas recibir mensajes de ABCPet. Puedes ajustar las configuraciones en Preferencias de Notificaciones.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script para inicializar intl-tel-input -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@17.0.13/dist/js/intlTelInput.min.js"></script>
+

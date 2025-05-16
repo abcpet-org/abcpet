@@ -1,0 +1,744 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>ABC Pet Project - Verificación de Código</title>
+    <style>
+        /* Variables para consistencia del diseño */
+        :root {
+            --primary-color: #0b8a00;
+            --secondary-color: #000000;
+            --text-color: #333333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+            --border-radius: 5px;
+        }
+        
+        /* Reseteo básico y estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        /* Estructura principal */
+        .flex-container {
+            display: flex;
+            height: 100%;
+        }
+
+        .half {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Lado de la imagen */
+        .image-side {
+            background-image: url('{% static "abcpet_app/images/login-abcpet.png" %}');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logo {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 150px;
+            height: auto;
+            z-index: 2;
+            transition: transform var(--transition-speed);
+        }
+        
+        .logo:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .image-text {
+            position: relative;
+            color: white;
+            font-size: 32px;
+            text-align: center;
+            z-index: 2;
+            font-weight: 300;
+            max-width: 80%;
+            line-height: 1.3;
+        }
+
+        /* Lado del formulario */
+        .form-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .form-content {
+            max-width: 450px;
+            width: 100%;
+            margin-top: 10vh;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .additional-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .additional-logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        /* Indicadores de pasos */
+        .step-indicators {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--medium-gray);
+            margin: 0 6px;
+            transition: all var(--transition-speed);
+        }
+
+        .step-indicator.active {
+            background-color: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        /* Cabecera del formulario */
+        .form-side h1 {
+            font-weight: 700;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .subtitle {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-gray);
+            line-height: 1.5;
+        }
+
+        /* Código de verificación */
+        .code-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            max-width: 360px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            margin: 0 4px;
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            transition: all var(--transition-speed);
+            appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        .code-input::-webkit-outer-spin-button,
+        .code-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .code-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px var(--shadow-color);
+            outline: none;
+        }
+        
+        .hidden-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--medium-gray);
+            transition: all var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+        }
+
+        .form-group input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        .form-group input[readonly] {
+            background-color: var(--light-gray);
+            cursor: not-allowed;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon input {
+            padding-right: 40px;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+
+        /* Botón */
+        .button-style {
+            background-color: var(--medium-gray);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: not-allowed;
+            transition: all var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+            margin-top: 10px;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-style.enabled {
+            background-color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .button-style.enabled:hover {
+            background-color: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        .button-style.enabled:active {
+            transform: translateY(0);
+        }
+
+        /* Contador */
+        .timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .timer-count {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .resend-link {
+            display: inline-block;
+            color: var(--secondary-color);
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: all var(--transition-speed);
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        .resend-link.disabled {
+            color: var(--medium-gray);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Tarjetas de información */
+        .info-card {
+            background-color: var(--light-gray);
+            border-left: 4px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-card i {
+            font-size: 20px;
+            margin-right: 15px;
+            color: var(--secondary-color);
+        }
+        
+        .info-card p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Enlaces */
+        .link {
+            display: block;
+            text-align: right;
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: color var(--transition-speed);
+        }
+
+        .link:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .footer-text {
+            font-size: 12px;
+            color: var(--dark-gray);
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.5;
+        }
+
+        .footer-text a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Preloader */
+        .preloader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preloader.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 5px solid var(--light-gray);
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mensajes de alerta */
+        .messages {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #ef5350;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsividad */
+        @media screen and (max-width: 992px) {
+            .form-content {
+                margin-top: 5vh;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .half.image-side {
+                display: none;
+            }
+            
+            .form-side {
+                padding: 30px 20px;
+            }
+            
+            .additional-logo {
+                display: block;
+            }
+            
+            .form-content {
+                margin-top: 10px;
+            }
+            
+            .code-inputs {
+                max-width: 300px;
+            }
+            
+            .code-input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="flex-container">
+        <!-- Lado de imagen -->
+        <div class="half image-side">
+            <div class="image-text">Verificación de Código</div>
+            <img class="logo" src="{% static 'abcpet_app/images/logo_white.png' %}" alt="Logo ABC Pet">
+        </div>
+        
+        <!-- Lado de formulario -->
+        <div class="half form-side">
+            <div class="form-content">
+                <!-- Logo para móviles -->
+                <div class="additional-logo">
+                    <img src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo ABC Pet">
+                </div>
+                
+                <!-- Indicadores de pasos -->
+                <div class="step-indicators">
+                    <div class="step-indicator active"></div>
+                    <div class="step-indicator active"></div>
+                    <div class="step-indicator"></div>
+                </div>
+                
+                <!-- Título y descripción -->
+                <h1>Verificación de acceso</h1>
+                <p class="subtitle">
+                    Para cambiar tu contraseña, introduce el código de 6 dígitos que te hemos enviado por correo electrónico.
+                    Este código será válido durante 15 minutos.
+                </p>
+                
+                <!-- Tarjeta de información -->
+                <div class="info-card">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Revisa tu bandeja de entrada o carpeta de spam si no encuentras el correo con el código.</p>
+                </div>
+                
+                <!-- Mensajes de error -->
+                {% if error %}
+                <div class="messages">
+                    <div class="alert alert-error">
+                        {{ error }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Formulario de verificación -->
+                <form method="post" action="{% url 'verify_code' %}" id="verifyForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <input type="email" id="email" name="email" value="{{ email }}" readonly>
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Input oculto para almacenar el código completo -->
+                    <input type="hidden" name="code" id="codeInput" value="">
+                    
+                    <!-- Inputs del código de verificación -->
+                    <div class="code-inputs">
+                        <input type="number" class="code-input" maxlength="1" data-index="1" min="0" max="9">
+                        <input type="number" class="code-input" maxlength="1" data-index="2" min="0" max="9">
+                        <input type="number" class="code-input" maxlength="1" data-index="3" min="0" max="9">
+                        <input type="number" class="code-input" maxlength="1" data-index="4" min="0" max="9">
+                        <input type="number" class="code-input" maxlength="1" data-index="5" min="0" max="9">
+                        <input type="number" class="code-input" maxlength="1" data-index="6" min="0" max="9">
+                    </div>
+                    
+                    <!-- Timer para reenvío -->
+                    <div class="timer">
+                        <span>¿No recibiste el código?</span>
+                        <span class="timer-count" id="timer">2:00</span>
+                        <a href="#" class="resend-link disabled" id="resendLink">Reenviar</a>
+                    </div>
+                    
+                    <button type="submit" class="button-style" id="verifyButton" disabled>
+                        Verificar Código
+                    </button>
+                </form>
+                
+                <!-- Footer -->
+                <p class="footer-text">
+                    Esta plataforma está protegida con reCAPTCHA con la tecnología de Google 
+                    <a href="https://policies.google.com/privacy" target="_blank">Política de privacidad</a> y 
+                    <a href="https://policies.google.com/terms" target="_blank">Términos de servicio</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            const hiddenInput = document.getElementById('codeInput');
+            const verifyButton = document.getElementById('verifyButton');
+            const verifyForm = document.getElementById('verifyForm');
+            const preloader = document.getElementById('preloader');
+            const resendLink = document.getElementById('resendLink');
+            const timerElement = document.getElementById('timer');
+            let formSubmitted = false;
+            
+            // Función para actualizar el input oculto con todos los dígitos
+            function updateHiddenInput() {
+                let code = '';
+                codeInputs.forEach(input => {
+                    code += input.value || '';
+                });
+                hiddenInput.value = code;
+                
+                // Activar/desactivar el botón según si el código está completo
+                if (code.length === 6) {
+                    verifyButton.disabled = false;
+                    verifyButton.classList.add('enabled');
+                } else {
+                    verifyButton.disabled = true;
+                    verifyButton.classList.remove('enabled');
+                }
+            }
+            
+            // Configurar los inputs de código
+            codeInputs.forEach((input, index) => {
+                // Al ingresar un valor
+                input.addEventListener('input', function() {
+                    // Limitar a un solo dígito
+                    if (this.value.length > 1) {
+                        this.value = this.value.slice(0, 1);
+                    }
+                    
+                    // Mover al siguiente input si se ingresó un dígito
+                    if (this.value.length === 1 && index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                    
+                    updateHiddenInput();
+                });
+                
+                // Manejo de teclas especiales
+                input.addEventListener('keydown', function(e) {
+                    // Borrar y mover al input anterior
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                        codeInputs[index - 1].value = '';
+                        updateHiddenInput();
+                    }
+                    
+                    // Permitir solo números, backspace, tab, flechas
+                    const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+                    if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+                
+                // Seleccionar todo el contenido al hacer foco
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+            
+            // Manejar envío del formulario
+            verifyForm.addEventListener('submit', function(e) {
+                if (formSubmitted) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (hiddenInput.value.length !== 6) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Formulario válido - activar el preloader y deshabilitar el botón
+                formSubmitted = true;
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verificando...';
+                
+                // Mostrar el preloader
+                preloader.classList.add('active');
+            });
+            
+            // Configurar el temporizador para reenvío
+            let timeLeft = 120; // 2 minutos en segundos
+            
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resendLink.classList.remove('disabled');
+                    timerElement.textContent = '';
+                } else {
+                    timeLeft--;
+                }
+            }
+            
+            const timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+            
+            // Manejar el reenvío de código
+            resendLink.addEventListener('click', function(e) {
+                if (this.classList.contains('disabled')) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Aquí puedes agregar la lógica para reenviar el código
+                // Por ejemplo, una llamada fetch a tu endpoint de reenvío
+                
+                // Reiniciar el temporizador
+                timeLeft = 120;
+                this.classList.add('disabled');
+                updateTimer();
+                timerInterval = setInterval(updateTimer, 1000);
+                
+                // Limpiar los campos de código
+                codeInputs.forEach(input => {
+                    input.value = '';
+                });
+                hiddenInput.value = '';
+                updateHiddenInput();
+                
+                // Mostrar mensaje de confirmación
+                const messagesDiv = document.querySelector('.messages') || document.createElement('div');
+                if (!document.querySelector('.messages')) {
+                    messagesDiv.className = 'messages';
+                    verifyForm.parentNode.insertBefore(messagesDiv, verifyForm);
+                }
+                
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        Se ha enviado un nuevo código a tu correo electrónico.
+                    </div>
+                `;
+                
+                // Enfocar el primer input
+                codeInputs[0].focus();
+                
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

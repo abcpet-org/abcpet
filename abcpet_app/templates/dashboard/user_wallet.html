@@ -1,0 +1,565 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block title %}Mi Billetera | ABCPET{% endblock %}
+
+{% block content %}
+  <!-- CSS personalizado -->
+  <style>
+    :root {
+      --primary-color: #E53935;       /* Rojo primario */
+      --primary-light: #FFCDD2;       /* Rojo claro */
+      --primary-dark: #B71C1C;        /* Rojo oscuro */
+      --secondary-color: #4B0082;     /* Púrpura secundario */
+      --text-color: #333333;
+      --background-color: #F8F9FA;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      --border-radius: 16px;
+    }
+    
+    .wallet-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    .wallet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .wallet-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-color);
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .wallet-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .balance-card {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    
+    .balance-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 10.5%);
+      background-position: 0 0;
+      background-size: 20px 20px;
+      opacity: 0.3;
+      animation: moveBackground 20s linear infinite;
+    }
+    
+    @keyframes moveBackground {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .balance-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+    
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .username {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 1rem;
+    }
+    
+    .action-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .wallet-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
+    }
+    
+    .wallet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .card-title i {
+      color: var(--primary-color);
+    }
+    
+    .promo-form {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .promo-form input {
+      border-radius: 50px;
+      padding: 0.75rem 1.25rem;
+      border: 1px solid #e0e0e0;
+      flex-grow: 1;
+      transition: all 0.3s ease;
+    }
+    
+    .promo-form input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--primary-light);
+      outline: none;
+    }
+    
+    .btn-wallet {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.5rem;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-wallet:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(183, 28, 28, 0.25);
+    }
+    
+    .btn-outline-wallet {
+      background-color: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .btn-outline-wallet:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .payment-method {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      background-color: #f9f9f9;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(229, 57, 53, 0.05);
+    }
+    
+    .payment-icon {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      color: var(--text-color);
+    }
+    
+    .payment-details {
+      flex-grow: 1;
+    }
+    
+    .payment-details p {
+      margin: 0;
+    }
+    
+    .transaction-list {
+      max-height: 350px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+    
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #e0e0e0;
+      transition: background-color 0.3s ease;
+    }
+    
+    .transaction-item:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #f0f0f0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+    
+    .transaction-item:hover .transaction-icon {
+      transform: scale(1.1);
+    }
+    
+    .transaction-icon.income {
+      background-color: #e8f5e9;
+      color: #28a745;
+    }
+    
+    .transaction-icon.expense {
+      background-color: #ffebee;
+      color: var(--primary-color);
+    }
+    
+    .transaction-content {
+      flex-grow: 1;
+    }
+    
+    .transaction-title {
+      font-weight: 600;
+      margin: 0;
+      font-size: 1rem;
+    }
+    
+    .transaction-details {
+      color: #666;
+      margin: 0.25rem 0 0;
+      font-size: 0.85rem;
+    }
+    
+    .transaction-amount {
+      font-weight: 700;
+      margin-left: 1rem;
+      white-space: nowrap;
+    }
+    
+    .transaction-amount.income {
+      color: #28a745;
+    }
+    
+    .transaction-amount.expense {
+      color: var(--primary-color);
+    }
+    
+    .transaction-date {
+      color: #888;
+      font-size: 0.75rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #888;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #ccc;
+    }
+    
+    /* Scrollbar personalizado */
+    .transaction-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .transaction-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .transaction-list::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    .transaction-list::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+    
+    /* Estilo para la insignia de balance */
+    .balance-badge {
+      position: absolute;
+      top: 0;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.75rem;
+      border-radius: 0 0 8px 8px;
+      font-size: 0.75rem;
+      backdrop-filter: blur(2px);
+    }
+    
+    @media (max-width: 768px) {
+      .action-row {
+        flex-direction: column;
+      }
+      
+      .balance-amount {
+        font-size: 2rem;
+      }
+      
+      .promo-form {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <div class="wallet-container">
+    <!-- Cabecera y título -->
+    <div class="wallet-header">
+      <h1 class="wallet-title">Mi Billetera</h1>
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-wallet">
+        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+      </a>
+    </div>
+    
+    <!-- Tarjeta de balance -->
+    <div class="balance-card">
+      <div class="balance-badge">ABCPET Pay</div>
+      <div class="balance-label">Balance Disponible</div>
+      <h2 class="balance-amount">${{ wallet.balance|floatformat:0 }} CLP</h2>
+      <div class="username">{{ wallet.user.first_name }} {{ wallet.user.last_name }}</div>
+    </div>
+    
+    <!-- Fila de acciones rápidas -->
+    <div class="action-row">
+      <button class="btn btn-wallet flex-grow-1">
+        <i class="fas fa-plus"></i> Agregar Fondos
+      </button>
+      <button class="btn btn-outline-wallet flex-grow-1">
+        <i class="fas fa-arrow-right"></i> Transferir
+      </button>
+    </div>
+    
+    <!-- Grid de 2 columnas en desktop, 1 en móvil -->
+    <div class="row">
+      <!-- Columna izquierda -->
+      <div class="col-lg-7">
+        <!-- Historial de transacciones -->
+        <div class="wallet-card">
+          <div class="card-title">
+            <i class="fas fa-exchange-alt"></i>
+            Historial de Transacciones
+            <span class="ms-auto badge rounded-pill" style="background-color: var(--primary-light); color: var(--primary-dark);">
+              {{ wallet.transacciones.all|length }}
+            </span>
+          </div>
+          
+          <div class="transaction-list">
+            {% if wallet.transacciones.all %}
+              {% for transaccion in wallet.transacciones.all %}
+                <div class="transaction-item">
+                  <div class="transaction-icon {% if transaccion.monto > 0 %}income{% else %}expense{% endif %}">
+                    <i class="fas {% if transaccion.monto > 0 %}fa-arrow-down{% else %}fa-arrow-up{% endif %}"></i>
+                  </div>
+                  <div class="transaction-content">
+                    <h5 class="transaction-title">{{ transaccion.descripcion }}</h5>
+                    <p class="transaction-details">{{ transaccion.detalle }}</p>
+                    <span class="transaction-date">{{ transaccion.fecha|date:"d M Y, H:i" }}</span>
+                  </div>
+                  <div class="transaction-amount {% if transaccion.monto > 0 %}income{% else %}expense{% endif %}">
+                    {% if transaccion.monto > 0 %}+{% endif %}${{ transaccion.monto|floatformat:0 }}
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="empty-state">
+                <i class="fas fa-receipt"></i>
+                <p>No tienes transacciones recientes</p>
+                <button class="btn btn-outline-wallet btn-sm mt-2">Simular una transacción</button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Columna derecha -->
+      <div class="col-lg-5">
+        <!-- Cupones -->
+        <div class="wallet-card">
+          <div class="card-title">
+            <i class="fas fa-ticket-alt"></i>
+            Cupones
+          </div>
+          
+          <form method="post" class="promo-form">
+            {% csrf_token %}
+            <input type="text" class="form-control" placeholder="Ingresa tu código" name="promo_code" autocomplete="off">
+            <button type="submit" class="btn btn-wallet">Aplicar</button>
+          </form>
+          
+          <div class="mt-3">
+            <small class="text-muted">
+              <i class="fas fa-info-circle"></i> 
+              Ingresa tu código promocional para obtener créditos en tu billetera
+            </small>
+          </div>
+          
+          <!-- Cupones disponibles -->
+          <div class="mt-4">
+            <h6 class="mb-3">Tus Cupones Disponibles</h6>
+            <div class="d-flex align-items-center p-2 mb-2 border rounded" style="background: rgba(229, 57, 53, 0.05); border-color: var(--primary-light) !important;">
+              <div class="me-3">
+                <i class="fas fa-percentage" style="color: var(--primary-color);"></i>
+              </div>
+              <div>
+                <strong>10% de descuento</strong>
+                <div><small class="text-muted">Válido hasta: 30/05/2025</small></div>
+              </div>
+              <button class="btn btn-sm ms-auto" style="color: var(--primary-color);">Usar</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Formas de pago -->
+        {% if user_payment %}
+        <div class="wallet-card">
+          <div class="card-title">
+            <i class="fas fa-credit-card"></i>
+            Formas de pago
+          </div>
+          
+          <div class="payment-method">
+            <div class="payment-icon">
+              {% if 'VISA' in user_payment.card_type %}
+                <i class="fab fa-cc-visa"></i>
+              {% elif 'MASTER' in user_payment.card_type %}
+                <i class="fab fa-cc-mastercard"></i>
+              {% elif 'AMEX' in user_payment.card_type %}
+                <i class="fab fa-cc-amex"></i>
+              {% else %}
+                <i class="fas fa-credit-card"></i>
+              {% endif %}
+            </div>
+            <div class="payment-details">
+              <p><strong>{{ user_payment.card_type }}</strong> •••• {{ user_payment.card_number|slice:"-4" }}</p>
+              <p class="text-muted">Caducidad: {{ user_payment.expiration_date }}</p>
+            </div>
+            <div class="ms-2">
+              <span class="badge bg-success">Predeterminada</span>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between mt-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" checked id="saveCardDefault">
+              <label class="form-check-label" for="saveCardDefault">
+                <small>Guardar como predeterminada</small>
+              </label>
+            </div>
+            <a href="{% url 'user_payment' %}" class="btn btn-outline-wallet btn-sm">
+              <i class="fas fa-pen"></i> Gestionar
+            </a>
+          </div>
+        </div>
+        {% else %}
+        <div class="wallet-card">
+          <div class="card-title">
+            <i class="fas fa-credit-card"></i>
+            Formas de pago
+          </div>
+          
+          <div class="empty-state">
+            <i class="fas fa-credit-card"></i>
+            <p>No tienes métodos de pago registrados</p>
+          </div>
+          
+          <div class="d-flex justify-content-center mt-3">
+            <a href="{% url 'user_payment' %}" class="btn btn-wallet">
+              <i class="fas fa-plus"></i> Agregar método de pago
+            </a>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Estadísticas rápidas -->
+        <div class="wallet-card">
+          <div class="card-title">
+            <i class="fas fa-chart-simple"></i>
+            Resumen Financiero
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 0.8rem; color: #666;">Ingresos</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: #28a745;">$15.000</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 0.8rem; color: #666;">Gastos</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary-color);">$8.500</div>
+              </div>
+            </div>
+          </div>
+          <div class="progress mt-2" style="height: 8px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 64%"></div>
+            <div class="progress-bar" role="progressbar" style="width: 36%; background-color: var(--primary-color);"></div>
+          </div>
+          <div class="text-center mt-3">
+            <a href="#" class="btn-link" style="color: var(--primary-color); text-decoration: none;">
+              <small>Ver reporte completo <i class="fas fa-arrow-right"></i></small>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

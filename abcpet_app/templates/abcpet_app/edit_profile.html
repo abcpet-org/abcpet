@@ -1,0 +1,1375 @@
+{% extends 'abcpet_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Circular:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+    :root {
+        /* Colores principales */
+        --primary: #ff385c;
+        --primary-dark: #d70466;
+        --secondary: #00a6bd;
+        --black: #222222;
+        --gray-900: #484848;
+        --gray-600: #717171;
+        --gray-400: #b0b0b0;
+        --gray-300: #dddddd;
+        --gray-200: #f0f0f0;
+        --gray-100: #f7f7f7;
+        --white: #ffffff;
+        --green: #008a5c;
+        --red: #c13515;
+        
+        /* Tipografía */
+        --font-family: 'Circular', -apple-system, 'Nunito', BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif;
+        
+        /* Espaciado */
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+        --spacing-xxl: 64px;
+        
+        /* Bordes y sombras */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.12);
+        --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.2);
+        
+        /* Transiciones */
+        --transition-short: all 0.2s ease;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: var(--font-family);
+        color: var(--black);
+        background-color: var(--white);
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Contenedor principal */
+    .profile-container {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: var(--spacing-xl);
+    }
+    
+    /* Encabezado */
+    .profile-header {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .profile-title {
+        flex: 1;
+    }
+    
+    .profile-title h1 {
+        font-size: 32px;
+        font-weight: 600;
+        margin: 0 0 var(--spacing-xs) 0;
+        letter-spacing: -0.02em;
+        color: var(--black);
+    }
+    
+    .profile-subtitle {
+        font-size: 16px;
+        color: var(--gray-600);
+        margin: 0;
+    }
+    
+    .profile-image {
+        width: 128px;
+        height: 128px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        margin-left: var(--spacing-xl);
+        box-shadow: var(--shadow-md);
+        border: 3px solid var(--white);
+        background-color: var(--gray-200);
+        position: relative;
+    }
+    
+    .profile-image-container {
+        position: relative;
+    }
+    
+    .change-photo-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: var(--white);
+        color: var(--black);
+        border-radius: var(--radius-full);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        border: none;
+        transition: var(--transition);
+    }
+    
+    .change-photo-btn:hover {
+        transform: scale(1.05);
+        background-color: var(--gray-100);
+    }
+    
+    .change-photo-input {
+        display: none;
+    }
+    
+    /* Tabs de navegación */
+    .profile-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--gray-300);
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .profile-tab {
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--gray-600);
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition-short);
+    }
+    
+    .profile-tab.active {
+        color: var(--primary);
+        font-weight: 600;
+    }
+    
+    .profile-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary);
+    }
+    
+    .profile-tab:hover {
+        color: var(--primary-dark);
+    }
+    
+    /* Cards */
+    .card {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        transition: var(--transition);
+        border: 1px solid var(--gray-300);
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-title .material-symbols-rounded {
+        margin-right: var(--spacing-md);
+        color: var(--gray-600);
+    }
+    
+    .card-body {
+        padding: var(--spacing-xl);
+    }
+    
+    .card-footer {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-top: 1px solid var(--gray-200);
+        background-color: var(--gray-100);
+    }
+    
+    /* Grid de información */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xl);
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .info-item {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .info-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-600);
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .info-value {
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--black);
+        margin: 0;
+    }
+    
+    .info-empty {
+        color: var(--gray-400);
+        font-style: italic;
+    }
+    
+    /* Botones */
+    .btn {
+        display: inline-block;
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        transition: var(--transition-short);
+        white-space: nowrap;
+    }
+    
+    .btn-sm {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 14px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background-color: var(--white);
+        color: var(--black);
+        border: 1px solid var(--gray-300);
+    }
+    
+    .btn-secondary:hover {
+        background-color: var(--gray-100);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-outline {
+        background-color: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+        background-color: rgba(255, 56, 92, 0.05);
+    }
+    
+    .btn-link {
+        background: none;
+        color: var(--primary);
+        padding: 0;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+    
+    /* Modal */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(4px);
+    }
+    
+    .modal-backdrop.show {
+        opacity: 1;
+    }
+    
+    .modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        width: 90%;
+        max-width: 720px;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: none;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .modal.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .modal-header {
+        padding: var(--spacing-xl);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    
+    .modal-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+        color: var(--black);
+    }
+    
+    .modal-close {
+        position: absolute;
+        right: var(--spacing-xl);
+        top: var(--spacing-xl);
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-full);
+        transition: var(--transition-short);
+    }
+    
+    .modal-close:hover {
+        background-color: var(--gray-200);
+    }
+    
+    .modal-body {
+        padding: var(--spacing-xl);
+    }
+    
+    .modal-footer {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-top: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-md);
+        background-color: var(--gray-100);
+    }
+    
+    /* Formulario */
+    .form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: var(--spacing-sm);
+        color: var(--gray-900);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: 16px;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        transition: var(--transition-short);
+        background-color: var(--white);
+        color: var(--black);
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        border-color: var(--black);
+        outline: none;
+    }
+    
+    .form-control::placeholder {
+        color: var(--gray-400);
+    }
+    
+    .form-control.is-invalid {
+        border-color: var(--red);
+    }
+    
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 40px;
+    }
+    
+    .input-group {
+        display: flex;
+        align-items: stretch;
+    }
+    
+    .input-group-prepend {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-md);
+        background-color: var(--gray-100);
+        border: 1px solid var(--gray-300);
+        border-right: none;
+        border-top-left-radius: var(--radius-md);
+        border-bottom-left-radius: var(--radius-md);
+        white-space: nowrap;
+    }
+    
+    .input-group .form-control {
+        flex: 1;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    
+    .invalid-feedback {
+        display: none;
+        color: var(--red);
+        font-size: 14px;
+        margin-top: var(--spacing-xs);
+    }
+    
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    
+    .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+        cursor: pointer;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        margin-right: var(--spacing-md);
+        accent-color: var(--primary);
+    }
+    
+    /* Alertas y notificaciones */
+    .alert {
+        display: flex;
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-lg);
+        align-items: flex-start;
+    }
+    
+    .alert-success {
+        background-color: rgba(0, 138, 92, 0.1);
+        border: 1px solid rgba(0, 138, 92, 0.2);
+    }
+    
+    .alert-icon {
+        margin-right: var(--spacing-md);
+        font-size: 20px;
+        color: var(--green);
+        margin-top: 2px;
+    }
+    
+    .alert-content {
+        flex: 1;
+    }
+    
+    .alert-title {
+        font-weight: 600;
+        margin: 0 0 var(--spacing-xs) 0;
+        font-size: 16px;
+    }
+    
+    .alert-message {
+        margin: 0;
+        font-size: 14px;
+        color: var(--gray-900);
+    }
+    
+    /* Toast */
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background-color: var(--white);
+        color: var(--black);
+        padding: var(--spacing-md) var(--spacing-xl);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        min-width: 300px;
+        max-width: 80%;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: var(--transition);
+        border-left: 4px solid var(--primary);
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    .toast-icon {
+        margin-right: var(--spacing-md);
+    }
+    
+    .toast-content {
+        flex: 1;
+    }
+    
+    .toast-message {
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    /* Loader */
+    .loader {
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--white);
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: var(--spacing-sm);
+    }
+    
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    /* Utilidades */
+    .hidden {
+        display: none !important;
+    }
+    
+    .text-muted {
+        color: var(--gray-600);
+    }
+    
+    .text-success {
+        color: var(--green);
+    }
+    
+    .text-danger {
+        color: var(--red);
+    }
+    
+    .mt-0 { margin-top: 0; }
+    .mb-0 { margin-bottom: 0; }
+    .mt-md { margin-top: var(--spacing-md); }
+    .mb-md { margin-bottom: var(--spacing-md); }
+    .mt-lg { margin-top: var(--spacing-lg); }
+    .mb-lg { margin-bottom: var(--spacing-lg); }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .profile-title {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .profile-image {
+            margin-left: 0;
+        }
+        
+        .profile-tabs {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .card-title {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-footer {
+            flex-direction: column;
+        }
+        
+        .modal-footer .btn {
+            width: 100%;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        .profile-container {
+            padding: var(--spacing-lg) var(--spacing-md);
+        }
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+</style>
+
+<div class="profile-container">
+    <!-- Cabecera del perfil -->
+    <div class="profile-header">
+        <div class="profile-title">
+            <h1>Tu perfil ABCPet</h1>
+            <p class="profile-subtitle">Actualizado el <span id="lastUpdateDate">{% now "j \d\e F \d\e Y" %}</span></p>
+        </div>
+        
+        <div class="profile-image-container">
+            {% if user_profile.profile_picture %}
+            <img src="{{ user_profile.profile_picture.url }}" alt="Foto de perfil" class="profile-image">
+            {% else %}
+            <img src="{% static 'abcpet_app/images/default_profile_picture.jpg' %}" alt="Foto de perfil predeterminada" class="profile-image">
+            {% endif %}
+            
+            <button class="change-photo-btn" onclick="document.getElementById('profilePicture').click()">
+                <span class="material-symbols-rounded">photo_camera</span>
+            </button>
+            <input type="file" id="profilePicture" name="profile_picture" class="change-photo-input" accept="image/*" onchange="uploadProfilePicture()">
+        </div>
+    </div>
+    
+    <!-- Pestañas de navegación -->
+    <div class="profile-tabs">
+        <div class="profile-tab active">Información personal</div>
+        <div class="profile-tab">Pedidos</div>
+        <div class="profile-tab">Mascotas</div>
+        <div class="profile-tab">Favoritos</div>
+    </div>
+    
+    <!-- Mensaje de éxito -->
+    <div id="successMessage" class="alert alert-success hidden">
+        <span class="alert-icon material-symbols-rounded">check_circle</span>
+        <div class="alert-content">
+            <h3 class="alert-title">Información actualizada</h3>
+            <p class="alert-message">Tus cambios han sido guardados correctamente.</p>
+        </div>
+    </div>
+    
+    <!-- Tarjeta de información personal -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-symbols-rounded">person</span>
+                Información personal
+            </h2>
+            <button class="btn btn-outline btn-edit-personal">Editar</button>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item {% if not user_form.first_name.value and not user_form.last_name.value %}hidden{% endif %}">
+                    <div class="info-label">Nombre completo</div>
+                    <p class="info-value" id="displayedFirstName">
+                        {{ user_form.first_name.value|default_if_none:'' }} {{ user_form.last_name.value|default_if_none:'' }}
+                    </p>
+                </div>
+                
+                <div class="info-item {% if not user_form.email.value %}hidden{% endif %}">
+                    <div class="info-label">Correo electrónico</div>
+                    <p class="info-value" id="displayedEmail">{{ user_form.email.value|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not user_form.username.value %}hidden{% endif %}">
+                    <div class="info-label">ID de cuenta</div>
+                    <p class="info-value" id="displayedUsername">{{ user_form.username.value|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not profile_form.rut.value %}hidden{% endif %}">
+                    <div class="info-label">RUT</div>
+                    <p class="info-value" id="displayedRUT">{{ profile_form.rut.value|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not profile_form.phone_number.value %}hidden{% endif %}">
+                    <div class="info-label">Teléfono</div>
+                    <p class="info-value" id="displayedPhoneNumber">
+                        {% if profile_form.phone_number.value %}CL (+56) {{ profile_form.phone_number.value }}{% endif %}
+                    </p>
+                </div>
+                
+                <div class="info-item {% if not profile_form.genero.value %}hidden{% endif %}">
+                    <div class="info-label">Género</div>
+                    <p class="info-value" id="displayedGenero">{{ profile_form.genero.value|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not profile_form.fecha_nacimiento.value %}hidden{% endif %}">
+                    <div class="info-label">Fecha de nacimiento</div>
+                    <p class="info-value" id="displayedFechaNacimiento">
+                        {% if profile_form.fecha_nacimiento.value %}{{ profile_form.fecha_nacimiento.value|date:"j \d\e F \d\e Y" }}{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tarjeta de direcciones -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-symbols-rounded">location_on</span>
+                Direcciones
+            </h2>
+            <button class="btn btn-outline btn-edit-address">Editar</button>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item {% if not user_profile.country %}hidden{% endif %}">
+                    <div class="info-label">País</div>
+                    <p class="info-value" id="displayedCountry">{{ user_profile.country|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not user_profile.region %}hidden{% endif %}">
+                    <div class="info-label">Región</div>
+                    <p class="info-value" id="displayedRegion">{{ user_profile.region|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not user_profile.comuna %}hidden{% endif %}">
+                    <div class="info-label">Comuna</div>
+                    <p class="info-value" id="displayedComuna">{{ user_profile.comuna|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not user_profile.calle_numero %}hidden{% endif %}">
+                    <div class="info-label">Dirección</div>
+                    <p class="info-value" id="displayedCalleNumero">{{ user_profile.calle_numero|default_if_none:'' }}</p>
+                </div>
+                
+                <div class="info-item {% if not user_profile.info_adicional %}hidden{% endif %}">
+                    <div class="info-label">Información adicional</div>
+                    <p class="info-value" id="displayedInfoAdicional">{{ user_profile.info_adicional|default_if_none:'' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tarjeta de preferencias de comunicación -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <span class="material-symbols-rounded">notifications</span>
+                Preferencias de comunicación
+            </h2>
+            <button class="btn btn-outline btn-edit-preferences">Editar</button>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Newsletter por email</div>
+                    <p class="info-value" id="displayedNewsletterEmail">
+                        {{ profile_form.newsletter_email.value|yesno:"Sí,No" }}
+                    </p>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Newsletter por teléfono</div>
+                    <p class="info-value" id="displayedNewsletterTelefono">
+                        {{ profile_form.newsletter_telefono.value|yesno:"Sí,No" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de edición -->
+<div id="editModal" class="modal">
+    <div class="modal-header">
+        <h2 class="modal-title">Actualizar tu perfil</h2>
+        <button id="closeEditModal" class="modal-close" type="button">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    </div>
+    
+    <form id="editProfileForm">
+        <div class="modal-body">
+            <div id="personalInfoSection">
+                <h3>Información personal</h3>
+                
+                <div class="form-group">
+                    <label class="form-label" for="firstName">Nombre</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name" placeholder="Ingresa tu nombre" value="{{ user_form.first_name.value|default_if_none:'' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="lastName">Apellido</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name" placeholder="Ingresa tu apellido" value="{{ user_form.last_name.value|default_if_none:'' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="rut">RUT</label>
+                    <input type="text" class="form-control" id="rut" name="rut" placeholder="Ej. 12345678-9" value="{{ profile_form.rut.value|default_if_none:'' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="phoneNumber">Número de teléfono</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">CL (+56)</div>
+                        <input type="text" class="form-control" id="phoneNumber" name="phone_number" placeholder="9 dígitos" maxlength="9" pattern="\d{9}" value="{{ profile_form.phone_number.value|default_if_none:'' }}">
+                    </div>
+                    <div class="invalid-feedback" id="phoneNumberError">Ingresa un número válido de 9 dígitos.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="genero">Género</label>
+                    <select class="form-control form-select" id="genero" name="genero">
+                        <option value="">Selecciona</option>
+                        <option value="Masculino" {% if profile_form.genero.value == 'Masculino' %}selected{% endif %}>Masculino</option>
+                        <option value="Femenino" {% if profile_form.genero.value == 'Femenino' %}selected{% endif %}>Femenino</option>
+                        <option value="Otro" {% if profile_form.genero.value == 'Otro' %}selected{% endif %}>Otro</option>
+                        <option value="Prefiero no decirlo" {% if profile_form.genero.value == 'Prefiero no decirlo' %}selected{% endif %}>Prefiero no decirlo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fechaNacimiento">Fecha de nacimiento</label>
+                    <input type="date" class="form-control" id="fechaNacimiento" name="fecha_nacimiento" value="{% if profile_form.fecha_nacimiento.value %}{{ profile_form.fecha_nacimiento.value|date:'Y-m-d' }}{% endif %}">
+                </div>
+            </div>
+            
+            <div id="addressSection" class="hidden">
+                <h3>Información de dirección</h3>
+                
+                <div class="form-group">
+                    <label class="form-label" for="country">País</label>
+                    <input type="text" class="form-control" id="country" name="country" value="{{ user_profile.country|default:'Chile' }}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="region">Región</label>
+                    <select class="form-control form-select" id="region" name="region">
+                        <option value="Región Metropolitana" {% if user_profile.region == 'Región Metropolitana' %}selected{% endif %}>Región Metropolitana</option>
+                        <option value="Otra">Otra región</option>
+                    </select>
+                    <div class="invalid-feedback" id="regionWarning">
+                        Por el momento ABCPet solo está disponible en la Región Metropolitana.
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="comuna">Comuna</label>
+                    <select class="form-control form-select" id="comuna" name="comuna">
+                        <!-- Opciones generadas por JS -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="calle_numero">Calle y número</label>
+                    <input type="text" class="form-control" id="calle_numero" name="calle_numero" placeholder="Ej. Av. Providencia 1234" value="{{ user_profile.calle_numero|default_if_none:'' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="info_adicional">Información adicional</label>
+                    <textarea class="form-control" id="info_adicional" name="info_adicional" rows="3" placeholder="Ej. Departamento 303, Torre B">{{ user_profile.info_adicional|default_if_none:'' }}</textarea>
+                </div>
+            </div>
+            
+            <div id="preferencesSection" class="hidden">
+                <h3>Preferencias de comunicación</h3>
+                
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newsletterEmail" name="newsletter_email" {% if profile_form.newsletter_email.value %}checked{% endif %}>
+                    <label class="form-check-label" for="newsletterEmail">
+                        Recibir ofertas y novedades por email
+                    </label>
+                </div>
+                
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newsletterTelefono" name="newsletter_telefono" {% if profile_form.newsletter_telefono.value %}checked{% endif %}>
+                    <label class="form-check-label" for="newsletterTelefono">
+                        Recibir notificaciones por teléfono
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" id="cancelButton" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" id="submitButton" class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+
+<!-- Fondo del modal -->
+<div id="modalBackdrop" class="modal-backdrop"></div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast">
+    <span class="toast-icon material-symbols-rounded">info</span>
+    <div class="toast-content">
+        <p class="toast-message" id="toastMessage"></p>
+    </div>
+</div>
+
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos DOM
+    const modal = document.getElementById('editModal');
+    const backdrop = document.getElementById('modalBackdrop');
+    const closeButton = document.getElementById('closeEditModal');
+    const cancelButton = document.getElementById('cancelButton');
+    const editProfileForm = document.getElementById('editProfileForm');
+    const submitButton = document.getElementById('submitButton');
+    
+    // Secciones del formulario
+    const personalInfoSection = document.getElementById('personalInfoSection');
+    const addressSection = document.getElementById('addressSection');
+    const preferencesSection = document.getElementById('preferencesSection');
+    
+    // Botones de edición
+    const btnEditPersonal = document.querySelector('.btn-edit-personal');
+    const btnEditAddress = document.querySelector('.btn-edit-address');
+    const btnEditPreferences = document.querySelector('.btn-edit-preferences');
+    
+    // Campos del formulario
+    const regionSelect = document.getElementById('region');
+    const comunaSelect = document.getElementById('comuna');
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    
+    // Comunas de la Región Metropolitana
+    const comunasMetropolitana = [
+        "Cerrillos", "Cerro Navia", "Conchalí", "El Bosque", "Estación Central", 
+        "Huechuraba", "Independencia", "La Cisterna", "La Florida", "La Granja", 
+        "La Pintana", "La Reina", "Las Condes", "Lo Barnechea", "Lo Espejo", 
+        "Lo Prado", "Macul", "Maipú", "Ñuñoa", "Pedro Aguirre Cerda", 
+        "Peñalolén", "Providencia", "Pudahuel", "Quilicura", "Quinta Normal", 
+        "Recoleta", "Renca", "San Joaquín", "San Miguel", "San Ramón", 
+        "Santiago", "Vitacura"
+    ];
+    
+    // Funciones para mostrar distintas secciones del modal
+    function showPersonalInfoSection() {
+        personalInfoSection.classList.remove('hidden');
+        addressSection.classList.add('hidden');
+        preferencesSection.classList.add('hidden');
+    }
+    
+    function showAddressSection() {
+        personalInfoSection.classList.add('hidden');
+        addressSection.classList.remove('hidden');
+        preferencesSection.classList.add('hidden');
+    }
+    
+    function showPreferencesSection() {
+        personalInfoSection.classList.add('hidden');
+        addressSection.classList.add('hidden');
+        preferencesSection.classList.remove('hidden');
+    }
+    
+    // Evento click para botones de edición
+    btnEditPersonal.addEventListener('click', function() {
+        showPersonalInfoSection();
+        openModal();
+    });
+    
+    btnEditAddress.addEventListener('click', function() {
+        showAddressSection();
+        openModal();
+    });
+    
+    btnEditPreferences.addEventListener('click', function() {
+        showPreferencesSection();
+        openModal();
+    });
+    
+    // Manejador de validación de teléfono
+    phoneNumberInput.addEventListener('input', function() {
+        validatePhoneNumber();
+    });
+    
+    function validatePhoneNumber() {
+        const phoneNumber = phoneNumberInput.value.trim();
+        const isValid = phoneNumber === '' || /^\d{9}$/.test(phoneNumber);
+        
+        if (!isValid) {
+            phoneNumberInput.classList.add('is-invalid');
+            return false;
+        } else {
+            phoneNumberInput.classList.remove('is-invalid');
+            return true;
+        }
+    }
+    
+    // Poblar las comunas según la región seleccionada
+    function populateComunas() {
+        const selectedRegion = regionSelect.value;
+        comunaSelect.innerHTML = '';
+        
+        if (selectedRegion === 'Región Metropolitana') {
+            document.getElementById('regionWarning').style.display = 'none';
+            submitButton.disabled = false;
+            
+            // Añadir placeholder
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = '';
+            placeholderOption.textContent = 'Selecciona tu comuna';
+            comunaSelect.appendChild(placeholderOption);
+            
+            // Añadir comunas
+            comunasMetropolitana.forEach(function(comuna) {
+                const option = document.createElement('option');
+                option.value = comuna;
+                option.textContent = comuna;
+                if ('{{ user_profile.comuna }}' === comuna) {
+                    option.selected = true;
+                }
+                comunaSelect.appendChild(option);
+            });
+            comunaSelect.disabled = false;
+        } else {
+            document.getElementById('regionWarning').style.display = 'block';
+            submitButton.disabled = true;
+            
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No disponible';
+            comunaSelect.appendChild(option);
+            comunaSelect.disabled = true;
+        }
+    }
+    
+    regionSelect.addEventListener('change', populateComunas);
+    
+    // Inicializar las comunas
+    populateComunas();
+    
+    // Funciones para abrir y cerrar el modal
+    function openModal() {
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+        
+        setTimeout(() => {
+            modal.classList.add('show');
+            backdrop.classList.add('show');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modal.classList.remove('show');
+        backdrop.classList.remove('show');
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+            backdrop.style.display = 'none';
+        }, 300);
+    }
+    
+    // Eventos para cerrar el modal
+    closeButton.addEventListener('click', closeModal);
+    cancelButton.addEventListener('click', closeModal);
+    
+    backdrop.addEventListener('click', function() {
+        closeModal();
+    });
+    
+    // Validación del formulario antes de enviar
+    function validateForm() {
+        let isValid = true;
+        
+        // Validar teléfono si está visible la sección personal
+        if (!personalInfoSection.classList.contains('hidden')) {
+            isValid = validatePhoneNumber();
+        }
+        
+        // Validar región si está visible la sección de dirección
+        if (!addressSection.classList.contains('hidden')) {
+            if (regionSelect.value === 'Otra') {
+                document.getElementById('regionWarning').style.display = 'block';
+                isValid = false;
+            }
+        }
+        
+        return isValid;
+    }
+    
+    // Manejar la presentación del formulario
+    editProfileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+            return;
+        }
+        
+        // Recopilar datos del formulario
+        const formData = {
+            first_name: document.getElementById('firstName').value.trim(),
+            last_name: document.getElementById('lastName').value.trim(),
+            rut: document.getElementById('rut').value.trim(),
+            genero: document.getElementById('genero').value,
+            phone_number: document.getElementById('phoneNumber').value.trim(),
+            fecha_nacimiento: document.getElementById('fechaNacimiento').value || null,
+            newsletter_email: document.getElementById('newsletterEmail').checked,
+            newsletter_telefono: document.getElementById('newsletterTelefono').checked,
+            country: document.getElementById('country').value,
+            region: document.getElementById('region').value,
+            comuna: document.getElementById('comuna').value,
+            calle_numero: document.getElementById('calle_numero').value.trim(),
+            info_adicional: document.getElementById('info_adicional').value.trim()
+        };
+        
+        // Mostrar estado de carga
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="loader"></span> Guardando...';
+        
+        // Enviar datos mediante fetch
+        fetch('/update-user-info/', {
+            method: 'POST',
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            cache: 'no-cache'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error del servidor: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Actualizar la información mostrada
+                document.getElementById('displayedFirstName').textContent = 
+                    `${formData.first_name} ${formData.last_name}`.trim();
+                document.getElementById('displayedRUT').textContent = formData.rut || '';
+                document.getElementById('displayedGenero').textContent = formData.genero || '';
+                document.getElementById('displayedPhoneNumber').textContent = 
+                    formData.phone_number ? `CL (+56) ${formData.phone_number}` : '';
+                
+                // Formatear la fecha para mostrar en español
+                let formattedDate = '';
+                if (formData.fecha_nacimiento) {
+                    const date = new Date(formData.fecha_nacimiento);
+                    formattedDate = date.toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                }
+                document.getElementById('displayedFechaNacimiento').textContent = formattedDate;
+                
+                document.getElementById('displayedNewsletterEmail').textContent = 
+                    formData.newsletter_email ? 'Sí' : 'No';
+                document.getElementById('displayedNewsletterTelefono').textContent = 
+                    formData.newsletter_telefono ? 'Sí' : 'No';
+                document.getElementById('displayedCountry').textContent = formData.country || '';
+                document.getElementById('displayedRegion').textContent = formData.region || '';
+                document.getElementById('displayedComuna').textContent = formData.comuna || '';
+                document.getElementById('displayedCalleNumero').textContent = formData.calle_numero || '';
+                document.getElementById('displayedInfoAdicional').textContent = formData.info_adicional || '';
+                
+                // Mostrar mensaje de éxito
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    successMessage.classList.add('hidden');
+                }, 5000);
+                
+                showToast('Información actualizada correctamente');
+                
+                // Actualizar fecha de última actualización
+                const now = new Date();
+                const updatedDate = now.toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                document.getElementById('lastUpdateDate').textContent = updatedDate;
+                
+                // Cerrar modal
+                closeModal();
+            } else {
+                throw new Error(data.message || 'Error al guardar los cambios');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error al guardar los cambios. Por favor, intenta de nuevo.');
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        });
+    });
+    
+    // Función para cargar imagen de perfil
+    window.uploadProfilePicture = function() {
+        const profilePictureInput = document.getElementById('profilePicture');
+        const file = profilePictureInput.files[0];
+        
+        if (!file) return;
+        
+        // Validar tipo de archivo
+        if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+            showToast('Solo se permiten imágenes en formato JPEG, JPG o PNG.');
+            return;
+        }
+        
+        // Validar tamaño del archivo (5MB máximo)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('El archivo es demasiado grande. El tamaño máximo permitido es 5MB.');
+            return;
+        }
+        
+        // Crear FormData y añadir archivo
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        
+        // Mostrar estado de carga
+        const profileImage = document.querySelector('.profile-image');
+        profileImage.style.opacity = '0.6';
+        
+        // Enviar solicitud para actualizar la imagen de perfil
+        fetch('/update-profile-picture/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Actualizar todas las imágenes de perfil con param para evitar caché
+                const timestamp = new Date().getTime();
+                const profileImages = document.querySelectorAll('.profile-image, .user-image');
+                profileImages.forEach(img => {
+                    img.src = `${data.profile_picture_url}?t=${timestamp}`;
+                });
+                
+                showToast('Foto de perfil actualizada correctamente');
+            } else {
+                throw new Error(data.message || 'Error al actualizar la foto de perfil');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('No se pudo actualizar la foto de perfil. Intenta de nuevo.');
+        })
+        .finally(() => {
+            profileImage.style.opacity = '1';
+        });
+    };
+});
+
+// Mostrar notificación toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    toast.style.display = 'block';
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 300);
+    }, 3000);
+}
+
+// Simulación de pestañas - Solamente la primera está activa
+document.querySelectorAll('.profile-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Si no es la primera pestaña, mostrar mensaje
+        if (this !== document.querySelector('.profile-tab')) {
+            showToast('Esta sección estará disponible próximamente');
+        }
+    });
+});
+</script>
+{% endblock %}

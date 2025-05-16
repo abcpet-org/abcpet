@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Circular+Std:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMareG5CCKj1TGhVXKjrwr7h7/68BHVbk8CU1jz" crossorigin="anonymous">
+    <title>ABC Pet Project - Admin Login</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Circular Std', sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 100%;
+            height: auto;
+            max-height: 50px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .form-group input:focus {
+            border-color: #007bff;
+        }
+        .form-group .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #007bff;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #d1d1d1;
+            color: white;
+            cursor: not-allowed;
+            transition: background-color 0.3s ease;
+        }
+        .form-group button.enabled {
+            background-color: #000;
+            cursor: pointer;
+        }
+        .form-group button.enabled:hover {
+            background-color: #333;
+        }
+        .link {
+            display: block;
+            text-align: right;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .signup {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .signup a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .signup a:hover {
+            text-decoration: underline;
+        }
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #555;
+        }
+        .separator div {
+            flex: 1;
+            height: 1px;
+            background-color: #ccc;
+        }
+        .separator span {
+            margin: 0 10px;
+        }
+        .social-login {
+            display: flex;
+            justify-content: space-between;
+        }
+        .social-login button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+        .social-login button:hover {
+            background-color: #f1f1f1;
+        }
+        .social-login img {
+            height: 20px;
+            margin-right: 10px;
+        }
+        footer {
+            font-size: 12px;
+            color: #555;
+            margin-top: 20px;
+        }
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{% static 'abcpet_app/images/logo.png' %}" alt="ABC Pet Project Logo" class="logo">
+        <h1>Admin Login</h1>
+        <form method="post" action="{% url 'admin_login' %}" id="loginForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="email" name="email" id="email" placeholder="Ingresa con tu email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" id="password" placeholder="Ingresa tu contraseña" required>
+                <span class="toggle-password" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </span>
+                <a href="{% url 'reset_password' %}" class="link">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="signInButton" disabled>Acceder</button>
+            </div>
+            {% if error_message %}
+                <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
+            <div class="signup">
+            </div>
+        </form>
+        <div class="separator">
+            <div></div>
+            <span>Acceso back-end abcpet</span>
+            <div></div>
+        </div>
+        
+        <footer>
+            Esta plataforma esta protegida con reCAPTCHA con la tecnologia de Google <a href="https://policies.google.com/privacy" target="_blank">Politica de privacidad</a> y <a href="https://policies.google.com/terms" target="_blank">Terminos de servicio</a>.
+        </footer>
+    </div>
+    <script>
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const signInButton = document.getElementById('signInButton');
+
+        function validateInputs() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (email && password) {
+                signInButton.classList.add('enabled');
+                signInButton.disabled = false;
+            } else {
+                signInButton.classList.remove('enabled');
+                signInButton.disabled = true;
+            }
+        }
+
+        emailInput.addEventListener('input', validateInputs);
+        passwordInput.addEventListener('input', validateInputs);
+
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            const icon = document.querySelector('.toggle-password i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
+
+        // Rellenar el campo de email con la cookie guardada
+        window.onload = function() {
+            const savedEmail = getCookie('saved_email');
+            if (savedEmail) {
+                emailInput.value = savedEmail.replace(/"/g, ''); // Eliminar cualquier comilla del valor de la cookie
+                validateInputs();  // Habilitar el botón si ambos campos están llenos
+            }
+        }
+
+        // Función para obtener el valor de una cookie por su nombre
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-mQ2TBUe9zCRaPdnXqLq8Xq6UZ99bdD3cUTTD70JU5xeg9HdL5fnfiidDEyRAt0uKSoi1z4eSj5neGwQDUKVeRQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+    <style>
+        /* Agrega tus estilos personalizados aquí si es necesario */
+    </style>
+    <title>Mascota Detalle</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="tus-mascotas">
+            <img src="{{ mascota.foto_url }}" alt="Foto de la mascota" class="rounded-circle" style="width: 50px; height: 50px;">
+            <div class="mascota-info">
+                <p>{{ mascota.nombre_mascota }}</p>
+                <p>{{ mascota.edad }} años</p>
+            </div>
+            <a href="{% url 'editar_mascota' %}" class="edit-link">(Editar)</a>
+        </div>
+
+        <a href="{% url 'crear_mascota' %}" class="add-pet-link">Add another pet</a>
+
+        <div class="mascota-presentation text-center">
+            <img src="{{ mascota.foto1_url }}" alt="Foto de la mascota" class="rounded-circle" style="width: 100px; height: 100px;">
+            <h2>{{ mascota.nombre_mascota }}</h2>
+            <p>{{ mascota.raza }}</p>
+            <p><small>{{ mascota.sexo }}, {{ mascota.peso }}, {{ mascota.edad }} años</small></p>
+        </div>
+
+        <div class="sobre-mascota text-center">
+            <i class="fas fa-info-circle"></i> Detalles sobre {{ mascota.nombre_mascota }}
+        </div>
+
+        <div class="mascota-details">
+            <!-- Detalles de la mascota -->
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Spayed/Neutered:</strong> {{ mascota.spayed_neutered }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Microchipped:</strong> {{ mascota.microchipped }}
+                </li>
+                <!-- Agrega más detalles según tu estructura de datos -->
+            </ul>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="back-link">Volver al dashboard</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

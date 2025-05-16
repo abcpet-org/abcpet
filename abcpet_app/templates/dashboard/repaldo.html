@@ -1,0 +1,647 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+  <h2>Números de Teléfono</h2>
+
+  <form method="post" class="mt-4 formulario-numero-telefono">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Guardar y Continuar</button>
+  </form>
+{% endblock %}
+
+
+
+
+#edit_profile respaldo.
+
+
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card p-4">
+            <!-- Encabezado centrado -->
+            <h2 class="text-center mb-4">Configuración de Perfil</h2>
+
+            <!-- Barra de progreso -->
+            <div class="mb-4">
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-primary text-white" role="progressbar" style="width: 80%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">Información básica</div>
+                    <div class="progress-bar bg-light text-dark" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Números de teléfono</div>
+                    <div class="progress-bar bg-light text-dark" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Métodos de pago</div>
+                </div>
+            </div>
+
+            <!-- Formulario para editar el perfil -->
+            <form method="post" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_address_line1" class="form-label">Dirección Línea 1</label>
+                    <input type="text" class="form-control" id="id_address_line1" name="address_line1" placeholder="Ingresa tu Dirección Línea 1" value="{{ form.address_line1.value }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_address_line2" class="form-label">Dirección Línea 2</label>
+                    <input type="text" class="form-control" id="id_address_line2" name="address_line2" placeholder="Ingresa tu Dirección Línea 2" value="{{ form.address_line2.value }}">
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_city" class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" id="id_city" name="city" placeholder="Ingresa tu Ciudad" value="{{ form.city.value }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="id_state" class="form-label">Comuna</label>
+                        <input type="text" class="form-control" id="id_state" name="state" placeholder="Ingresa tu Comuna" value="{{ form.state.value }}">
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="id_postal_code" class="form-label">Código Postal (opcional)</label>
+                        <input type="text" class="form-control" id="id_postal_code" name="postal_code" placeholder="Ingresa tu Código Postal opcional" value="{{ form.postal_code.value }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="id_country" class="form-label">País (Predeterminado: Chile)</label>
+                        <select class="form-select" id="id_country" name="country">
+                            <option value="Chile" selected>Chile</option>
+                            <!-- Otras opciones de país aquí -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="id_profile_picture" class="form-label">Foto de perfil</label>
+                            <p class="small text-muted">Esta es la primera foto que verán los dueños de mascotas. Recomendamos utilizar una fotografía clara y bien iluminada de su rostro (sin gafas de sol).</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_profile_picture" class="form-label">Sube tu foto</label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="id_profile_picture" name="profile_picture">
+                                <label class="input-group-text btn btn-primary" for="id_profile_picture">
+                                    <i class="bi bi-camera"></i> Sube tu foto
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+
+
+
+
+
+                <button type="submit" class="btn btn-primary btn-lg">Guardar y Continuar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function saveAndContinue() {
+            // Aquí puedes agregar lógica para validar los datos antes de redirigir
+
+            // Redirigir a la sección de Números de teléfono
+            window.location.href = '#numeros-telefono';
+        }
+    </script>
+{% endblock %}
+
+
+
+
+
+
+    # edicion views.py
+
+
+@login_required
+def edit_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('numeros_telefono')  # Redirige a la página de números de teléfono
+    else:
+        form = EditProfileForm(instance=user_profile)
+
+    # Añade el siguiente bloque de código para crear el botón "Volver al Dashboard"
+    dashboard_url = reverse('dashboard')  # Obtiene la URL del dashboard
+    return render(request, 'abcpet_app/edit_profile.html', {'form': form, 'dashboard_url': dashboard_url})
+
+
+
+
+
+
+
+// codigo que funciona para abcpet_app/edit_profile.html
+
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card p-4" style="background-color: #ffffff; width: 66%;">
+            <div class="mb-4">
+                <h3 style="font-family: 'Circular', -apple-system, 'system-ui', Roboto, 'Helvetica Neue', sans-serif; font-style: normal; font-weight: 600; font-size: 14px; color: #222222;">Dashboard / Información Personal</h3>
+                <p style="font-family: 'Circular', -apple-system, 'system-ui', Roboto, 'Helvetica Neue', sans-serif; font-size: 14px; color: #222222;">
+                    {% if user.is_authenticated %}
+                        <span style="font-weight: 600; font-size: 16px;">{{ user.first_name }} {{ user.last_name }}</span>
+                    {% else %}
+                        Usuario no autenticado.
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if user.is_authenticated %}
+                <h2 class="text-left mb-4" style="font-family: 'Circular', -apple-system, 'system-ui', Roboto, 'Helvetica Neue', sans-serif; font-style: normal; font-weight: 800; font-size: 32px; line-height: 36px; color: #484848;">Información personal</h2>
+
+                <!-- Vista de solo lectura -->
+                <div>
+                    <p class="mb-2">
+                        <strong>Dirección Línea 1:</strong> <span id="address_line1">{{ form.address_line1.value }}</span>
+                        <button class="btn btn-primary edit-btn" data-field="address_line1">Editar</button>
+                    </p>
+                    <!-- Agregar más campos según sea necesario -->
+
+                    <!-- Incorporar el nombre y apellido -->
+                    <p class="mb-2">
+                        <strong>Firstname:</strong> <span id="firstname">{{ user.first_name }}</span>
+                        <button class="btn btn-primary edit-btn" data-field="first_name">Editar</button>
+                    </p>
+
+                    <!-- Formulario de edición -->
+                    <form id="editForm" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editField">Editar Campo:</label>
+                        <input type="text" id="editField" class="form-control">
+                        <button type="button" class="btn btn-success btn-sm" onclick="saveEdit()">Guardar</button>
+                        <input type="hidden" id="editFieldId" value="">
+                    </form>
+                </div>
+
+                <script>
+                    function saveEdit() {
+                        var csrftoken = $('[name=csrfmiddlewaretoken]').val();
+                        console.log('CSRF Token:', csrftoken);
+                        
+                        var editedValue = $('#editField').val();
+                        var field = $('#editFieldId').val();  // Obtener el campo actual desde el input hidden
+                        
+                        $.ajax({
+                            url: '{% url "save_profile_field" %}',
+                            method: 'POST',
+                            headers: {'X-CSRFToken': csrftoken},
+                            data: {
+                                field: field,
+                                value: editedValue
+                            },
+                            success: function (response) {
+                                console.log('Response:', response);
+                    
+                                if (response.success) {
+                                    $('#' + field).text(editedValue);
+                                    $('#editForm').hide();
+                                } else {
+                                    console.error('Error al guardar el campo del perfil.');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error de conexión al intentar guardar el campo del perfil.');
+                                console.log('XHR:', xhr);
+                                console.log('Status:', status);
+                                console.log('Error:', error);
+                            }
+                        });
+                    }
+                
+                    $('.edit-btn').click(function () {
+                        var field = $(this).data('field');
+                        var currentValue = $('#' + field).text();
+                        
+                        $('#editField').val(currentValue);
+                        $('#editFieldId').val(field);
+                        $('#editForm').show();
+                    });
+
+                    
+                </script>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+respaldo abcpet_app/edit_profile.html
+
+
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-mQ2TBUe9zCRaPdnXqLq8Xq6UZ99bdD3cUTTD70JU5xeg9HdL5fnfiidDEyRAt0uKSoi1z4eSj5neGwQDUKVeRQ==" crossorigin="anonymous" />
+<!-- Enlace a Font Awesome (agrega esto en la sección head) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+
+
+
+
+<style>
+    body {
+        background-color: #ffffff; /* Fondo blanco para todo el cuerpo */
+        font-family: 'Afacad', sans-serif;
+    }
+
+    .container {
+        background-color: #ffffff; /* Fondo blanco para el contenedor principal */
+        padding: 20px; /* Agregado para espacio alrededor del contenido */
+    }
+
+    .separation-line {
+        border-top: 1px solid #e8e8e8;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .card {
+        background-color: #ffffff; /* Fondo gris para las tarjetas */
+        padding: 15px;
+        margin-bottom: 20px; /* Agregado para espacio entre tarjetas */
+    }
+
+    .edit-btn {
+        float: right;
+        margin-left: 10px;  /* Ajusta el margen según sea necesario */
+    }
+
+    .edit-label {
+        font-size: 12px; /* Ajusta el tamaño de la fuente según tus preferencias */
+    }
+
+    .personal-info-title h3 {
+        font-size: 30px; 
+    }
+
+    .city-info {
+        color: #717171; 
+    }
+
+    .address-info {
+        color: #717171; 
+    }
+
+    .dashboard-info h3 {
+        color: #717171; 
+    }
+
+    .dashboard-title h3 {
+        color: #000000; /* Color del texto en negro */
+        font-size: 24px; /* Tamaño de fuente normal */
+        transition: font-size 0.3s; /* Transición suave en el cambio de tamaño de fuente */
+        cursor: pointer; /* Cambia el cursor al pasar el mouse */
+    }
+
+    .dashboard-title h3:hover {
+        font-size: 28px; /* Tamaño de fuente más grande al pasar el mouse */
+    }
+
+    .editField {
+        border: 1px solid ##d0f5d2; /* Green border color */
+        background-color: #f2f2f2; /* Light green background color */
+        transition: border-color 0.3s, background-color 0.3s; /* Smooth transition effect */
+    }
+
+    /* Add this style for highlighting the edit field when focused */
+    .editField:focus {
+        outline: none; /* Remove default focus outline */
+        border-color: #d9ffda; /* Darker green border color on focus */
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card p-4" style="background-color: #ffffff; border: none; margin-bottom: 0; box-shadow: none; padding: 0;">
+                <div class="mb-4 dashboard-info dashboard-title">
+                    <h3>Dashboard / <strong>Información Personal</strong></h3>
+                    <p>
+                        {% if user.is_authenticated %}
+                            <p style="font-family: 'Afacad', sans-serif; font-size: 14px; color: #222222;">
+                                <span style="font-weight: 600; font-size: 16px;">{{ user.first_name }} {{ user.last_name }}</span> - {{ user.email }}
+                                <span style="text-decoration: underline; color: #222222; font-weight: 600; font-size: 16px;"><a href="{% url 'dashboard' %}">Volver al Dashboard</a></span>
+                            </p>
+                        {% else %}
+                            Usuario no autenticado.
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="personal-info-title">
+                        <h3>Mi Información personal</h3>
+                    </div>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>Teléfono</strong>
+                    </p>
+                    <p class="mb-2" id="phoneParagraph">
+                        <span id="phoneValue">
+                            {% if user_phone.phone_number %}
+                                {{ user_phone.phone_number }}
+                            {% else %}
+                                No proporcionado
+                            {% endif %}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="phone_number">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="phone_number" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldPhone" class="edit-label">Ingresa tu número de teléfono actualizado:</label>
+                        <input type="text" id="editFieldPhone" class="form-control editField">
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="phone_number">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>Dirección</strong>
+                    </p>
+                    <p class="mb-2 address-info" id="addressLine1Paragraph">
+                        <span id="address_line1Value">
+                            {% if form.address_line1.value %}
+                                {{ form.address_line1.value }}
+                            {% else %}
+                                No proporcionado
+                            {% endif %}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="address_line1">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="address_line1" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldAddress" class="edit-label">Ingresa tu dirección actualizada:</label>
+                        <input type="text" id="editFieldAddress" class="form-control editField">
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="address_line1">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>Dirección Línea 2</strong>
+                    </p>
+                    <p class="mb-2" id="addressLine2Paragraph">
+                        <span id="addressLine2Value">
+                            {{ form.address_line2.value|default:"No proporcionado" }}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="address_line2">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="address_line2" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldAddressLine2" class="edit-label">Ingresa tu dirección línea 2 actualizada:</label>
+                        <input type="text" id="editFieldAddressLine2" class="form-control editField">
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="address_line2">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>Comuna</strong>
+                    </p>
+                    <p class="mb-2" id="stateParagraph">
+                        <span id="stateValue">
+                            {% if form.state.value %}
+                                {{ form.state.value }}
+                            {% else %}
+                                No proporcionado
+                            {% endif %}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="state">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="state" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldState" class="edit-label">Ingresa tu comuna actualizada:</label>
+                        <input type="text" id="editFieldState" class="form-control editField">
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="state">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>País</strong>
+                    </p>
+                    <p class="mb-2" id="countryParagraph">
+                        <span id="countryValue">
+                            {{ form.country.value|default:"Chile" }}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="country">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="country" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldCountry" class="edit-label">Selecciona tu país actualizado:</label>
+                        <select id="editFieldCountry" class="form-select editField">
+                            <option value="Chile" {% if form.country.value == 'Chile' %}selected{% endif %}>Chile</option>
+                            <!-- Otras opciones de país aquí -->
+                        </select>
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="country">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+
+                    <p class="mb-2">
+                        <strong>Código Postal</strong>
+                    </p>
+                    <p class="mb-2" id="postalCodeParagraph">
+                        <span id="postalCodeValue">
+                            {% if form.postal_code.value %}
+                                {{ form.postal_code.value }}
+                            {% else %}
+                                No proporcionado
+                            {% endif %}
+                        </span>
+                        <button class="btn btn-link edit-btn" data-field="postal_code">Editar</button>
+                    </p>
+                    <form class="editForm" data-field="postal_code" style="display: none;">
+                        {% csrf_token %}
+                        <label for="editFieldPostalCode" class="edit-label">Ingresa tu código postal actualizado:</label>
+                        <input type="text" id="editFieldPostalCode" class="form-control editField">
+                        <button type="button" class="btn btn-link btn-sm saveEdit" data-field="postal_code">Guardar</button>
+                    </form>
+
+                    <div class="separation-line"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const editBtns = $('.edit-btn');
+        const editForms = $('.editForm');
+    
+        editBtns.on('click', function (event) {
+            event.preventDefault();
+            const field = $(this).data('field');
+            const valueContainer = $(`#${field}Value`);
+            const editForm = $(`.editForm[data-field="${field}"]`);
+            const editField = editForm.find('.editField');
+    
+            if (valueContainer.text().trim().toLowerCase() === 'no proporcionado') {
+                editField.val('');
+            } else {
+                editField.val(valueContainer.text().trim());
+            }
+    
+            editForms.not(editForm).hide();
+            editForm.show();
+        });
+    
+        $('.saveEdit').on('click', function (event) {
+            event.preventDefault();
+    
+            const csrftoken = $('[name=csrfmiddlewaretoken]').val();
+            let editedValue = $(this).siblings('.editField').val();
+            const field = $(this).closest('.editForm').data('field');
+    
+            editedValue = editedValue.trim() === '' ? 'no proporcionado' : editedValue;
+    
+            console.log('Solicitud AJAX:', {
+                field: field,
+                value: editedValue
+            });
+    
+            // Definir editForms globalmente
+            window.editForms = editForms;
+    
+            $.ajax({
+                url: '{% url "save_profile_field" %}',
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    field: field,
+                    value: editedValue
+                },
+                success: function (response) {
+                    console.log('Respuesta del servidor:', response);
+                    if (response.success) {
+                        $(`#${field}Value`).text(editedValue);
+                        window.editForms.filter(`[data-field="${field}"]`).hide();
+                    } else {
+                        console.error('Error al guardar el campo del perfil.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error de conexión al intentar guardar el campo del perfil.');
+                    console.log('XHR:', xhr);
+                    console.log('Status:', status);
+                    console.log('Error:', error);
+                }
+            });
+        });
+    });
+
+    
+        
+</script>
+
+{% endblock %}
+
+
+
+
+
+<p class="mb-2">
+  <strong>Nombres</strong>
+</p>
+<p class="mb-2" id="firstNameParagraph">
+  <span id="firstNameValue">
+      {{ user.first_name }}
+  </span>
+  <button class="btn btn-link edit-btn" data-field="first_name">Editar</button>
+</p>
+<form class="editForm" data-field="first_name" style="display: none;">
+  {% csrf_token %}
+  <label for="editFieldFirstName" class="edit-label">Ingresa tus nombres actualizados:</label>
+  <input type="text" id="editFieldFirstName" name="first_name" class="form-control editField">
+  <button type="button" class="btn btn-link btn-sm saveEdit" data-field="first_name">Guardar</button>
+</form>
+
+
+
+
+<p class="mb-2">
+    <strong>Comuna</strong>
+</p>
+<p class="mb-2" id="stateParagraph">
+    <span id="stateValue">
+        {% if form.state.value %}
+            {{ form.state.value }}
+        {% else %}
+            No proporcionado
+        {% endif %}
+    </span>
+    <button class="btn btn-link edit-btn" data-field="state">Editar</button>
+</p>
+<form class="editForm" data-field="state" style="display: none;">
+    {% csrf_token %}
+    <label for="editFieldState" class="edit-label">Ingresa tu comuna actualizada:</label>
+    <input type="text" id="editFieldState" class="form-control editField">
+    <button type="button" class="btn btn-link btn-sm saveEdit" data-field="state">Guardar</button>
+</form>
+
+<div class="separation-line"></div>
+
+<p class="mb-2">
+    <strong>País</strong>
+</p>
+<p class="mb-2 address-info countryValue" id="countryParagraph">
+    <span id="countryValue">
+        {{ user.country_value|default:"Chile" }}
+    </span>
+    <button class="btn btn-link edit-btn" data-field="country">Editar</button>
+</p>
+<form class="editForm" data-field="country" style="display: none;">
+    {% csrf_token %}
+    <label for="editFieldCountry" class="edit-label">Selecciona tu país actualizado:</label>
+    <select id="editFieldCountry" class="form-select editField">
+        <option value="Chile" {% if form.country.value == 'Chile' %}selected{% endif %}>Chile</option>
+        <!-- Otras opciones de país aquí -->
+    </select>
+    <button type="button" class="btn btn-link btn-sm saveEdit" data-field="country">Guardar</button>
+</form>
+
+*****
+
+
+<p class="mb-2 address-info first_nameValue" id="firstNameParagraph">
+    <span id="firstNameValue">
+        {% if user.first_name %}
+            {{ user.first_name }}
+        {% else %}
+            No proporcionado
+        {% endif %}
+    </span>
+    <button class="btn btn-link edit-btn" data-field="first_name">Editar</button>
+</p>
+<form class="editForm" data-field="first_name" style="display: none;">
+    {% csrf_token %}
+    <label for="editFieldFirstName" class="edit-label">Ingresa tus nombres actualizados:</label>
+    <input type="text" id="editFieldFirstName" class="form-control editField">
+    <button type="button" class="btn btn-link btn-sm saveEdit" data-field="first_name">Guardar</button>
+</form>

@@ -1,0 +1,239 @@
+<!-- register_host.html -->
+{% extends 'abcpet_app/base.html' %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.user.label_tag }} {{ form.user }} {{ form.user.errors }}
+    {{ form.tarifa_hospedaje.label_tag }} {{ form.tarifa_hospedaje }} {{ form.tarifa_hospedaje.errors }}
+    {{ form.tarifa_cuidado_casa.label_tag }} {{ form.tarifa_cuidado_casa }} {{ form.tarifa_cuidado_casa.errors }}
+    {{ form.tarifa_guarderia.label_tag }} {{ form.tarifa_guarderia }} {{ form.tarifa_guarderia.errors }}
+    {{ form.tarifa_paseo_perros.label_tag }} {{ form.tarifa_paseo_perros }} {{ form.tarifa_paseo_perros.errors }}
+    {{ form.tarifa_vacaciones.label_tag }} {{ form.tarifa_vacaciones }} {{ form.tarifa_vacaciones.errors }}
+    {{ form.tarifa_adicional_perros.label_tag }} {{ form.tarifa_adicional_perros }} {{ form.tarifa_adicional_perros.errors }}
+    {{ form.tarifa_adicional_gatos.label_tag }} {{ form.tarifa_adicional_gatos }} {{ form.tarifa_adicional_gatos.errors }}
+    {{ form.tarifa_estancia_prolongada.label_tag }} {{ form.tarifa_estancia_prolongada }} {{ form.tarifa_estancia_prolongada.errors }}
+    {{ form.tarifa_aseo.label_tag }} {{ form.tarifa_aseo }} {{ form.tarifa_aseo.errors }}
+    {{ form.tarifa_recogida_entrega.label_tag }} {{ form.tarifa_recogida_entrega }} {{ form.tarifa_recogida_entrega.errors }}
+    {{ form.en_casa_tiempo_completo.label_tag }} {{ form.en_casa_tiempo_completo }} {{ form.en_casa_tiempo_completo.errors }}
+    {{ form.dias_disponibles.label_tag }} {{ form.dias_disponibles }} {{ form.dias_disponibles.errors }}
+    {{ form.aviso_previo.label_tag }} {{ form.aviso_previo }} {{ form.aviso_previo.errors }}
+    {{ form.maximo_mascotas.label_tag }} {{ form.maximo_mascotas }} {{ form.maximo_mascotas.errors }}
+    {{ form.tipos_mascotas.label_tag }} {{ form.tipos_mascotas }} {{ form.tipos_mascotas.errors }}
+    {{ form.tipo_vivienda.label_tag }} {{ form.tipo_vivienda }} {{ form.tipo_vivienda.errors }}
+    {{ form.tipo_jardin.label_tag }} {{ form.tipo_jardin }} {{ form.tipo_jardin.errors }}
+    {{ form.expectativas_casa.label_tag }} {{ form.expectativas_casa }} {{ form.expectativas_casa.errors }}
+    {{ form.mascotas_varias_familias.label_tag }} {{ form.mascotas_varias_familias }} {{ form.mascotas_varias_familias.errors }}
+    {{ form.cachorros_menos_1_ano.label_tag }} {{ form.cachorros_menos_1_ano }} {{ form.cachorros_menos_1_ano.errors }}
+    {{ form.perros_sin_entrenar.label_tag }} {{ form.perros_sin_entrenar }} {{ form.perros_sin_entrenar.errors }}
+    {{ form.machos_no_castrados.label_tag }} {{ form.machos_no_castrados }} {{ form.machos_no_castrados.errors }}
+    {{ form.hembras_no_esterilizadas.label_tag }} {{ form.hembras_no_esterilizadas }} {{ form.hembras_no_esterilizadas.errors }}
+    {{ form.hembras_en_celo.label_tag }} {{ form.hembras_en_celo }} {{ form.hembras_en_celo.errors }}
+    {{ form.perros_juguetones.label_tag }} {{ form.perros_juguetones }} {{ form.perros_juguetones.errors }}
+    {{ form.gatos_sin_esterilizar_castrar.label_tag }} {{ form.gatos_sin_esterilizar_castrar }} {{ form.gatos_sin_esterilizar_castrar.errors }}
+    {{ form.politica_cancelacion.label_tag }} {{ form.politica_cancelacion }} {{ form.politica_cancelacion.errors }}
+    {{ form.email_referencia1.label_tag }} {{ form.email_referencia1 }} {{ form.email_referencia1.errors }}
+    {{ form.email_referencia2.label_tag }} {{ form.email_referencia2 }} {{ form.email_referencia2.errors }}
+    {{ form.anos_experiencia.label_tag }} {{ form.anos_experiencia }} {{ form.anos_experiencia.errors }}
+    {{ form.titular_atractivo.label_tag }} {{ form.titular_atractivo }} {{ form.titular_atractivo.errors }}
+    {{ form.experiencia_cuidado_mascotas.label_tag }} {{ form.experiencia_cuidado_mascotas }} {{ form.experiencia_cuidado_mascotas.errors }}
+    {{ form.rutina_diaria.label_tag }} {{ form.rutina_diaria }} {{ form.rutina_diaria.errors }}
+    {{ form.foto_perfil.label_tag }} {{ form.foto_perfil }} {{ form.foto_perfil.errors }}
+    {{ form.foto_identificacion.label_tag }} {{ form.foto_identificacion }} {{ form.foto_identificacion.errors }}
+    {{ form.comprobante_domicilio.label_tag }} {{ form.comprobante_domicilio }} {{ form.comprobante_domicilio.errors }}
+    {{ form.fotos_casa.label_tag }} {{ form.fotos_casa }} {{ form.fotos_casa.errors }}
+    {{ form.desea_verificacion.label_tag }} {{ form.desea_verificacion }} {{ form.desea_verificacion.errors }}
+    {{ form.aprobado.label_tag }} {{ form.aprobado }} {{ form.aprobado.errors }}
+    <button type="submit">Registrar como Anfitrión</button>
+</form>
+<script>
+    var fields = ['tarifa_hospedaje', 'tarifa_cuidado_casa', 'tarifa_guarderia', 'tarifa_paseo_perros', 'tarifa_vacaciones', 'tarifa_adicional_perros', 'tarifa_adicional_gatos', 'tarifa_estancia_prolongada', 'tarifa_aseo', 'tarifa_recogida_entrega'];
+    fields.forEach(function(field) {
+        var inputField = document.getElementById(field);
+        if (inputField) {
+            inputField.addEventListener('input', function (e) {
+                var value = parseInt(this.value.replace(/\./g, ''));
+                if (!isNaN(value)) {
+                    this.value = value.toLocaleString('es-CL');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    
+
+
+<head>
+    <style>
+        .formulario-mascota .campo-tarifa {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container crear-mascota-container">
+        <h1 class="display-4 titulo1">Crearemos el perfil de tu mascota</h1>
+        <form method="post" action="{% url 'crear_mascota' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- [Campos existentes de crear_mascota.html] -->
+
+            <!-- Campos integrados de register_host.html -->
+            <div class="form-group formulario-mascota">
+                <label for="{{ form.tarifa_hospedaje.id_for_label }}">Tarifa de Hospedaje:</label>
+                <input type="text" class="campo-tarifa" name="{{ form.tarifa_hospedaje.name }}" id="{{ form.tarifa_hospedaje.id_for_label }}" value="{{ form.tarifa_hospedaje.value }}">
+            </div>
+            
+            <div class="form-group formulario-mascota">
+                <label for="{{ form.tarifa_cuidado_casa.id_for_label }}">Tarifa de Cuidado en Casa:</label>
+                <input type="text" class="campo-tarifa" name="{{ form.tarifa_cuidado_casa.name }}" id="{{ form.tarifa_cuidado_casa.id_for_label }}" value="{{ form.tarifa_cuidado_casa.value }}">
+            </div>
+            
+
+            <!-- [Continuar agregando más campos del formulario register_host.html de manera similar] -->
+
+            <!-- [Resto del formulario y botones de crear_mascota.html] -->
+        </form>
+    </div>
+
+    <!-- [Scripts y cierre de etiquetas igual que en crear_mascota.html] -->
+</body>
+<script>
+    var fields = ['tarifa_hospedaje', 'tarifa_cuidado_casa', 'tarifa_guarderia', 'tarifa_paseo_perros', 'tarifa_vacaciones', 'tarifa_adicional_perros', 'tarifa_adicional_gatos', 'tarifa_estancia_prolongada', 'tarifa_aseo', 'tarifa_recogida_entrega'];
+    fields.forEach(function(field) {
+        var inputField = document.getElementById(field);
+        if (inputField) {
+            inputField.addEventListener('input', function (e) {
+                var value = parseInt(this.value.replace(/\./g, ''));
+                if (!isNaN(value)) {
+                    this.value = value.toLocaleString('es-CL');
+                }
+            });
+        }
+    });
+</script>
+</html>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+models.py para campos obligarotios. se cambian 
+
+
+class ABCPetHost(models.Model):
+    # Relaciona con el usuario
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+    # Configuración de los servicios
+    tarifa_hospedaje = models.IntegerField()
+    tarifa_cuidado_casa = models.IntegerField()
+    tarifa_guarderia = models.IntegerField()
+    tarifa_paseo_perros = models.IntegerField()
+    tarifa_vacaciones = models.IntegerField()
+    tarifa_adicional_perros = models.IntegerField()
+    tarifa_adicional_gatos = models.IntegerField()
+    tarifa_estancia_prolongada = models.IntegerField()
+    tarifa_aseo = models.IntegerField()
+    tarifa_recogida_entrega = models.IntegerField()
+
+    # Disponibilidad
+    en_casa_tiempo_completo = models.BooleanField()
+    dias_disponibles = models.CharField(max_length=100)  # Lunes, Martes, etc.
+    aviso_previo = models.CharField(max_length=100)
+
+    # Preferencias de mascotas
+    maximo_mascotas = models.IntegerField()
+    tipos_mascotas = models.CharField(max_length=200)  # Perro pequeño, Gato, etc.
+
+    # Sobre tu casa
+    tipo_vivienda = models.CharField(max_length=100)  # Casa, Departamento, etc.
+    tipo_jardin = models.CharField(max_length=100)  # Patio cercado, Sin patio, etc.
+    expectativas_casa = models.TextField()
+
+    # Otras preferencias
+    mascotas_varias_familias = models.BooleanField()
+    cachorros_menos_1_ano = models.BooleanField()
+    perros_sin_entrenar = models.BooleanField()
+    machos_no_castrados = models.BooleanField()
+    hembras_no_esterilizadas = models.BooleanField()
+    hembras_en_celo = models.BooleanField()
+    perros_juguetones = models.BooleanField()
+    gatos_sin_esterilizar_castrar = models.BooleanField()
+
+    # Política de cancelación
+    politica_cancelacion = models.CharField(max_length=100)
+
+    # Referencias
+    email_referencia1 = models.EmailField()
+    email_referencia2 = models.EmailField()
+
+    # Experiencia y sobre ti
+    anos_experiencia = models.IntegerField()
+    titular_atractivo = models.CharField(max_length=200)
+    experiencia_cuidado_mascotas = models.TextField()
+    rutina_diaria = models.TextField()
+
+    # Fotos y validación
+    foto_perfil = models.ImageField(upload_to='fotos_perfil')
+    foto_identificacion = models.ImageField(upload_to='fotos_id')
+    comprobante_domicilio = models.ImageField(upload_to='fotos_domicilio')
+    fotos_casa = models.ImageField(upload_to='fotos_casa')
+
+    # Verificación de cuenta
+    desea_verificacion = models.BooleanField()
+
+    # Aprobación de anfitriones
+    aprobado = models.BooleanField(default=False)
+    
+    def is_config_complete(self):
+        # Lista de campos obligatorios
+        required_fields = ['tarifa_hospedaje', 'tarifa_cuidado_casa', 'tarifa_guarderia', 
+                           'tarifa_paseo_perros', 'tarifa_vacaciones', 
+                           'tarifa_adicional_perros', 'tarifa_adicional_gatos', 
+                           'tarifa_estancia_prolongada', 'tarifa_aseo', 
+                           'tarifa_recogida_entrega', 'en_casa_tiempo_completo', 
+                           'dias_disponibles', 'aviso_previo', 'maximo_mascotas', 
+                           'tipos_mascotas', 'tipo_vivienda', 'tipo_jardin', 
+                           'expectativas_casa', 'mascotas_varias_familias', 
+                           'cachorros_menos_1_ano', 'perros_sin_entrenar', 
+                           'machos_no_castrados', 'hembras_no_esterilizadas', 
+                           'hembras_en_celo', 'perros_juguetones', 
+                           'gatos_sin_esterilizar_castrar', 'politica_cancelacion', 
+                           'email_referencia1', 'email_referencia2', 'anos_experiencia', 
+                           'titular_atractivo', 'experiencia_cuidado_mascotas', 
+                           'rutina_diaria', 'foto_perfil', 'foto_identificacion', 
+                           'comprobante_domicilio', 'fotos_casa', 'desea_verificacion']
+
+        # Verificar si todos los campos obligatorios están completos
+        for field in required_fields:
+            if not getattr(self, field):
+                return False
+        return True

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Código de verificación ABCPet</title>
+    <style>
+        /* Estilos generales - diseño minimalista */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Encabezado minimalista */
+        .email-header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #eeeeee;
+        }
+        
+        .logo {
+            max-width: 140px;
+            height: auto;
+        }
+        
+        /* Contenido principal */
+        .email-body {
+            padding: 40px 30px;
+            text-align: center;
+            background-color: #ffffff;
+        }
+        
+        h1 {
+            color: #333333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.6;
+        }
+        
+        /* Código OTP con estilo minimalista */
+        .otp-code {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 32px;
+            letter-spacing: 5px;
+            font-weight: 700;
+            color: #E53935; /* Rojo */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin: 30px auto;
+            max-width: 300px;
+            text-align: center;
+            border: none;
+        }
+        
+        /* Aviso de expiración */
+        .expiry-notice {
+            font-size: 14px;
+            color: #E53935; /* Rojo */
+            font-weight: 500;
+        }
+        
+        /* Botón con estilo minimalista */
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #E53935; /* Rojo */
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 4px;
+            margin-top: 25px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #C62828; /* Rojo más oscuro */
+        }
+        
+        /* Separador minimalista */
+        .divider {
+            height: 1px;
+            background-color: #eeeeee;
+            margin: 30px 0;
+        }
+        
+        /* Pie de página minimalista */
+        .email-footer {
+            padding: 25px;
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            border-top: 1px solid #eeeeee;
+            background-color: #fafafa;
+        }
+        
+        .social-links {
+            margin: 15px 0;
+        }
+        
+        .footer-links a {
+            color: #757575;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-links a:hover {
+            color: #E53935; /* Rojo */
+            text-decoration: underline;
+        }
+        
+        /* Elementos responsivos */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .email-body {
+                padding: 25px 20px;
+            }
+            
+            .otp-code {
+                font-size: 24px;
+                letter-spacing: 3px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <!-- Usando la etiqueta static para el logo -->
+            <img src="{{ logo_url }}" alt="ABCPet Logo" class="logo">
+        </div>
+        
+        <div class="email-body">
+            <h1>¡Hola {{ user.first_name }}!</h1>
+            
+            <p>Gracias por utilizar ABCPet. Para continuar con tu proceso, necesitamos verificar tu dirección de correo electrónico.</p>
+            
+            <div class="otp-code">{{ otp_code }}</div>
+            
+            <p class="expiry-notice">Este código expirará en 2 minutos</p>
+            
+            <p>Si no has solicitado este código, puedes ignorar este mensaje.</p>
+            
+            <a href="{{ login_url }}" class="button">Volver a ABCPet</a>
+        </div>
+        
+        <div class="email-footer">
+            <p>© {{ current_year }} ABCPet. Todos los derechos reservados.</p>
+            
+            <div class="divider"></div>
+            
+            <div class="footer-links">
+                <a href="#">Política de Privacidad</a>
+                <a href="#">Términos de Servicio</a>
+                <a href="#">Contacto</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,235 @@
+/* Estilos para el cuerpo del dashboard */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link i {
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+.logo {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    transition: all 0.3s; /* Agrega una transición para suavizar el cambio de tamaño */
+    position: relative; /* Para posicionar las imágenes dentro del contenedor */
+}
+
+.sidebar.minimized .logo {
+    margin-top: 10px; /* Ajusta la posición vertical del logo minimizado */
+}
+
+.sidebar.minimized .logo .logo-img {
+    max-width: 40px; /* Tamaño más pequeño del logo cuando la barra lateral está minimizada */
+}
+
+
+
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: white; /* Establece el fondo blanco */
+    overflow: hidden; /* Oculta el contenido que se desborda del contorno redondeado */
+}
+
+
+/* Estilos para la barra lateral de navegación */
+.sidebar {
+    width: 250px;
+    background-color: white;
+    color: #333;
+    transition: all 0.3s;
+    overflow-y: auto;
+    border-right: 1px solid #ccc;
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column; /* Cambia la dirección del contenido a columna */
+    align-items: center; /* Centra horizontalmente el contenido */
+}
+
+/* Estilos para los botones de navegación en el navbar izquierdo */
+.nav-links .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #333;
+    text-decoration: none;
+}
+
+/* Estilos para los botones seleccionados */
+.nav-link.active {
+    color: white;
+}
+
+.sidebar.active {
+    width: 80px;
+}
+
+.logo-img {
+    max-width: 100px; /* Ajusta el tamaño del logo aquí */
+    height: auto;
+}
+
+.nav-links {
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+/* Estilos para el contenido principal */
+.content {
+    flex-grow: 1;
+    background-color: #f1f1f1;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#menu-toggle {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Estilos para las animaciones de transición */
+.transition {
+    transition: all 0.3s;
+}
+
+
+
+.minimized {
+    width: 70px; /* Ancho de la barra lateral minimizada */
+}
+
+.minimized span {
+    display: none; /* Oculta el texto cuando está minimizado */
+}
+
+.logo-img.minimized {
+    max-width: 40px; /* Tamaño más pequeño del logo cuando la barra lateral está minimizada */
+}
+
+.bg-light {
+    background-color: #f5f5f5; /* Define el color de fondo que desees */
+    /* Otros estilos de fondo, como imágenes de fondo o gradientes, si es necesario */
+}
+
+
+
+
+
+
+
+
+.dashboard-box {
+    background-color: white; /* Fondo blanco */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Borde gris con efecto blur */
+    padding: 20px; /* Espaciado interno */
+    width: 100%; /* Ancho completo de la página */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    margin-bottom: 20px; /* Espacio inferior */
+    border-radius: 10px; /* Agrega el redondeo al cuadro blanco */
+}
+
+/* Estilos de texto dentro del box */
+.dashboard-box h2 {
+    font-size: 24px; /* Tamaño de fuente */
+    margin-bottom: 10px; /* Espaciado inferior */
+}
+
+.dashboard-box p {
+    font-size: 12px; /* Tamaño de fuente */
+}
+
+
+
+
+
+
+/* Estilos para el título "Bienvenido al Dashboard" */
+.dashboard-title {
+    font-size: 18px; /* Reducir el tamaño de fuente */
+    width: 100%; /* Ancho completo */
+}
+
+/* Estilos para las nuevas cajas con la clase "custom-box" */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.custom-box {
+    flex-basis: calc(25% - 20px);
+    margin: 10px;
+    box-sizing: border-box;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Estilos de texto dentro de las cajas "custom-box" */
+.custom-box h3 {
+    font-size: 16px; /* Tamaño de fuente reducido */
+    margin-bottom: 10px;
+}
+
+.custom-box p {
+    font-size: 12px;
+}
+
+
+
+.mascota-foto-container {
+    position: relative; /* Permite posicionar elementos secundarios con respecto a este contenedor */
+    display: inline-block; /* Para que el texto de la raza no ocupe toda la línea */
+}
+
+.mascota-foto {
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid #D3D3D3;
+    box-shadow: 1px 0px 20px 1px rgba(0, 0, 0, 0.1);
+}
+
+.raza-label {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-top: 60px; /* Agregar un margen superior para dar espacio al primer botón de inicio */
+}

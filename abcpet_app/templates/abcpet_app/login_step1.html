@@ -1,0 +1,603 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <title>ABC Pet Project - Crear Cuenta</title>
+    <style>
+        /* Variables para consistencia del diseño */
+        :root {
+            --primary-color: #0b8a00;
+            --secondary-color: #000000;
+            --text-color: #333333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+            --border-radius: 5px;
+        }
+        
+        /* Reseteo básico y estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        /* Estructura principal */
+        .flex-container {
+            display: flex;
+            height: 100%;
+        }
+
+        .half {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Lado de la imagen */
+        .image-side {
+            background-image: url('{% static "abcpet_app/images/login-abcpet.png" %}');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logo {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 150px;
+            height: auto;
+            z-index: 2;
+            transition: transform var(--transition-speed);
+        }
+        
+        .logo:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .image-text {
+            position: relative;
+            color: white;
+            font-size: 32px;
+            text-align: center;
+            z-index: 2;
+            font-weight: 300;
+            max-width: 80%;
+            line-height: 1.3;
+        }
+
+        /* Lado del formulario */
+        .form-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .form-content {
+            max-width: 450px;
+            width: 100%;
+            margin-top: 10vh;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .additional-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .additional-logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        /* Indicadores de pasos */
+        .step-indicators {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--medium-gray);
+            margin: 0 6px;
+            transition: all var(--transition-speed);
+        }
+
+        .step-indicator.active {
+            background-color: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        /* Cabecera del formulario */
+        .form-side h1 {
+            font-weight: 700;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .additional-text {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-gray);
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+
+        /* Campo de formulario */
+        .form-group {
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--medium-gray);
+            transition: border var(--transition-speed), box-shadow var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+        }
+
+        .form-group input[type="email"]:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        input::placeholder {
+            font-family: 'Lato', sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            color: var(--dark-gray);
+        }
+
+        /* Botón */
+        button {
+            background-color: white;
+            color: var(--secondary-color);
+            width: 100%;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--secondary-color);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        button:disabled {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            border-color: var(--medium-gray);
+            cursor: not-allowed;
+        }
+
+        .button-active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Enlace olvidar contraseña */
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color var(--transition-speed);
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Política de privacidad */
+        .privacy-policy {
+            color: var(--dark-gray);
+            font-size: 12px;
+            text-align: center;
+            margin-top: auto;
+            padding-top: 40px;
+            max-width: 80%;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+        
+        .privacy-policy a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .privacy-policy a:hover {
+            text-decoration: underline;
+        }
+
+        .privacy-policy a strong {
+            font-weight: 600;
+        }
+
+        /* Popup */
+        .popup-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+        
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            z-index: 1000;
+            max-width: 750px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .popup-content {
+            padding: 30px;
+        }
+        
+        .popup-content h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .popup-content p {
+            font-size: 14px;
+            font-weight: 300;
+            text-align: justify;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background-color: #ed6a5e;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .close-button:hover {
+            background-color: #ff8a80;
+        }
+        
+        .close-button::before,
+        .close-button::after {
+            content: "";
+            position: absolute;
+            width: 2px;
+            height: 14px;
+            background-color: #000000;
+        }
+        
+        .close-button::before {
+            transform: rotate(45deg);
+        }
+        
+        .close-button::after {
+            transform: rotate(-45deg);
+        }
+        
+        /* Mensajes de alerta */
+        .messages {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .alert-warning {
+            background-color: #fff8e1;
+            color: #ff8f00;
+            border: 1px solid #ffe082;
+        }
+        
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        /* Responsividad */
+        @media screen and (max-width: 992px) {
+            .form-content {
+                margin-top: 5vh;
+            }
+            
+            .privacy-policy {
+                padding-top: 30px;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .half.image-side {
+                display: none;
+            }
+            
+            .form-side {
+                padding: 30px 20px;
+            }
+            
+            .additional-logo {
+                display: block;
+            }
+            
+            .form-content {
+                margin-top: 10px;
+            }
+            
+            .form-group input[type="email"],
+            button {
+                font-size: 15px;
+            }
+        }
+
+        @media screen and (max-height: 700px) {
+            .privacy-policy {
+                padding-top: 20px;
+                font-size: 11px;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-container">
+        <!-- Lado de imagen -->
+        <div class="half image-side">
+            <div class="image-text">Inicia sesión o crea tu cuenta</div>
+            <img class="logo" src="{% static 'abcpet_app/images/logo_white.png' %}" alt="Logo ABC Pet">
+        </div>
+        
+        <!-- Lado de formulario -->
+        <div class="half form-side">
+            <div class="form-content">
+                <!-- Logo para móviles -->
+                <div class="additional-logo">
+                    <img src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo ABC Pet">
+                </div>
+                
+                <!-- Indicadores de pasos -->
+                <div class="step-indicators">
+                    <div class="step-indicator active"></div>
+                    <div class="step-indicator"></div>
+                    <div class="step-indicator"></div>
+                    <div class="step-indicator"></div>
+                    <div class="step-indicator"></div>
+                </div>
+                
+                <!-- Título y descripción -->
+                <h1>Inicia sesión o crea una cuenta nueva</h1>
+                <div class="additional-text">
+                    Para continuar, ingresa tu email y presiona el botón "Continuar".
+                </div>
+                
+                <!-- Mensajes de Django -->
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Formulario -->
+                <form method="post" action="{% url 'login_step1' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <input type="email" name="email" id="email" placeholder="Correo Electrónico" required value="{{ email }}">
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" disabled>Continuar</button>
+                </form>
+                
+                <!-- Enlace de olvido de contraseña -->
+                <div class="forgot-password">
+                    <a href="{% url 'reset_password' %}">¿Olvidaste tu contraseña?</a>
+                </div>
+                
+                {% if email_no_encontrado %}
+                <div style="text-align: center; margin-top: 30px;">
+                    <p style="margin-bottom: 15px;">El correo electrónico ingresado no está asociado con ninguna cuenta. Regístrate a continuación:</p>
+                    <form method="post" action="{% url 'signup' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button-active">Registrarse</button>
+                    </form>
+                </div>
+                {% endif %}
+                
+                <!-- Política de privacidad -->
+                <div class="privacy-policy">
+                    Al registrarte en ABCPET, das tu consentimiento y estás de acuerdo con la 
+                    <a href="#" onclick="showPopup()">política de privacidad</a> 
+                    de ABCPET para almacenar, gestionar y procesar tu información personal. 
+                    Para más información, consulta nuestra 
+                    <a href="#" onclick="showPopup()"><strong>Política de Privacidad</strong></a>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de política de privacidad -->
+    <div class="popup-background" id="popup-background" onclick="closePopup()"></div>
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <h2>Política de Privacidad de ABCPet</h2>
+            
+            <p>En ABCPet, entendemos y valoramos la importancia de tu privacidad y la protección de tus datos personales. Por eso, nos comprometemos a garantizar la confidencialidad y seguridad de la información que nos confías. Esta Política de Privacidad describe cómo recopilamos, utilizamos, compartimos y protegemos tus datos cuando utilizas nuestros servicios.</p>
+            
+            <p><strong>Información que Recopilamos:</strong></p>
+            <p>Recopilamos información personal que nos proporcionas directamente, como tu nombre, dirección de correo electrónico, dirección postal, número de teléfono y cualquier otra información que decidas compartir con nosotros al registrarte en nuestra plataforma o utilizar nuestros servicios.</p>
+            
+            <p>También recopilamos información automáticamente a través de cookies y tecnologías similares cuando visitas nuestro sitio web. Esta información puede incluir tu dirección IP, tipo de navegador, páginas visitadas, tiempo de visita y otras estadísticas de uso.</p>
+            
+            <p><strong>Uso de la Información:</strong></p>
+            <p>Utilizamos la información recopilada para brindarte nuestros servicios, procesar tus pedidos, comunicarnos contigo, personalizar tu experiencia en nuestra plataforma, mejorar nuestros servicios y prevenir actividades fraudulentas o maliciosas.</p>
+            
+            <p><strong>Compartición de la Información:</strong></p>
+            <p>No vendemos, alquilamos ni compartimos tu información personal con terceros sin tu consentimiento, excepto en los casos descritos en esta Política de Privacidad o cuando la ley lo requiera.</p>
+            
+            <p>Podemos compartir tu información con proveedores de servicios de confianza que nos ayudan a operar nuestro negocio y brindar nuestros servicios, así como con autoridades gubernamentales u otras partes en respuesta a solicitudes legales válidas.</p>
+            
+            <p><strong>Protección de la Información:</strong></p>
+            <p>Tomamos medidas de seguridad adecuadas para proteger tu información contra accesos no autorizados, divulgación, alteración o destrucción. Sin embargo, debes tener en cuenta que ninguna transmisión de datos por Internet o almacenamiento electrónico es completamente segura, y no podemos garantizar la seguridad absoluta de tus datos.</p>
+            
+            <p><strong>Tus Derechos:</strong></p>
+            <p>Tienes derecho a acceder, corregir, actualizar o eliminar tu información personal en cualquier momento. También puedes optar por no recibir comunicaciones promocionales nuestras siguiendo las instrucciones de cancelación de suscripción incluidas en nuestros correos electrónicos.</p>
+            
+            <p><strong>Cambios en la Política de Privacidad:</strong></p>
+            <p>Nos reservamos el derecho de actualizar o modificar esta Política de Privacidad en cualquier momento. Te recomendamos que revises periódicamente esta página para estar al tanto de cualquier cambio. El uso continuado de nuestros servicios después de la publicación de cambios en esta Política de Privacidad constituirá tu aceptación de dichos cambios.</p>
+            
+            <p>Al utilizar nuestros servicios, aceptas los términos de esta Política de Privacidad. Si tienes alguna pregunta o inquietud sobre nuestras prácticas de privacidad, no dudes en ponerte en contacto con nosotros.</p>
+            
+            <p><strong>Fecha de entrada en vigencia: 07 de Mayo 2024</strong></p>
+        </div>
+        <div class="close-button" onclick="closePopup()"></div>
+    </div>
+
+    <script>
+        // Validación del email
+        document.getElementById('email').addEventListener('input', function() {
+            var emailInput = this.value.trim();
+            var submitButton = document.getElementById('submitBtn');
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if(emailPattern.test(emailInput)) {
+                submitButton.disabled = false;
+                submitButton.classList.add('button-active');
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.remove('button-active');
+            }
+        });
+
+        // Iniciar con el valor correcto del botón si hay un email ya ingresado
+        window.onload = function() {
+            var emailInput = document.getElementById('email').value.trim();
+            var submitButton = document.getElementById('submitBtn');
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if(emailPattern.test(emailInput)) {
+                submitButton.disabled = false;
+                submitButton.classList.add('button-active');
+            }
+        };
+
+        // Funciones del popup
+        function showPopup() {
+            document.getElementById('popup-background').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePopup() {
+            document.getElementById('popup-background').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // También cerrar al hacer clic en el fondo
+        document.getElementById('popup-background').addEventListener('click', closePopup);
+    </script>
+</body>
+</html>

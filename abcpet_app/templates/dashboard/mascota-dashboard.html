@@ -1,0 +1,680 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ mascota.nombre_mascota }} | Dashboard ABCPET</title>
+    
+    <!-- Google Fonts - Montserrat y Open Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP para animaciones -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': {
+                            DEFAULT: '#E53935',
+                            'light': '#FFCDD2',
+                            'dark': '#B71C1C'
+                        },
+                        'secondary': {
+                            DEFAULT: '#4B0082',
+                            'light': '#E1BEE7'
+                        },
+                        'text': {
+                            DEFAULT: '#333333',
+                            'light': '#666666'
+                        },
+                        'bg': '#f8f9fa'
+                    },
+                    fontFamily: {
+                        'heading': ['Montserrat', 'sans-serif'],
+                        'body': ['Open Sans', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 4px 12px rgba(0,0,0,0.08)'
+                    },
+                    borderRadius: {
+                        'card': '12px'
+                    },
+                    transitionProperty: {
+                        'height': 'height',
+                        'spacing': 'margin, padding'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-20px)', opacity: 0 },
+                            '100%': { transform: 'translateX(0)', opacity: 1 },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer components {
+            .nav-link {
+                @apply flex items-center py-3 px-6 text-text border-l-4 border-transparent hover:bg-primary-light/10 hover:text-primary hover:border-l-4 hover:border-primary transition-all duration-200 cursor-pointer;
+            }
+            .nav-link.active {
+                @apply bg-primary-light/10 border-l-4 border-primary text-primary font-semibold;
+            }
+            .nav-link i {
+                @apply text-lg min-w-[25px] text-center mr-3 text-text-light transition-colors duration-200;
+            }
+            .nav-link.active i {
+                @apply text-primary;
+            }
+            .btn-action {
+                @apply flex items-center gap-2 px-5 py-2 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-200 text-white font-medium;
+            }
+            .stat-card {
+                @apply bg-white rounded-card shadow-card p-5 border-t-4 transition-all duration-300 hover:translate-y-[-5px] hover:shadow-lg;
+            }
+            .stat-icon {
+                @apply flex items-center justify-center w-12 h-12 rounded-xl mb-4;
+            }
+            .stat-count {
+                @apply text-3xl font-bold my-3;
+            }
+            .stat-link {
+                @apply block mt-4 font-medium text-sm text-text hover:text-primary transition-colors duration-200;
+            }
+        }
+    </style>
+</head>
+<body class="bg-bg font-body text-text antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="bg-white shadow-card w-64 flex-shrink-0 transition-all duration-300 ease-in-out h-full fixed lg:relative z-50">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="h-[70px] flex items-center justify-center px-4 border-b border-gray-100 mb-4">
+                    <img class="max-h-10" src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo ABCPET">
+                </div>
+                
+                <!-- Pet Profile -->
+                {% if mascota.mascotafoto_set.all %}
+                <div class="px-4 mb-6 pb-4 border-b border-gray-100">
+                    <div class="relative w-24 h-24 mx-auto mb-3">
+                        <img class="w-full h-full object-cover rounded-full border-3 border-primary-light shadow-md transition-transform duration-300 hover:scale-105" 
+                             src="{{ mascota.mascotafoto_set.all.0.imagen.url }}" 
+                             alt="{{ mascota.nombre_mascota }}">
+                        <span class="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></span>
+                    </div>
+                    <h3 class="text-center font-semibold text-text">{{ mascota.nombre_mascota }}</h3>
+                    <p class="text-center text-sm text-text-light">{{ mascota.raza|default:"Sin raza definida" }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Navigation Links -->
+                <nav class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                    <ul class="space-y-1 px-2">
+                        <li>
+                            <a href="{% url 'mascota_dashboard' mascota_id=mascota.id nombre_mascota=mascota.nombre_mascota %}" class="nav-link active">
+                                <i class="fas fa-home"></i>
+                                <span class="text-sm">Inicio</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span class="text-sm">Mis reservaciones</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-bed"></i>
+                                <span class="text-sm">Mis estadías</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-search"></i>
+                                <span class="text-sm">Buscar alojamiento</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-paw"></i>
+                                <span class="text-sm">Perfil de {{ mascota.nombre_mascota }}</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-user"></i>
+                                <span class="text-sm">Mi perfil</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-notes-medical"></i>
+                                <span class="text-sm">Mi ficha clínica</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/dashboard/" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="text-sm">Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <!-- Logout Button -->
+                <div class="p-4 mt-auto border-t border-gray-100">
+                    <button class="flex items-center w-full px-4 py-2 text-left rounded-lg bg-gray-50 hover:bg-primary-light/10 hover:text-primary transition-colors duration-200">
+                        <i class="fas fa-sign-out-alt mr-3"></i>
+                        <span class="text-sm font-medium">Cerrar sesión</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Header -->
+            <header class="h-[70px] bg-white shadow-sm flex items-center justify-between px-6">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="text-text hover:bg-gray-100 p-2 rounded-full transition-colors duration-200 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-bold font-heading">Dashboard de {{ mascota.nombre_mascota }}</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Notification Bell -->
+                    <div class="relative">
+                        <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </button>
+                        <span class="absolute top-0 right-0 w-5 h-5 bg-primary text-white text-xs flex items-center justify-center rounded-full">3</span>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-9 h-9 bg-primary-light text-primary rounded-full flex items-center justify-center font-semibold">
+                            {{ request.user.first_name|slice:":1" }}
+                        </div>
+                        <span class="font-medium hidden md:block">{{ request.user.first_name }}</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto p-6 bg-bg">
+                <!-- Welcome Banner -->
+                <div class="animate-fade-in">
+                    <div class="relative overflow-hidden rounded-card shadow-card bg-gradient-to-r from-primary to-secondary text-white mb-6">
+                        <div class="absolute inset-0 opacity-10">
+                            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                        <circle cx="3" cy="3" r="1.5" fill="white" />
+                                    </pattern>
+                                </defs>
+                                <rect x="0" y="0" width="100%" height="100%" fill="url(#dots)"></rect>
+                            </svg>
+                        </div>
+                        <div class="p-6 md:p-8 relative z-10">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="mb-6 md:mb-0 md:w-2/3 md:pr-8">
+                                    <h2 class="text-2xl md:text-3xl font-bold font-heading mb-2">¡Hola, {{ request.user.first_name }}!</h2>
+                                    <p class="mb-6 text-white/90">Bienvenido al dashboard de {{ mascota.nombre_mascota }}. Desde aquí podrás gestionar todas sus actividades.</p>
+                                    
+                                    <div class="flex flex-wrap gap-4">
+                                        <button class="btn-action group">
+                                            <i class="fas fa-calendar-plus group-hover:scale-110 transition-transform"></i> 
+                                            <span>Nueva reserva</span>
+                                        </button>
+                                        <button class="btn-action group">
+                                            <i class="fas fa-paw group-hover:scale-110 transition-transform"></i>
+                                            <span>Ficha médica</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="md:w-1/3 border-t md:border-t-0 md:border-l border-white/20 pl-0 md:pl-8 pt-4 md:pt-0">
+                                    <div class="grid grid-cols-3 gap-4 text-center">
+                                        <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm transform hover:scale-105 transition-all">
+                                            <div class="text-2xl font-bold">{{ mascota.edad|default:"0" }}</div>
+                                            <div class="text-xs text-white/80">Años</div>
+                                        </div>
+                                        
+                                        <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm transform hover:scale-105 transition-all">
+                                            <div class="text-2xl font-bold truncate">{{ mascota.raza|default:"--" }}</div>
+                                            <div class="text-xs text-white/80">Raza</div>
+                                        </div>
+                                        
+                                        <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm transform hover:scale-105 transition-all">
+                                            <div class="text-2xl font-bold">{{ mascota.peso|default:"--" }}</div>
+                                            <div class="text-xs text-white/80">Kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Bottom wave decoration -->
+                        <div class="absolute bottom-0 left-0 right-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" fill="#ffffff">
+                                <path fill-opacity="0.1" d="M0,96L80,85.3C160,75,320,53,480,53.3C640,53,800,75,960,80C1120,85,1280,75,1360,69.3L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Reservations Card -->
+                    <div class="stat-card border-primary animate-slide-in" style="animation-delay: 0.1s;">
+                        <div class="stat-icon bg-primary-light/20 text-primary">
+                            <i class="fas fa-calendar-check text-xl"></i>
+                        </div>
+                        <h3 class="font-heading font-semibold">Mis Reservas</h3>
+                        <div class="stat-count">0</div>
+                        <p class="text-text-light text-sm">No tienes reservas activas en este momento.</p>
+                        <a href="#" class="stat-link group">
+                            Ver todas las reservas
+                            <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Requests Card -->
+                    <div class="stat-card border-orange-500 animate-slide-in" style="animation-delay: 0.2s;">
+                        <div class="stat-icon bg-orange-100 text-orange-500">
+                            <i class="fas fa-file-alt text-xl"></i>
+                        </div>
+                        <h3 class="font-heading font-semibold">Mis Solicitudes</h3>
+                        <div class="stat-count">0</div>
+                        <p class="text-text-light text-sm">No tienes solicitudes pendientes en este momento.</p>
+                        <a href="#" class="stat-link group">
+                            Ver todas las solicitudes
+                            <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Insurance Card -->
+                    <div class="stat-card border-green-500 animate-slide-in" style="animation-delay: 0.3s;">
+                        <div class="stat-icon bg-green-100 text-green-500">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <h3 class="font-heading font-semibold">Mis Seguros Activos</h3>
+                        <div class="stat-count">0</div>
+                        <p class="text-text-light text-sm">No tienes seguros activos para {{ mascota.nombre_mascota }}.</p>
+                        <a href="#" class="stat-link group">
+                            Contratar un seguro
+                            <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Lodging Card -->
+                    <div class="stat-card border-blue-500 animate-slide-in" style="animation-delay: 0.4s;">
+                        <div class="stat-icon bg-blue-100 text-blue-500">
+                            <i class="fas fa-home text-xl"></i>
+                        </div>
+                        <h3 class="font-heading font-semibold">Mis Hospedajes</h3>
+                        <div class="stat-count">0</div>
+                        <p class="text-text-light text-sm">No tienes hospedajes registrados para {{ mascota.nombre_mascota }}.</p>
+                        <a href="#" class="stat-link group">
+                            Buscar hospedajes
+                            <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Recent activity and Schedule -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-card shadow-card p-6 animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold font-heading">Actividad Reciente</h3>
+                            <a href="#" class="text-sm text-primary hover:underline">Ver todo</a>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-primary bg-primary-light/5 p-4 rounded-r hover:shadow-md transition-shadow">
+                                <div class="flex">
+                                    <div class="mr-4 mt-1">
+                                        <span class="flex h-8 w-8 rounded-full bg-primary-light items-center justify-center">
+                                            <i class="fas fa-paw text-primary"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium">Perfil actualizado</h4>
+                                        <p class="text-text-light text-sm">Has actualizado el perfil de {{ mascota.nombre_mascota }}</p>
+                                        <span class="text-xs font-medium text-text-light mt-1 block">Hoy</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-green-500 bg-green-50/50 p-4 rounded-r hover:shadow-md transition-shadow">
+                                <div class="flex">
+                                    <div class="mr-4 mt-1">
+                                        <span class="flex h-8 w-8 rounded-full bg-green-100 items-center justify-center">
+                                            <i class="fas fa-camera text-green-500"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium">Nueva foto añadida</h4>
+                                        <p class="text-text-light text-sm">Has añadido una nueva foto al perfil</p>
+                                        <span class="text-xs font-medium text-text-light mt-1 block">Ayer</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-blue-500 bg-blue-50/50 p-4 rounded-r hover:shadow-md transition-shadow">
+                                <div class="flex">
+                                    <div class="mr-4 mt-1">
+                                        <span class="flex h-8 w-8 rounded-full bg-blue-100 items-center justify-center">
+                                            <i class="fas fa-user-plus text-blue-500"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium">Registro completado</h4>
+                                        <p class="text-text-light text-sm">{{ mascota.nombre_mascota }} ha sido registrado en ABCPET</p>
+                                        <span class="text-xs font-medium text-text-light mt-1 block">Hace 2 días</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Schedule/Calendar Overview -->
+                    <div class="bg-white rounded-card shadow-card p-6 animate-slide-up" style="animation-delay: 0.5s;">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold font-heading">Próximos eventos</h3>
+                            <div class="flex space-x-2">
+                                <button class="w-8 h-8 inline-flex items-center justify-center rounded hover:bg-gray-100">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span class="font-medium">Mayo 2025</span>
+                                <button class="w-8 h-8 inline-flex items-center justify-center rounded hover:bg-gray-100">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Mini calendar header -->
+                        <div class="grid grid-cols-7 text-center text-xs font-medium text-gray-500 mb-2">
+                            <div>Dom</div>
+                            <div>Lun</div>
+                            <div>Mar</div>
+                            <div>Mié</div>
+                            <div>Jue</div>
+                            <div>Vie</div>
+                            <div>Sáb</div>
+                        </div>
+                        
+                        <!-- Calendar grid -->
+                        <div class="grid grid-cols-7 gap-2 text-sm">
+                            <!-- Previous month days -->
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">27</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">28</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">29</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">30</div>
+                            
+                            <!-- Current month -->
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">1</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">2</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">3</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">4</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">5</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">6</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-400">7</div>
+                            <div class="h-10 rounded-full flex items-center justify-center bg-primary-light/10 font-bold text-primary border border-primary-light cursor-pointer hover:bg-primary-light/20">8</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">9</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">10</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">11</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">12</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">13</div>
+                            <div class="h-10 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer">14</div>
+                            <!-- More days... -->
+                        </div>
+                        
+                        <!-- Today's agenda -->
+                        <div class="mt-6 border-t border-gray-100 pt-4">
+                            <h4 class="font-medium mb-3">Agenda para hoy</h4>
+                            <div class="text-center py-6 text-text-light">
+                                <div class="inline-block p-3 rounded-full bg-gray-100 mb-2">
+                                    <i class="fas fa-calendar-check text-xl text-gray-500"></i>
+                                </div>
+                                <p>No hay eventos programados para hoy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Health & Wellness Section -->
+                <div class="mt-8 bg-white rounded-card shadow-card p-6 animate-slide-up" style="animation-delay: 0.7s;">
+                    <h3 class="text-lg font-semibold font-heading mb-4">Salud y Bienestar</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Weight Progress -->
+                        <div class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium">Peso</h4>
+                                <span class="text-xs text-gray-500">Última actualización: hace 2 semanas</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-2xl font-bold">{{ mascota.peso|default:"0" }} kg</span>
+                                    <span class="text-xs text-green-500 ml-2">
+                                        <i class="fas fa-arrow-up"></i> 0.3kg
+                                    </span>
+                                </div>
+                                <button class="text-primary">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Simple weight chart -->
+                            <div class="h-16 mt-3 flex items-end">
+                                <div class="w-1/6 h-6 bg-primary/20 rounded-sm mx-px"></div>
+                                <div class="w-1/6 h-8 bg-primary/30 rounded-sm mx-px"></div>
+                                <div class="w-1/6 h-10 bg-primary/40 rounded-sm mx-px"></div>
+                                <div class="w-1/6 h-7 bg-primary/30 rounded-sm mx-px"></div>
+                                <div class="w-1/6 h-9 bg-primary/40 rounded-sm mx-px"></div>
+                                <div class="w-1/6 h-12 bg-primary/60 rounded-sm mx-px"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Next Vaccination -->
+                        <div class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium">Próxima vacuna</h4>
+                                <div class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">Pendiente</div>
+                            </div>
+                            
+                            <div class="flex items-center mt-4">
+                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-syringe text-orange-500"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium">Vacuna anual</h5>
+                                    <p class="text-xs text-gray-500">Programada para el 15 de junio</p>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-lg text-sm font-medium transition-colors">
+                                Programar cita
+                            </button>
+                        </div>
+                        
+                        <!-- Diet Overview -->
+                        <div class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h4 class="font-medium mb-3">Plan de alimentación</h4>
+                            
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-coffee text-green-500 mr-2"></i>
+                                        <span class="text-sm">Mañana</span>
+                                    </div>
+                                    <span class="text-sm">200g</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-sun text-amber-500 mr-2"></i>
+                                        <span class="text-sm">Mediodía</span>
+                                    </div>
+                                    <span class="text-sm">100g</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-moon text-blue-500 mr-2"></i>
+                                        <span class="text-sm">Noche</span>
+                                    </div>
+                                    <span class="text-sm">200g</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Tipo de alimento: Premium adulto
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p>© 2025 ABCPET. Todos los derechos reservados.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebar.classList.toggle('lg:translate-x-0');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+            
+            // Close sidebar when clicking on overlay
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.add('lg:translate-x-0');
+                sidebarOverlay.classList.add('hidden');
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 1024) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('lg:translate-x-0');
+                    sidebarOverlay.classList.add('hidden');
+                }
+            });
+            
+            // Add click event handler for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // On mobile, close the sidebar after clicking a link
+                    if (window.innerWidth <= 1024) {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.add('lg:translate-x-0');
+                        sidebarOverlay.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Initialize GSAP animations
+            gsap.from(".dashboard-welcome", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+            
+            gsap.from(".stat-card", {
+                y: 20,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
+            });
+            
+            // Create hover animation for buttons
+            const buttons = document.querySelectorAll('.btn-action');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    gsap.to(this, {
+                        scale: 1.05,
+                        duration: 0.2
+                    });
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    gsap.to(this, {
+                        scale: 1,
+                        duration: 0.2
+                    });
+                });
+            });
+            
+            // Create pulsing effect for notification bell
+            gsap.to(".notification-bell", {
+                scale: 1.1,
+                duration: 0.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        });
+    </script>
+</body>
+</html>

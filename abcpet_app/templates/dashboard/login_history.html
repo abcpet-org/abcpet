@@ -1,0 +1,112 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-mQ2TBUe9zCRaPdnXqLq8Xq6UZ99bdD3cUTTD70JU5xeg9HdL5fnfiidDEyRAt0uKSoi1z4eSj5neGwQDUKVeRQ==" crossorigin="anonymous" />
+    <!-- Enlace a Font Awesome (agrega esto en la sección head) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Afacad', sans-serif;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        .separation-line {
+            border-top: 1px solid #e8e8e8;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .edit-btn {
+            float: right;
+            margin-left: 10px;
+        }
+
+        .edit-label {
+            font-size: 12px;
+        }
+
+        .dashboard-info h3 {
+            color: #717171;
+        }
+
+        .dashboard-title h3 {
+            color: #000000;
+            font-size: 24px;
+            transition: font-size 0.3s;
+            cursor: pointer;
+        }
+
+        .dashboard-title h3:hover {
+            font-size: 28px;
+        }
+
+        .editField {
+            border: 1px solid #d0f5d2;
+            background-color: #f2f2f2;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        /* Add this style for highlighting the edit field when focused */
+        .editField:focus {
+            outline: none;
+            border-color: #d9ffda;
+        }
+    </style>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card p-4" style="background-color: #ffffff; border: none; margin-bottom: 0; box-shadow: none; padding: 0;">
+                    <div class="mb-4 dashboard-info dashboard-title">
+                        <h3>Login History</h3>
+                        {% if user.is_authenticated %}
+                            <p style="font-family: 'Afacad', sans-serif; font-size: 14px; color: #222222;">
+                                <span style="font-weight: 600; font-size: 16px;">{{ user.first_name }} {{ user.last_name }}</span> - {{ user.email }}
+                                <span style="text-decoration: underline; color: #222222; font-weight: 600; font-size: 16px;"><a href="{% url 'dashboard' %}">Volver al Dashboard</a></span>
+                            </p>
+                        {% else %}
+                            Usuario no autenticado.
+                        {% endif %}
+                    </div>
+
+                    <table class="table mt-4">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>User Agent</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detail in login_details %}
+                                <tr>
+                                    <td>{{ detail.ip_address }}</td>
+                                    <td>{{ detail.user_agent }}</td>
+                                    <td>{{ detail.timestamp }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // JavaScript code if needed
+    </script>
+{% endblock %}

@@ -1,0 +1,896 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABCPet - Anfitriones para mascotas en Santiago Oriente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        abcpet: {
+                            red: '#FF5A5F',
+                            light: '#FF7E82',
+                            dark: '#E04848',
+                            black: '#222222',
+                            white: '#FFFFFF',
+                            gray: '#717171',
+                            lightgray: '#F7F7F7'
+                        }
+                    },
+                    fontFamily: {
+                        mont: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .gradient-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 50%);
+        }
+        
+        .search-bar-shadow {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .listing-card:hover .card-image {
+            transform: scale(1.05);
+        }
+        
+        .card-image {
+            transition: transform 0.3s ease;
+        }
+        
+        .host-badge {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .scroll-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .comunas-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .comunas-dropdown.show {
+            max-height: 300px;
+        }
+
+        .pet-category.active {
+            color: #FF5A5F;
+            border-bottom: 2px solid #FF5A5F;
+        }
+        
+        .featured-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-abcpet-black">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center">
+                        <img src="{% static 'abcpet_app/images/logo.png' %}" alt="ABCPet Logo" class="h-8 mr-2">
+                        <span class="text-abcpet-red font-bold text-xl hidden md:inline-block">ABCPet</span>
+                    </a>
+                </div>
+                
+                <!-- Search Bar (centered) -->
+                <div class="hidden md:block flex-grow max-w-xl mx-auto">
+                    <div class="relative group search-bar-shadow rounded-full border border-gray-200">
+                        <div class="flex items-center">
+                            <div class="flex-1 px-6 py-2.5 border-r border-gray-200 relative" id="comuna-selector">
+                                <div class="text-sm font-medium">Comuna</div>
+                                <div class="text-xs text-gray-600 flex items-center cursor-pointer">
+                                    <span id="selected-comuna">Las Condes</span>
+                                    <i class="fas fa-chevron-down ml-2"></i>
+                                </div>
+                                <!-- Dropdown for comunas -->
+                                <div id="comunas-dropdown" class="comunas-dropdown absolute left-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 w-full z-10">
+                                    <div class="py-2">
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">Las Condes</div>
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">Vitacura</div>
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">Lo Barnechea</div>
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">Providencia</div>
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">Ñuñoa</div>
+                                        <div class="comuna-option px-4 py-2 text-sm hover:bg-abcpet-lightgray cursor-pointer">La Reina</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 px-6 py-2.5 border-r border-gray-200">
+                                <div class="text-sm font-medium">Tipo de mascota</div>
+                                <div class="text-xs text-gray-600">Todas las mascotas</div>
+                            </div>
+                            <div class="pl-6 pr-2 py-2">
+                                <div class="text-sm font-medium">Fecha</div>
+                                <div class="text-xs text-gray-600">Cualquier fecha</div>
+                            </div>
+                            <button class="bg-abcpet-red text-white p-3 rounded-full ml-2 mr-1">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Right -->
+                <div class="flex items-center space-x-4">
+                    <a href="/register/" class="hidden md:block text-sm font-medium hover:bg-abcpet-lightgray px-4 py-2 rounded-full transition-colors">Conviértete en anfitrión</a>
+                    <div class="relative group" id="user-menu">
+                        <button class="flex items-center space-x-2 border border-gray-300 rounded-full p-2 hover:shadow-md transition-shadow">
+                            <i class="fas fa-bars text-gray-600"></i>
+                            <div class="bg-abcpet-red text-white rounded-full w-8 h-8 flex items-center justify-center">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </button>
+                        <div id="user-dropdown" class="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 w-64 hidden">
+                            <div class="py-2">
+                                <a href="/login/" class="block px-4 py-2 text-sm hover:bg-abcpet-lightgray">Iniciar sesión</a>
+                                <a href="/register/" class="block px-4 py-2 text-sm hover:bg-abcpet-lightgray">Registrarse</a>
+                                <hr class="my-1">
+                                <a href="/register/" class="block px-4 py-2 text-sm hover:bg-abcpet-lightgray">Conviértete en anfitrión</a>
+                                <a href="/help/" class="block px-4 py-2 text-sm hover:bg-abcpet-lightgray">Ayuda</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Search Bar -->
+            <div class="mt-4 md:hidden">
+                <div class="relative search-bar-shadow rounded-full border border-gray-200 flex items-center p-2">
+                    <i class="fas fa-search text-gray-600 ml-3 mr-2"></i>
+                    <input type="text" placeholder="Busca por comuna o tipo de mascota" class="flex-1 text-sm outline-none">
+                    <button class="bg-abcpet-lightgray p-2 rounded-full">
+                        <i class="fas fa-sliders-h text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Categories Scrollbar -->
+    <div class="border-b border-gray-200 pt-4 pb-3 sticky top-20 bg-white z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex overflow-x-auto scroll-hide space-x-8 pb-2">
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer active">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-paw text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Todas</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-dog text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Perros</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-cat text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Gatos</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-feather-alt text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Aves</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-carrot text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Conejos</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-fish text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Peces</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-hippo text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Roedores</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-dragon text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Reptiles</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[56px] pet-category group cursor-pointer">
+                    <div class="relative h-14 w-14 flex items-center justify-center bg-abcpet-lightgray rounded-full">
+                        <i class="fas fa-spider text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-medium mt-1 group-hover:text-abcpet-red transition-colors">Exóticos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Banner -->
+    <div class="relative bg-abcpet-red py-8 overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center text-white">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">Tu mascota merece vacaciones de cinco estrellas</h1>
+                <p class="text-lg mb-6">Encuentra anfitriones confiables en el sector oriente de Santiago que abrirán las puertas de su hogar a tu mascota</p>
+                <a href="/register/" class="inline-block bg-white text-abcpet-red font-bold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-105 duration-300">Reserva ahora</a>
+            </div>
+        </div>
+        <div class="absolute -bottom-2 left-0 right-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120">
+                <path fill="#ffffff" fill-opacity="1" d="M0,32L60,37.3C120,43,240,53,360,58.7C480,64,600,64,720,53.3C840,43,960,21,1080,26.7C1200,32,1320,64,1380,80L1440,96L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"></path>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Main Content - Host Listings -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Featured Hosts Section -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold mb-2">Anfitriones destacados</h2>
+            <p class="text-abcpet-gray mb-6">Los mejores anfitriones en Santiago Oriente calificados por los dueños de mascotas</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Host 1 - Featured -->
+                <div class="listing-card group">
+                    <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                        <img src="{% static 'abcpet_app/images/host1.jpg' %}" alt="Carolina Martínez - Anfitriona" class="card-image h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="far fa-heart text-gray-800"></i>
+                        </div>
+                        <div class="absolute top-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md featured-badge">
+                            DESTACADO
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                            Las Condes
+                        </div>
+                        <div class="absolute bottom-2 right-2">
+                            <div class="flex">
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                    <i class="fas fa-cat text-abcpet-red text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Carolina Martínez</h3>
+                                <p class="text-abcpet-gray text-sm">Parque Araucano, Las Condes</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-abcpet-red"></i>
+                                <span class="ml-1 font-medium">4.97</span>
+                            </div>
+                        </div>
+                        <p class="text-abcpet-gray text-sm mt-1">Veterinaria con casa con jardín amplio</p>
+                        <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">120 mascotas</span> hospedadas</p>
+                        <p class="mt-1"><span class="font-semibold">$25.000</span> / noche</p>
+                    </div>
+                </div>
+                
+                <!-- Host 2 - Featured -->
+                <div class="listing-card group">
+                    <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                        <img src="{% static 'abcpet_app/images/host2.jpg' %}" alt="Manuel Rodríguez - Anfitrión" class="card-image h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="far fa-heart text-gray-800"></i>
+                        </div>
+                        <div class="absolute top-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md featured-badge">
+                            DESTACADO
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                            Vitacura
+                        </div>
+                        <div class="absolute bottom-2 right-2">
+                            <div class="flex">
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-cat text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                    <i class="fas fa-feather-alt text-abcpet-red text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Manuel Rodríguez</h3>
+                                <p class="text-abcpet-gray text-sm">Lo Curro, Vitacura</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-abcpet-red"></i>
+                                <span class="ml-1 font-medium">4.92</span>
+                            </div>
+                        </div>
+                        <p class="text-abcpet-gray text-sm mt-1">Adiestrador canino con espacio para todos</p>
+                        <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">87 mascotas</span> hospedadas</p>
+                        <p class="mt-1"><span class="font-semibold">$28.000</span> / noche</p>
+                    </div>
+                </div>
+                
+                <!-- Host 3 - Featured -->
+                <div class="listing-card group">
+                    <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                        <img src="{% static 'abcpet_app/images/host3.jpg' %}" alt="Valentina Gómez - Anfitriona" class="card-image h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="far fa-heart text-gray-800"></i>
+                        </div>
+                        <div class="absolute top-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md featured-badge">
+                            DESTACADO
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                            Providencia
+                        </div>
+                        <div class="absolute bottom-2 right-2">
+                            <div class="flex">
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-cat text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                    <i class="fas fa-fish text-abcpet-red text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Valentina Gómez</h3>
+                                <p class="text-abcpet-gray text-sm">Pedro de Valdivia, Providencia</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-abcpet-red"></i>
+                                <span class="ml-1 font-medium">4.95</span>
+                            </div>
+                        </div>
+                        <p class="text-abcpet-gray text-sm mt-1">Especialista en gatos y animales acuáticos</p>
+                        <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">65 mascotas</span> hospedadas</p>
+                        <p class="mt-1"><span class="font-semibold">$22.000</span> / noche</p>
+                    </div>
+                </div>
+                
+                <!-- Host 4 - Featured -->
+                <div class="listing-card group">
+                    <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                        <img src="{% static 'abcpet_app/images/host4.jpg' %}" alt="Javier Soto - Anfitrión" class="card-image h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="far fa-heart text-gray-800"></i>
+                        </div>
+                        <div class="absolute top-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md featured-badge">
+                            DESTACADO
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                            Ñuñoa
+                        </div>
+                        <div class="absolute bottom-2 right-2">
+                            <div class="flex">
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                    <i class="fas fa-carrot text-abcpet-red text-xs"></i>
+                                </div>
+                                <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                    <i class="fas fa-dragon text-abcpet-red text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Javier Soto</h3>
+                                <p class="text-abcpet-gray text-sm">Plaza Ñuñoa, Ñuñoa</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-abcpet-red"></i>
+                                <span class="ml-1 font-medium">4.91</span>
+                            </div>
+                        </div>
+                        <p class="text-abcpet-gray text-sm mt-1">Amante de los animales exóticos y perros</p>
+                        <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">54 mascotas</span> hospedadas</p>
+                        <p class="mt-1"><span class="font-semibold">$20.000</span> / noche</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pets Highlights Section -->
+        <div class="mb-16">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Mascotas destacadas</h2>
+                    <p class="text-abcpet-gray">Las mascotas más felices y mejor cuidadas por nuestros anfitriones</p>
+                </div>
+                <a href="#" class="text-abcpet-red font-medium hover:underline">Ver todas</a>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Pet 1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{% static 'abcpet_app/images/pet1.jpg' %}" alt="Rocky - Golden Retriever" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <p class="text-white font-medium">Rocky - Golden Retriever</p>
+                            <div class="flex items-center text-white text-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>Las Condes, con Carolina M.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-green-100 text-green-600 text-xs rounded-full px-2 py-1">
+                                <i class="fas fa-check-circle mr-1"></i> Excelente estadía
+                            </div>
+                        </div>
+                        <p class="text-sm text-abcpet-gray mb-2">"Rocky ha estado muy feliz con Carolina. Le encanta su jardín y los paseos diarios."</p>
+                        <div class="flex items-center text-xs text-abcpet-gray">
+                            <img src="{% static 'abcpet_app/images/owner1.jpg' %}" alt="Dueño" class="w-5 h-5 rounded-full mr-1">
+                            <span>Comentario de Marcela, su dueña</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pet 2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{% static 'abcpet_app/images/pet2.jpg' %}" alt="Luna - Gato Siamés" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <p class="text-white font-medium">Luna - Gato Siamés</p>
+                            <div class="flex items-center text-white text-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>Providencia, con Valentina G.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-green-100 text-green-600 text-xs rounded-full px-2 py-1">
+                                <i class="fas fa-check-circle mr-1"></i> Cliente frecuente
+                            </div>
+                        </div>
+                        <p class="text-sm text-abcpet-gray mb-2">"Luna siempre está feliz cuando visita a Valentina. Ambiente perfecto para gatos."</p>
+                        <div class="flex items-center text-xs text-abcpet-gray">
+                            <img src="{% static 'abcpet_app/images/owner2.jpg' %}" alt="Dueño" class="w-5 h-5 rounded-full mr-1">
+                            <span>Comentario de Rodrigo, su dueño</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pet 3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{% static 'abcpet_app/images/pet3.jpg' %}" alt="Max - Bulldog Francés" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <p class="text-white font-medium">Max - Bulldog Francés</p>
+                            <div class="flex items-center text-white text-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>Vitacura, con Manuel R.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-green-100 text-green-600 text-xs rounded-full px-2 py-1">
+                                <i class="fas fa-check-circle mr-1"></i> Gran experiencia
+                            </div>
+                        </div>
+                        <p class="text-sm text-abcpet-gray mb-2">"Manuel es un excelente adiestrador. Max ha vuelto más obediente y feliz."</p>
+                        <div class="flex items-center text-xs text-abcpet-gray">
+                            <img src="{% static 'abcpet_app/images/owner3.jpg' %}" alt="Dueño" class="w-5 h-5 rounded-full mr-1">
+                            <span>Comentario de Camila, su dueña</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pet 4 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{% static 'abcpet_app/images/pet4.jpg' %}" alt="Coco - Loro Amazónico" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <p class="text-white font-medium">Coco - Loro Amazónico</p>
+                            <div class="flex items-center text-white text-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>Ñuñoa, con Javier S.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-green-100 text-green-600 text-xs rounded-full px-2 py-1">
+                                <i class="fas fa-check-circle mr-1"></i> Cuidado especializado
+                            </div>
+                        </div>
+                        <p class="text-sm text-abcpet-gray mb-2">"Javier tiene un espacio perfecto para aves. Coco ha aprendido nuevas palabras."</p>
+                        <div class="flex items-center text-xs text-abcpet-gray">
+                            <img src="{% static 'abcpet_app/images/owner4.jpg' %}" alt="Dueño" class="w-5 h-5 rounded-full mr-1">
+                            <span>Comentario de Pablo, su dueño</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hosts by Comuna -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Anfitriones por comuna</h2>
+            
+            <!-- Las Condes Section -->
+            <div class="mb-10">
+                <div class="flex justify-between items-end mb-4">
+                    <h3 class="text-xl font-semibold">Las Condes</h3>
+                    <a href="#" class="text-abcpet-red text-sm font-medium hover:underline">Ver todos</a>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Host 5 -->
+                    <div class="listing-card group">
+                        <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                            <img src="{% static 'abcpet_app/images/host5.jpg' %}" alt="Andrea Muñoz - Anfitriona" class="card-image h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                                <i class="far fa-heart text-gray-800"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                                Las Condes
+                            </div>
+                            <div class="absolute bottom-2 right-2">
+                                <div class="flex">
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                        <i class="fas fa-cat text-abcpet-red text-xs"></i>
+                                    </div>
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                        <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold">Andrea Muñoz</h3>
+                                    <p class="text-abcpet-gray text-sm">El Golf, Las Condes</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-abcpet-red"></i>
+                                    <span class="ml-1 font-medium">4.88</span>
+                                </div>
+                            </div>
+                            <p class="text-abcpet-gray text-sm mt-1">Departamento con terraza para mascotas</p>
+                            <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">42 mascotas</span> hospedadas</p>
+                            <p class="mt-1"><span class="font-semibold">$22.000</span> / noche</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Host 6 -->
+                    <div class="listing-card group">
+                        <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                            <img src="{% static 'abcpet_app/images/host6.jpg' %}" alt="Pedro Díaz - Anfitrión" class="card-image h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                                <i class="far fa-heart text-gray-800"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                                Las Condes
+                            </div>
+                            <div class="absolute bottom-2 right-2">
+                                <div class="flex">
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                        <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                    </div>
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                        <i class="fas fa-hippo text-abcpet-red text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold">Pedro Díaz</h3>
+                                    <p class="text-abcpet-gray text-sm">Los Dominicos, Las Condes</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-abcpet-red"></i>
+                                    <span class="ml-1 font-medium">4.82</span>
+                                </div>
+                            </div>
+                            <p class="text-abcpet-gray text-sm mt-1">Zoólogo con experiencia en mascotas exóticas</p>
+                            <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">38 mascotas</span> hospedadas</p>
+                            <p class="mt-1"><span class="font-semibold">$24.000</span> / noche</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Host 7 -->
+                    <div class="listing-card group">
+                        <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                            <img src="{% static 'abcpet_app/images/host7.jpg' %}" alt="Fernanda Rojas - Anfitriona" class="card-image h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                                <i class="far fa-heart text-gray-800"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                                Las Condes
+                            </div>
+                            <div class="absolute top-2 left-2 bg-blue-500 text-white text-xs py-1 px-2 rounded-md">
+                                NUEVO
+                            </div>
+                            <div class="absolute bottom-2 right-2">
+                                <div class="flex">
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                        <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold">Fernanda Rojas</h3>
+                                    <p class="text-abcpet-gray text-sm">Escuela Militar, Las Condes</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-abcpet-red"></i>
+                                    <span class="ml-1 font-medium">Nuevo</span>
+                                </div>
+                            </div>
+                            <p class="text-abcpet-gray text-sm mt-1">Entrenadora canina con espacios al aire libre</p>
+                            <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">5 mascotas</span> hospedadas</p>
+                            <p class="mt-1"><span class="font-semibold">$19.000</span> / noche</p>
+                        </div>
+                    </div>
+                    
+                    <!-- More hosts button -->
+                    <div class="flex items-center justify-center bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-shadow p-8">
+                        <a href="#" class="text-abcpet-red font-semibold flex flex-col items-center">
+                            <div class="bg-abcpet-red bg-opacity-10 rounded-full p-4 mb-3">
+                                <i class="fas fa-plus text-abcpet-red text-xl"></i>
+                            </div>
+                            Ver más anfitriones en Las Condes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Providencia Section -->
+            <div class="mb-10">
+                <div class="flex justify-between items-end mb-4">
+                    <h3 class="text-xl font-semibold">Providencia</h3>
+                    <a href="#" class="text-abcpet-red text-sm font-medium hover:underline">Ver todos</a>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Host 8 -->
+                    <div class="listing-card group">
+                        <div class="relative overflow-hidden rounded-xl aspect-square mb-2">
+                            <img src="{% static 'abcpet_app/images/host8.jpg' %}" alt="Sebastián Castro - Anfitrión" class="card-image h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full opacity-70 hover:opacity-100 transition-opacity">
+                                <i class="far fa-heart text-gray-800"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-abcpet-red text-white text-xs py-1 px-2 rounded-md">
+                                Providencia
+                            </div>
+                            <div class="absolute bottom-2 right-2">
+                                <div class="flex">
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full mr-1">
+                                        <i class="fas fa-dog text-abcpet-red text-xs"></i>
+                                    </div>
+                                    <div class="bg-abcpet-lightgray p-1 rounded-full">
+                                        <i class="fas fa-cat text-abcpet-red text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold">Sebastián Castro</h3>
+                                    <p class="text-abcpet-gray text-sm">Manuel Montt, Providencia</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-abcpet-red"></i>
+                                    <span class="ml-1 font-medium">4.85</span>
+                                </div>
+                            </div>
+                            <p class="text-abcpet-gray text-sm mt-1">Casa con amplio patio y experiencia en cuidados</p>
+                            <p class="text-abcpet-gray text-sm mt-0.5"><span class="font-semibold">45 mascotas</span> hospedadas</p>
+                            <p class="mt-1"><span class="font-semibold">$21.000</span> / noche</p>
+                        </div>
+                    </div>
+                    
+                    <!-- More hosts button -->
+                    <div class="flex items-center justify-center bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-shadow p-8">
+                        <a href="#" class="text-abcpet-red font-semibold flex flex-col items-center">
+                            <div class="bg-abcpet-red bg-opacity-10 rounded-full p-4 mb-3">
+                                <i class="fas fa-plus text-abcpet-red text-xl"></i>
+                            </div>
+                            Ver más anfitriones en Providencia
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How it works Section -->
+        <div class="mb-16 bg-abcpet-lightgray rounded-2xl p-8 md:p-12">
+            <h2 class="text-2xl font-bold mb-8 text-center">¿Cómo funciona ABCPet?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="bg-white rounded-xl p-6 shadow-md relative">
+                    <div class="absolute -top-5 -left-5 bg-abcpet-red text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">1</div>
+                    <h3 class="text-lg font-bold mb-4">Encuentra al anfitrión perfecto</h3>
+                    <p class="text-abcpet-gray">Busca entre cientos de anfitriones verificados, filtra por ubicación, tipo de mascota y lee reseñas de otros dueños.</p>
+                    <div class="mt-4">
+                        <img src="{% static 'abcpet_app/images/step1.jpg' %}" alt="Búsqueda" class="w-full h-36 object-cover rounded-lg">
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="bg-white rounded-xl p-6 shadow-md relative">
+                    <div class="absolute -top-5 -left-5 bg-abcpet-red text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">2</div>
+                    <h3 class="text-lg font-bold mb-4">Reserva con facilidad</h3>
+                    <p class="text-abcpet-gray">Selecciona las fechas, conversa con el anfitrión para aclarar detalles sobre tu mascota y realiza el pago seguro.</p>
+                    <div class="mt-4">
+                        <img src="{% static 'abcpet_app/images/step2.jpg' %}" alt="Reserva" class="w-full h-36 object-cover rounded-lg">
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="bg-white rounded-xl p-6 shadow-md relative">
+                    <div class="absolute -top-5 -left-5 bg-abcpet-red text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">3</div>
+                    <h3 class="text-lg font-bold mb-4">Tranquilidad total</h3>
+                    <p class="text-abcpet-gray">Recibe actualizaciones y fotos de tu mascota mientras no estás. Después de la estadía, comparte tu experiencia.</p>
+                    <div class="mt-4">
+                        <img src="{% static 'abcpet_app/images/step3.jpg' %}" alt="Seguimiento" class="w-full h-36 object-cover rounded-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Become a Host -->
+        <div class="mb-16">
+            <div class="bg-gradient-to-r from-abcpet-red to-abcpet-light rounded-2xl overflow-hidden relative">
+                <div class="md:flex items-center">
+                    <div class="md:w-1/2 p-8 md:p-12 text-white">
+                        <h2 class="text-3xl font-bold mb-4">¿Amas a los animales?</h2>
+                        <p class="text-lg mb-6">Conviértete en anfitrión ABCPet y gana dinero compartiendo tu hogar con mascotas mientras sus dueños no están.</p>
+                        <ul class="mb-8 space-y-3">
+                            <li class="flex items-center">
+                                <div class="bg-white/20 rounded-full p-1 mr-3">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <span>Gana hasta $500.000 mensuales</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="bg-white/20 rounded-full p-1 mr-3">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <span>Disfruta de la compañía de mascotas</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="bg-white/20 rounded-full p-1 mr-3">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <span>Tú decides cuándo y qué mascotas recibir</span>
+                            </li>
+                        </ul>
+                        <a href="/register/" class="inline-block bg-white text-abcpet-red font-bold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-105 duration-300">
+                            Conviértete en anfitrión
+                        </a>
+                    </div>
+                    <div class="md:w-1/2 relative min-h-[300px] md:min-h-[400px]">
+                        <img src="{% static 'abcpet_app/images/become-host.jpg' %}" alt="Anfitrión con mascota" class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Column 1 -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Soporte</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Centro de ayuda</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Información de seguridad</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Opciones de cancelación</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Protección para mascotas</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Reportar un problema</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 2 -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Comunidad</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">ABCPet.org</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Foro de mascotas</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Apoya refugios locales</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Historias de mascotas</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 3 -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Anfitrión</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Conviértete en anfitrión</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Recursos para anfitriones</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Foro de anfitriones</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Anfitriones responsables</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">ABCPet</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Newsroom</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Nuevas funciones</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Carreras</a></li>
+                        <li><a href="#" class="text-abcpet-gray hover:text-abcpet-red transition-colors">Inversores</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8

@@ -1,0 +1,7 @@
+<div id="profile-config-status">
+    {% if not is_profile_complete %}
+        <a href="/edit_profile">Ir a Configurar</a>
+    {% else %}
+        <button style="background-color: green; color: white; border: none;">(Configurado)</button>
+    {% endif %}
+</div>

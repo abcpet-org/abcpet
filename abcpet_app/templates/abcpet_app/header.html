@@ -1,0 +1,174 @@
+{% load static %}
+<!-- header.html -->
+<nav>
+    <a href="{% url 'index' %}">
+        <img class="logo" src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo">
+    </a>
+    <ul class="nav-links">
+
+    </ul>
+    <div class="user-info">
+        {% if user.is_authenticated %}
+            <img src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}{% static 'abcpet_app/images/default_profile_picture.jpg' %}{% endif %}" alt="Imagen de usuario">
+            <p>Hola <strong>{{ user_profile.user.first_name }}</strong></p>
+            <div class="user-menu">
+                <a href="{% url 'dashboard' %}">Configuración</a>
+                <a href="{% url 'detalle_mascota' %}">Mis Mascotas</a>
+                <a href="{% url 'mi_perfil' %}">Mi Perfil</a>
+                <a href="#">Mis Mensajes</a>
+                <a href="{% url 'host' %}">ABCPet Amigo</a>
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            </div>
+        {% else %}
+            <a href="{% url 'login_step1' %}" class="auth-link">Iniciar sesión</a>
+            <a href="{% url 'login_step1' %}" class="auth-link">Registrar</a>
+        {% endif %}
+    </div>
+    <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+</nav>
+
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        height: 60px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo {
+        width: 80px; /* Tamaño ajustado para logo */
+        height: auto;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-links li {
+        margin: 0 15px;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .nav-links a:hover {
+        color: #000; /* Color negro al hacer hover */
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .user-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .user-info p {
+        margin: 0;
+        margin-right: 10px;
+    }
+
+    .user-info a {
+        color: #000;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .user-info a:hover {
+        text-decoration: underline;
+    }
+
+    .user-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #fff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        width: 200px;
+    }
+
+    .user-info:hover .user-menu {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-menu a {
+        color: #333;
+        padding: 12px;
+        text-decoration: none;
+    }
+
+    .user-menu a:hover {
+        background-color: #f4f4f4;
+    }
+
+    .auth-link {
+        color: #888 !important;
+        font-size: 14px !important;
+        text-decoration: none !important;
+        margin: 0 10px;
+    }
+
+    .auth-link:hover {
+        color: #555 !important;
+    }
+
+    .menu-toggle {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            background-color: #fff;
+            position: absolute;
+            top: 60px;
+            width: 100%;
+            left: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links li {
+            margin: 15px 0;
+        }
+
+        .nav-links a {
+            font-size: 18px;
+        }
+
+        .menu-toggle {
+            display: block;
+            cursor: pointer;
+        }
+
+        .menu-toggle.active + .nav-links {
+            display: flex;
+        }
+    }
+</style>

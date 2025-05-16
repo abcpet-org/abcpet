@@ -1,0 +1,1504 @@
+{% extends 'abcpet_app/base.html' %}
+{% load static %}
+
+{% block title %}Conviértete en ABCPet Amigo | ABCPet{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+<style>
+    /* Hero Section */
+    .host-hero {
+        position: relative;
+        height: 600px;
+        margin-top: -2rem;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+    }
+    
+    .host-hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .host-hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+        z-index: 1;
+    }
+    
+    .host-hero-content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 5%;
+        color: white;
+        max-width: 700px;
+    }
+    
+    .host-hero-tagline {
+        font-size: 0.95rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+    
+    .host-hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+    
+    .host-hero-subtitle {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    /* Earnings Calculator */
+    .earnings-calculator {
+        background-color: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        padding: 2rem;
+        margin-top: -80px;
+        position: relative;
+        z-index: 3;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .calculator-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--neutral-900);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .calculator-title span {
+        color: var(--primary);
+    }
+    
+    .calculator-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .calculator-input {
+        flex: 1;
+        padding-right: 2rem;
+    }
+    
+    .calculator-input label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--neutral-600);
+        margin-bottom: 0.5rem;
+    }
+    
+    .range-slider-container {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .range-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 5px;
+        background: linear-gradient(to right, var(--primary) 0%, var(--primary) 50%, var(--neutral-300) 50%, var(--neutral-300) 100%);
+        outline: none;
+        margin: 1rem 0;
+    }
+    
+    .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        border: 3px solid white;
+    }
+    
+    .range-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        border: 3px solid white;
+    }
+    
+    .range-values {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--neutral-600);
+    }
+    
+    .calculator-result {
+        flex: 1;
+        background: linear-gradient(45deg, var(--primary-light), var(--primary));
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        color: white;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .result-label {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+    
+    .result-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .result-period {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+    
+    .result-note {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-top: 1rem;
+    }
+    
+    .btn-earnings-cta {
+        background-color: white;
+        color: var(--primary);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition-fast);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-earnings-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    /* How it Works Section */
+    .how-it-works {
+        padding: 5rem 0;
+        background-color: var(--neutral-50);
+        margin-top: 3rem;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    
+    .section-pretitle {
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--neutral-900);
+        margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+        color: var(--neutral-600);
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    
+    .steps-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    
+    .step-card {
+        background-color: white;
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-md);
+        flex: 1;
+        transition: var(--transition-standard);
+    }
+    
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .step-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--neutral-900);
+    }
+    
+    .step-description {
+        color: var(--neutral-600);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .step-icon {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Benefits Section */
+    .benefits {
+        padding: 5rem 0;
+    }
+    
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .benefit-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transition-standard);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .benefit-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .benefit-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--primary);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: bottom right;
+    }
+    
+    .benefit-card:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+    
+    .benefit-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-light), var(--primary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        color: white;
+        font-size: 1.8rem;
+        box-shadow: 0 10px 20px rgba(228, 30, 38, 0.2);
+    }
+    
+    .benefit-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .benefit-description {
+        color: var(--neutral-600);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    /* Income Features Section */
+    .income-features {
+        padding: 5rem 0;
+        background: linear-gradient(to right, #f8f9fa, #f1f3f5);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .income-pattern {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 400px;
+        height: 400px;
+        background-image: radial-gradient(var(--primary-transparent) 2px, transparent 2px);
+        background-size: 20px 20px;
+        opacity: 0.3;
+    }
+    
+    .features-container {
+        display: flex;
+        align-items: center;
+        gap: 4rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    
+    .features-content {
+        flex: 1;
+    }
+    
+    .features-image {
+        flex: 1;
+        position: relative;
+    }
+    
+    .features-img {
+        width: 100%;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-fast);
+    }
+    
+    .feature-item:hover {
+        transform: translateX(5px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .feature-icon {
+        margin-right: 1rem;
+        color: var(--primary);
+        font-size: 1.5rem;
+        min-width: 28px;
+    }
+    
+    .feature-text h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+    }
+    
+    .feature-text p {
+        margin: 0;
+        color: var(--neutral-600);
+        font-size: 0.9rem;
+    }
+    
+    /* Stories Section */
+    .stories {
+        padding: 5rem 0;
+    }
+    
+    .stories-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    
+    .stories-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .story-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition-standard);
+    }
+    
+    .story-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .story-image {
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .story-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .story-card:hover .story-image img {
+        transform: scale(1.05);
+    }
+    
+    .story-content {
+        padding: 1.5rem;
+    }
+    
+    .story-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .story-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--neutral-500);
+    }
+    
+    .story-author {
+        display: flex;
+        align-items: center;
+    }
+    
+    .author-img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    .story-date {
+        margin-left: auto;
+    }
+    
+    .story-excerpt {
+        color: var(--neutral-700);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .story-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary);
+        font-weight: 500;
+        font-size: 0.9rem;
+        gap: 0.5rem;
+    }
+    
+    .story-link:hover {
+        gap: 0.75rem;
+    }
+    
+    /* FAQ Section */
+    .faq {
+        padding: 5rem 0;
+        background-color: var(--neutral-50);
+    }
+    
+    .accordion-container {
+        max-width: 800px;
+        margin: 3rem auto 0;
+    }
+    
+    .accordion-item {
+        margin-bottom: 1rem;
+    }
+    
+    .accordion-header {
+        background-color: white;
+        padding: 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--neutral-900);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-fast);
+    }
+    
+    .accordion-header:hover {
+        background-color: var(--neutral-100);
+    }
+    
+    .accordion-header.active {
+        background-color: var(--primary-transparent);
+        color: var(--primary);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .accordion-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .accordion-header.active .accordion-icon {
+        transform: rotate(180deg);
+    }
+    
+    .accordion-content {
+        background-color: white;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        border-bottom-left-radius: var(--radius-lg);
+        border-bottom-right-radius: var(--radius-lg);
+    }
+    
+    .accordion-body {
+        padding: 0 1.5rem 1.5rem;
+        color: var(--neutral-600);
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .cta-container {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .btn-cta-primary {
+        background-color: white;
+        color: var(--primary);
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition-fast);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cta-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        color: var(--primary-dark);
+    }
+    
+    .btn-cta-secondary {
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: var(--transition-fast);
+        text-decoration: none;
+    }
+    
+    .btn-cta-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    /* Success Stories */
+    .success-stories {
+        padding: 5rem 0;
+    }
+    
+    .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 3rem auto 0;
+    }
+    
+    .testimonial-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .testimonial-quote {
+        font-size: 4rem;
+        color: var(--primary-transparent);
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-family: Georgia, serif;
+        line-height: 1;
+    }
+    
+    .testimonial-text {
+        flex-grow: 1;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--neutral-700);
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid var(--neutral-200);
+        padding-top: 1.5rem;
+    }
+    
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        border: 3px solid var(--primary-transparent);
+    }
+    
+    .testimonial-info h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+    }
+    
+    .testimonial-info p {
+        margin: 0;
+        color: var(--primary);
+        font-size: 0.9rem;
+    }
+    
+    .testimonial-rating {
+        display: flex;
+        margin-top: 0.5rem;
+    }
+    
+    .testimonial-rating i {
+        color: gold;
+        font-size: 0.9rem;
+        margin-right: 0.2rem;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        padding: 3rem 0;
+        background: linear-gradient(to right, var(--neutral-900), var(--neutral-800));
+        color: white;
+    }
+    
+    .stats-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .stat-item {
+        padding: 2rem;
+        text-align: center;
+        min-width: 200px;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(45deg, white, var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+    }
+    
+    .stat-text {
+        font-size: 1.1rem;
+        color: var(--neutral-300);
+    }
+    
+    /* Video Section */
+    .video-section {
+        padding: 5rem 0;
+        background-color: var(--neutral-50);
+    }
+    
+    .video-container {
+        max-width: 900px;
+        margin: 3rem auto 0;
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .video-placeholder {
+        width: 100%;
+        height: 500px;
+        background-color: var(--neutral-800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .video-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .video-play-button {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .video-play-button:hover {
+        transform: scale(1.1);
+        background: var(--primary-dark);
+    }
+    
+    .video-play-button i {
+        margin-left: 5px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .host-hero-title {
+            font-size: 2.8rem;
+        }
+        
+        .steps-container, 
+        .benefits-grid,
+        .testimonial-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .features-container {
+            flex-direction: column;
+        }
+        
+        .features-image {
+            order: -1;
+            margin-bottom: 2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .host-hero {
+            height: 500px;
+        }
+        
+        .host-hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .calculator-content {
+            flex-direction: column;
+        }
+        
+        .calculator-input {
+            width: 100%;
+            padding-right: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .steps-container, 
+        .benefits-grid,
+        .stories-grid,
+        .testimonial-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="host-hero">
+    <img src="{% static 'abcpet_app/images/fondo1.png' %}" alt="ABCPet Amigo" class="host-hero-image">
+    <div class="host-hero-overlay"></div>
+    <div class="host-hero-content">
+        <span class="host-hero-tagline" data-aos="fade-up" data-aos-delay="100">COMIENZA HOY</span>
+        <h1 class="host-hero-title" data-aos="fade-up" data-aos-delay="200">Cobra por jugar con mascotas</h1>
+        <p class="host-hero-subtitle" data-aos="fade-up" data-aos-delay="300">
+            ¿Eres un amante de los animales? ¿Tienes un espacio acogedor? Únete a nuestra comunidad de ABCPet Amigos y comienza a ganar dinero haciendo lo que más te gusta.
+        </p>
+        <a href="{% url 'provider_profile' %}" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">
+            <i class="fas fa-paw"></i> Comenzar ahora
+        </a>
+    </div>
+</section>
+
+<!-- Earnings Calculator -->
+<div class="container">
+    <div class="earnings-calculator" data-aos="fade-up">
+        <h2 class="calculator-title">Calcula tus <span>ingresos potenciales</span> como ABCPet Amigo</h2>
+        <div class="calculator-content">
+            <div class="calculator-input">
+                <div class="range-slider-container">
+                    <label for="hoursRange">Horas por semana</label>
+                    <input type="range" id="hoursRange" class="range-slider" min="5" max="40" step="5" value="15">
+                    <div class="range-values">
+                        <span>5h</span>
+                        <span>40h</span>
+                    </div>
+                </div>
+                <div class="range-slider-container">
+                    <label for="petsRange">Número de mascotas</label>
+                    <input type="range" id="petsRange" class="range-slider" min="1" max="5" step="1" value="2">
+                    <div class="range-values">
+                        <span>1 mascota</span>
+                        <span>5 mascotas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calculator-result">
+                <div class="result-label">Podrías ganar hasta</div>
+                <div class="result-value" id="earningsResult">$735.000</div>
+                <div class="result-period">al mes</div>
+                <div class="result-note">*Los resultados son un estimado basado en los promedios de nuestra plataforma</div>
+                <a href="{% url 'provider_profile' %}" class="btn-earnings-cta">
+                    ¡Conviértete en ABCPet Amigo!
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-number" data-count="2500">0</div>
+            <div class="stat-text">ABCPet Amigos activos</div>
+        </div>
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-number" data-count="15000">0</div>
+            <div class="stat-text">Mascotas felices</div>
+        </div>
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-number" data-count="98">0</div>
+            <div class="stat-text">% de satisfacción</div>
+        </div>
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-number" data-count="750">0</div>
+            <div class="stat-text">Millones $ generados</div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-pretitle">Proceso simple</span>
+            <h2 class="section-title">¿Cómo funciona?</h2>
+            <p class="section-subtitle">Seguimos un proceso sencillo para convertirte en un ABCPet Amigo y comenzar a recibir solicitudes de cuidado de mascotas.</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-number">1</div>
+                <div class="step-icon"><i class="fas fa-user-edit"></i></div>
+                <h3 class="step-title">Crea tu perfil</h3>
+                <p class="step-description">Te guiamos a través de la construcción de un perfil atractivo que muestre tu experiencia y amor por las mascotas. Incluye fotos de tu espacio y tus habilidades.</p>
+            </div>
+            
+            <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-number">2</div>
+                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <h3 class="step-title">Espera tu aprobación</h3>
+                <p class="step-description">En un plazo de 24 horas aprobaremos tu perfil de ABCPet Amigo. Nuestro proceso de verificación garantiza la seguridad tanto para ti como para los dueños de mascotas.</p>
+            </div>
+            
+            <div class="step-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-number">3</div>
+                <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
+                <h3 class="step-title">Acepta solicitudes</h3>
+                <p class="step-description">Nuestra plataforma te permite configurar tus preferencias para recibir solicitudes de cuidado que se adapten a tu disponibilidad y experiencia. ¡Tú eliges cuándo y con quién trabajar!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-pretitle">Ventajas exclusivas</span>
+            <h2 class="section-title">Beneficios de ser un ABCPet Amigo</h2>
+            <p class="section-subtitle">Disfruta de numerosas ventajas al unirte a nuestra comunidad, diseñadas para hacer tu experiencia gratificante tanto personal como profesionalmente.</p>
+        </div>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="benefit-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3 class="benefit-title">Ingresos Flexibles</h3>
+                <p class="benefit-description">Establece tus propias tarifas y horarios. Gana más de $735.000 mensuales mientras disfrutas del tiempo con adorables mascotas.</p>
+            </div>
+            
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="benefit-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3 class="benefit-title">Trabaja desde Casa</h3>
+                <p class="benefit-description">Aprovecha tu propio espacio para cuidar mascotas. Sin desplazamientos, sin jefes, solo tú y tus nuevos amigos peludos.</p>
+            </div>
+            
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="benefit-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="benefit-title">Horarios Flexibles</h3>
+                <p class="benefit-description">Tú decides cuándo trabajar. Acepta solicitudes que se ajusten a tu agenda y disfruta de un equilibrio perfecto entre vida y trabajo.</p>
+            </div>
+            
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="benefit-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="benefit-title">Garantía y Seguridad</h3>
+                <p class="benefit-description">Ofrecemos seguro de responsabilidad civil y soporte veterinario 24/7 para todos nuestros ABCPet Amigos certificados.</p>
+            </div>
+            
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="benefit-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="benefit-title">Construye Reputación</h3>
+                <p class="benefit-description">Recibe valoraciones y reseñas que te ayudarán a destacar y atraer más clientes mientras construyes tu perfil profesional.</p>
+            </div>
+            
+            <div class="benefit-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="benefit-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="benefit-title">Conexión Emocional</h3>
+                <p class="benefit-description">Crea vínculos especiales con mascotas y sus dueños. Experimenta la alegría de marcar la diferencia en sus vidas diariamente.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Income Features Section -->
+<section class="income-features">
+    <div class="income-pattern"></div>
+    <div class="container">
+        <div class="features-container">
+            <div class="features-content">
+                <span class="section-pretitle">Potencial de ingresos</span>
+                <h2 class="section-title">Transforma tu amor por las mascotas en ingresos reales</h2>
+                <p class="mb-4">Nuestros ABCPet Amigos disfrutan de múltiples formas de maximizar sus ganancias mientras hacen lo que aman.</p>
+                
+                <div class="feature-item" data-aos="fade-right" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Establece tus propias tarifas</h4>
+                        <p>Tú tienes el control total para fijar precios competitivos según tus servicios y experiencia.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-right" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Ingresos crecientes</h4>
+                        <p>A medida que construyes reputación, puedes aumentar tus tarifas y expandir tu cartera de clientes.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-right" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Bonificaciones y programas de lealtad</h4>
+                        <p>Gana bonificaciones por clientes frecuentes y accede a nuestros programas exclusivos de recompensas.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-right" data-aos-delay="400">
+                    <div class="feature-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Comisiones bajas</h4>
+                        <p>Disfruta de una de las tasas de comisión más bajas del mercado, maximizando tus ganancias.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-image" data-aos="fade-left">
+                <img src="{% static 'abcpet_app/images/income-features.jpg' %}" alt="Potencial de ingresos" class="features-img">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video Section -->
+<section class="video-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-pretitle">Conoce más</span>
+            <h2 class="section-title">¿Cómo es ser un ABCPet Amigo?</h2>
+            <p class="section-subtitle">Descubre las experiencias de nuestros ABCPet Amigos y cómo han transformado su pasión por las mascotas en una oportunidad de ingresos.</p>
+        </div>
+        
+        <div class="video-container" data-aos="zoom-in">
+            <div class="video-placeholder">
+                <img src="{% static 'abcpet_app/images/video-thumbnail.jpg' %}" alt="Video ABCPet Amigo">
+                <div class="video-play-button" id="videoPlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Stories -->
+<section class="success-stories">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-pretitle">Historias reales</span>
+            <h2 class="section-title">Lo que dicen nuestros ABCPet Amigos</h2>
+            <p class="section-subtitle">Descubre cómo nuestros ABCPet Amigos han transformado sus vidas mientras disfrutan del cuidado de mascotas.</p>
+        </div>
+        
+        <div class="testimonial-grid">
+            <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    Me encanta ser ABCPet Amigo. Puedo trabajar desde casa, establecer mi propio horario y lo mejor de todo, pasar tiempo con mascotas increíbles. Gano más de lo que esperaba y he creado relaciones maravillosas con los dueños que confían en mí.
+                </p>
+                <div class="testimonial-author">
+                    <img src="{% static 'abcpet_app/images/testimonials/testimonial-1.jpg' %}" alt="María González" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>María González</h4>
+                        <p>ABCPet Amigo desde 2025</p>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    Después de perder mi trabajo, encontré en ABCPet una nueva forma de generar ingresos. Ahora gano más que antes, trabajo en mis propios términos y disfruto cada minuto con mis amigos peludos. La plataforma es super intuitiva y el soporte siempre está disponible.
+                </p>
+                <div class="testimonial-author">
+                    <img src="{% static 'abcpet_app/images/testimonials/testimonial-2.jpg' %}" alt="Carlos Ramírez" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>Carlos Ramírez</h4>
+                        <p>ABCPet Amigo desde 2025</p>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    Como estudiante universitario, ABCPet me ha permitido ganar dinero extra sin interferir con mis estudios. Elijo cuándo acepto reservas y puedo concentrarme en mis exámenes cuando lo necesito. Además, cuidar mascotas reduce mi estrés durante el período académico.
+                </p>
+                <div class="testimonial-author">
+                    <img src="{% static 'abcpet_app/images/testimonials/testimonial-3.jpg' %}" alt="Laura Sánchez" class="testimonial-avatar">
+                    <div class="testimonial-info">
+                        <h4>Laura Sánchez</h4>
+                        <p>ABCPet Amigo desde 2025</p>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-pretitle">Preguntas frecuentes</span>
+            <h2 class="section-title">Resolvemos tus dudas</h2>
+            <p class="section-subtitle">Encuentra respuestas a las preguntas más comunes sobre cómo convertirte en un ABCPet Amigo y comenzar tu aventura cuidando mascotas.</p>
+        </div>
+        
+        <div class="accordion-container">
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="accordion-header">
+                    <span>¿Cuánto puedo ganar como ABCPet Amigo?</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>En ABCPet, tú decides cuánto ganas. Al crear una cuenta, tendrás la libertad de establecer tus tarifas y servicios personalizados. Los ABCPet Amigos más activos pueden ganar entre $400.000 y $1.200.000 al mes, dependiendo de su disponibilidad, ubicación y servicios ofrecidos. Nuestra tarifa base es de $24.500 por hora por mascota, y ofrecemos opciones de agendamiento flexible que te permiten trabajar según tus propias condiciones.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="accordion-header">
+                    <span>¿Cuánto tiempo lleva activar una cuenta de ABCPet Amigo?</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>La activación de tu cuenta como ABCPet Amigo es un proceso rápido y sencillo. Una vez que completes la solicitud, nuestro equipo de validación la revisará en un plazo de 24 a 48 horas. Este proceso incluye la verificación de tus datos personales y referencias para garantizar la seguridad de nuestra comunidad. En casos excepcionales, podríamos solicitar información adicional, pero trabajamos para hacer el proceso lo más ágil posible.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+                <div class="accordion-header">
+                    <span>¿Cuándo recibiré mi pago después de prestar un servicio?</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>En ABCPet, valoramos tu tiempo y esfuerzo. Los pagos por tus servicios se efectúan de manera rápida y conveniente. Después de que la mascota haya completado su estancia y el check-out se haya realizado, los fondos estarán disponibles en tu cuenta de ABCPet en un plazo de 24 horas. Puedes transferir tus ganancias a tu cuenta bancaria en cualquier momento, con un tiempo de procesamiento de 1-3 días hábiles dependiendo de tu banco.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="accordion-header">
+                    <span>¿Qué medidas de seguridad tiene ABCPet para proteger a mascotas y anfitriones?</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>La seguridad es nuestra prioridad en ABCPet. Realizamos verificaciones exhaustivas de antecedentes tanto para anfitriones como para los ABCPet Amigos. Cada servicio incluye protección de reserva, soporte de emergencia 24/7 y acceso a consultas veterinarias. Además, ofrecemos un seguro de responsabilidad civil para nuestros ABCPet Amigos certificados, brindando tranquilidad adicional durante los servicios de cuidado.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="500">
+                <div class="accordion-header">
+                    <span>¿Puedo ofrecer servicios personalizados para necesidades específicas?</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p>¡Sí! En ABCPet, puedes adaptar tus servicios para satisfacer las necesidades únicas de cada mascota. Ya sea que ofrezcas paseos adicionales, juguetes especiales, dietas personalizadas o administración de medicamentos, nuestra plataforma te permite detallar todos los servicios que puedes proporcionar. Esto no solo mejora la experiencia de las mascotas, sino que también te permite destacar entre otros cuidadores y potencialmente cobrar tarifas premium por servicios especializados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-pattern"></div>
+    <div class="cta-container">
+        <h2 class="cta-title" data-aos="fade-up">¿Listo para comenzar tu aventura como ABCPet Amigo?</h2>
+        <p class="cta-text" data-aos="fade-up" data-aos-delay="100">Únete a nuestra comunidad y transforma tu amor por las mascotas en una oportunidad que te brinda flexibilidad, ingresos adicionales y experiencias inolvidables.</p>
+        <div class="cta-buttons" data-aos="fade-up" data-aos-delay="200">
+            <a href="{% url 'provider_profile' %}" class="btn-cta-primary">
+                <i class="fas fa-paw"></i> Crear mi perfil ahora
+            </a>
+            <a href="#" class="btn-cta-secondary">
+                Saber más
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100,
+            easing: 'ease-in-out'
+        });
+        
+        // Earnings Calculator
+        const hoursRange = document.getElementById('hoursRange');
+        const petsRange = document.getElementById('petsRange');
+        const earningsResult = document.getElementById('earningsResult');
+        
+        function calculateEarnings() {
+            const hoursPerWeek = parseInt(hoursRange.value);
+            const petsCount = parseInt(petsRange.value);
+            
+            // Base rate per hour per pet (in Chilean Pesos)
+            const baseRatePerHour = 24500; // $24,500 CLP per hour per pet
+            
+            // Calculate earnings
+            const weeklyEarnings = hoursPerWeek * petsCount * baseRatePerHour;
+            const monthlyEarnings = weeklyEarnings * 4; // 4 weeks in a month
+            
+            // Format earnings with commas for thousands
+            const formattedEarnings = new Intl.NumberFormat('es-CL').format(monthlyEarnings);
+            
+            // Update the result
+            earningsResult.textContent = '$' + formattedEarnings;
+        }
+        
+        if (hoursRange && petsRange) {
+            hoursRange.addEventListener('input', function() {
+                calculateEarnings();
+                updateRangeBackground(this);
+            });
+            
+            petsRange.addEventListener('input', function() {
+                calculateEarnings();
+                updateRangeBackground(this);
+            });
+            
+            // Initialize earnings calculation
+            calculateEarnings();
+            
+            // Update range slider backgrounds initially
+            updateRangeBackground(hoursRange);
+            updateRangeBackground(petsRange);
+        }
+        
+        // Update range slider background
+        function updateRangeBackground(range) {
+            if (!range) return;
+            
+            const min = range.min;
+            const max = range.max;
+            const value = range.value;
+            const percentage = ((value - min) / (max - min)) * 100;
+            
+            range.style.background = `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percentage}%, var(--neutral-300) ${percentage}%, var(--neutral-300) 100%)`;
+        }
+        
+        // Accordion functionality
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                
+                // Close all accordions
+                accordionHeaders.forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('active');
+                        h.nextElementSibling.style.maxHeight = '0';
+                    }
+                });
+                
+                // Toggle current accordion
+                this.classList.toggle('active');
+                
+                if (this.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                } else {
+                    content.style.maxHeight = '0';
+                }
+            });
+        });
+        
+        // Video modal functionality
+        const videoPlay = document.getElementById('videoPlay');
+        if (videoPlay) {
+            videoPlay.addEventListener('click', function() {
+                // Here you would implement a video modal or redirect to a video page
+                alert('Aquí se mostraría un video sobre ABCPet Amigos. Funcionalidad en desarrollo.');
+            });
+        }
+        
+        // Animate stats numbers on scroll
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+        
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const count = parseInt(target.getAttribute('data-count'));
+                    
+                    let currentCount = 0;
+                    const duration = 2000; // 2 seconds
+                    const frameRate = 30; // frames per second
+                    const totalFrames = duration / 1000 * frameRate;
+                    const increment = count / totalFrames;
+                    
+                    const counter = setInterval(() => {
+                        currentCount += increment;
+                        if (currentCount >= count) {
+                            target.textContent = new Intl.NumberFormat('es-CL').format(count);
+                            clearInterval(counter);
+                        } else {
+                            target.textContent = new Intl.NumberFormat('es-CL').format(Math.floor(currentCount));
+                        }
+                    }, 1000 / frameRate);
+                    
+                    statsObserver.unobserve(target);
+                }
+            });
+        }, observerOptions);
+        
+        statNumbers.forEach(stat => {
+            statsObserver.observe(stat);
+        });
+    });
+</script>
+{% endblock %}

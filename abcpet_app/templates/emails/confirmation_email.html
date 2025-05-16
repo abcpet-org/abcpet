@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirma tu cuenta en ABCPet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700&display=swap');
+        
+        /* Estilos base */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Lato', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f7f7f7;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        /* Contenedor principal */
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Encabezado */
+        .email-header {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .logo {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        /* Cuerpo del email */
+        .email-body {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 300;
+            color: #000000;
+            margin-bottom: 20px;
+        }
+        
+        .name-emphasis {
+            font-weight: 700;
+        }
+        
+        .message-text {
+            font-size: 16px;
+            font-weight: 300;
+            color: #555555;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        /* Botón CTA */
+        .cta-button {
+            display: inline-block;
+            background-color: #000000;
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 14px 30px;
+            border-radius: 8px;
+            margin: 20px 0 30px;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: #333333;
+        }
+        
+        /* Sección de pasos */
+        .steps-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+            text-align: left;
+            padding-left: 15px;
+            border-left: 3px solid #0b8a00;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #0b8a00;
+            margin-bottom: 5px;
+        }
+        
+        .step-description {
+            font-weight: 300;
+            font-size: 14px;
+            color: #555555;
+        }
+        
+        /* Sección URL alternativa */
+        .alt-url-section {
+            background-color: #f5f7fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .alt-url-section p {
+            font-size: 14px;
+            margin: 0 0 10px 0;
+        }
+        
+        .url-display {
+            background-color: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            color: #0b8a00;
+        }
+        
+        /* Alerta de expiración */
+        .expiration-alert {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        /* Sección de beneficios */
+        .benefits-section {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .benefit {
+            width: 30%;
+            text-align: center;
+            min-width: 140px;
+            margin-bottom: 15px;
+        }
+        
+        .benefit-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-text {
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.4;
+            color: #666;
+        }
+        
+        /* Firma */
+        .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            font-weight: 300;
+        }
+        
+        .team-name {
+            font-weight: 600;
+        }
+        
+        /* Pie de página */
+        .email-footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888888;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .policy-link {
+            color: #000000;
+            text-decoration: none;
+        }
+        
+        /* Estilos responsivos */
+        @media screen and (max-width: 480px) {
+            .email-body {
+                padding: 20px 15px;
+            }
+            
+            .benefit {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .benefits-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <img class="logo" src="https://drive.google.com/uc?export=view&id=1sICnGm8Fa9gyekdPn3MC8fZPrfguJQeh" alt="ABCPet">
+        </div>
+        
+        <div class="email-body">
+            <h1 class="welcome-text">Un último paso para activar tu cuenta</h1>
+            
+            <p class="message-text">
+                Hola <span class="name-emphasis">{{ first_name }}</span>,<br><br>
+                Estamos encantados de que te hayas unido a la comunidad ABCPet.
+                Solo falta un paso para completar tu registro y comenzar a disfrutar de
+                todos nuestros servicios para el cuidado de tu mascota.
+            </p>
+            
+            <a href="{{ confirmation_link }}" class="cta-button">Activar mi cuenta ahora</a>
+            
+            <div class="steps-section">
+                <div class="step">
+                    <div class="step-title">Activa tu cuenta</div>
+                    <div class="step-description">Haz clic en el botón de arriba para verificar tu dirección de correo electrónico.</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title">Inicia sesión</div>
+                    <div class="step-description">Una vez activada tu cuenta, podrás iniciar sesión con tus credenciales.</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title">Completa tu perfil</div>
+                    <div class="step-description">Personaliza tu perfil con información sobre ti y tus mascotas.</div>
+                </div>
+            </div>
+            
+            <div class="alt-url-section">
+                <p>Si el botón no funciona, copia y pega esta URL en tu navegador:</p>
+                <div class="url-display">{{ confirmation_link }}</div>
+            </div>
+            
+            <div class="expiration-alert">
+                <strong>Nota:</strong> Este enlace caducará en 24 horas por motivos de seguridad.
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit">
+                    <div class="benefit-icon">👥</div>
+                    <div class="benefit-text">Conecta con cuidadores y veterinarios profesionales</div>
+                </div>
+                
+                <div class="benefit">
+                    <div class="benefit-icon">📅</div>
+                    <div class="benefit-text">Gestiona citas y recordatorios</div>
+                </div>
+                
+                <div class="benefit">
+                    <div class="benefit-icon">⭐</div>
+                    <div class="benefit-text">Accede a consejos y recursos exclusivos</div>
+                </div>
+            </div>
+            
+            <div class="signature">
+                <p>Gracias por confiar en nosotros,</p>
+                <p class="team-name">El Equipo de ABCPet</p>
+            </div>
+        </div>
+        
+        <div class="email-footer">
+            <p>Al registrarte en ABCPet, das tu consentimiento y estás de acuerdo con nuestra política de privacidad para almacenar, gestionar y procesar tu información personal.</p>
+            <p>Para más información, consulta nuestra <a href="https://www.abcpet.org/privacy" class="policy-link">política de privacidad</a>.</p>
+            <p>&copy; ABCPet 2025. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+respaldo index.<i class="fa fa-html5
+
+
+{% extends 'abcpet_app/base.html' %}
+
+{% block title %}ABC Pet Project - Inicio{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    body {
+        background-color: white;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 0 15px;
+    }
+
+    .jumbotron {
+        background-color: #f8f9fa;
+        padding: 2rem 1rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .service-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 5px;
+    }
+
+    .service-btn:hover {
+        background-color: #0056b3;
+    }
+
+    #search-form {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    label {
+        margin-right: 10px;
+    }
+
+    #search-service {
+        padding: 5px;
+    }
+
+    #search-button {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .services-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .service {
+        text-align: center;
+        width: 45%;
+        margin-bottom: 1rem;
+        padding: 15px;
+        border: 1px solid #e9ecef;
+        border-radius: 5px;
+    }
+
+    .service i {
+        margin-bottom: 15px;
+        color: #007bff; /* Choose the color that fits your design */
+    }
+
+    @media (max-width: 768px) {
+        .service {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="jumbotron">
+        
+
+        <div id="service-buttons" class="service-buttons">
+            <button class="service-btn" onclick="selectService('servicio_hotel')">Hotel</button>
+            <button class="service-btn" onclick="selectService('servicio_en_casa_mascota')">En casa de la mascota</button>
+            <button class="service-btn" onclick="selectService('servicio_paseo_mascota')">Paseo mascota</button>
+            <button class="service-btn" onclick="selectService('servicio_guarderia')">Guardería</button>
+        </div>
+
+        <form id="search-form">
+            <label for="search-service">Buscar por servicio:</label>
+            <select id="search-service">
+                <option value="servicio_hotel">Hotel</option>
+                <option value="servicio_en_casa_mascota">En casa de la mascota</option>
+                <option value="servicio_paseo_mascota">Paseo mascota</option>
+                <option value="servicio_guarderia">Guardería</option>
+            </select>
+            <button type="button" id="search-button" onclick="searchHosts()">Buscar</button>
+        </form>
+    </div>
+
+    <div class="services-container">
+        <div class="service">
+            <i class="fas fa-home fa-3x"></i>
+            <h3>Busca cuidadores</h3>
+            <p>Revise las reseñas autentificadas de propietarios de mascotas como usted y seleccione un cuidador que se ajuste perfectamente a sus necesidades y las de sus animales.</p>
+        </div>
+        <div class="service">
+            <i class="fas fa-calendar-alt fa-3x"></i>
+            <h3>Reservar y pagar</h3>
+            <p>Eliminamos la necesidad de efectivo: facilitamos la reserva y garantizamos pagos seguros mediante nuestro sitio web o aplicación.</p>
+        </div>
+        <div class="service">
+            <i class="fas fa-heart fa-3x"></i>
+            <h3>Relájate</h3>
+            <p>Tus queridas mascotas están en manos de un cuidador amoroso. Además, tu reserva cuenta con el respaldo de ABCPet.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    var selectedService = ''; // Variable para almacenar el servicio seleccionado
+
+    function selectService(service) {
+        selectedService = service;
+    }
+
+    function searchHosts() {
+        var selectedService = document.getElementById("search-service").value;
+
+        // Verificar si se seleccionó un servicio
+        if (selectedService) {
+            console.log("Búsqueda con servicio:", selectedService);
+
+            // Redireccionar a la página de resultados de búsqueda con el servicio seleccionado como parámetro
+            window.location.href = '/resultados_busqueda/?service=' + selectedService;
+        } else {
+            console.error("Por favor, selecciona un servicio antes de hacer clic en Buscar.");
+        }
+    }
+</script>
+
+{% endblock %}

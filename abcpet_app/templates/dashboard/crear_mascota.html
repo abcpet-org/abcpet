@@ -1,0 +1,1434 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+<div class="pet-profile-creator">
+    <div class="container">
+        <div class="progress-indicator">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div class="steps">
+                <div class="step active" data-step="1">
+                    <div class="step-icon"><i class="fa fa-paw"></i></div>
+                    <span>Datos básicos</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-icon"><i class="fa fa-heart"></i></div>
+                    <span>Características</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-icon"><i class="fa fa-medkit"></i></div>
+                    <span>Salud</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-icon"><i class="fa fa-camera"></i></div>
+                    <span>Fotos</span>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'crear_mascota' %}" enctype="multipart/form-data" id="petProfileForm">
+            {% csrf_token %}
+            
+            <!-- Sección 1: Datos básicos -->
+            <section class="form-section" data-section="1">
+                <div class="section-header">
+                    <h1 class="section-title">¡Vamos a conocer a tu mascota!</h1>
+                    <p class="section-description">Cuéntanos los datos básicos para crear el perfil perfecto</p>
+                </div>
+
+                <div class="pet-type-selector">
+                    <h2>¿Qué tipo de mascota tienes?</h2>
+                    <div class="pet-type-options">
+                        <div class="pet-type-card" id="dogType" data-type="Perro">
+                            <div class="pet-icon">
+                                <i class="fa fa-dog"></i>
+                            </div>
+                            <span>Perro</span>
+                        </div>
+                        <div class="pet-type-card" id="catType" data-type="Gato">
+                            <div class="pet-icon">
+                                <i class="fa fa-cat"></i>
+                            </div>
+                            <span>Gato</span>
+                        </div>
+                    </div>
+                    <div class="error-message" id="tipo-mascota-error">Por favor selecciona un tipo de mascota</div>
+                    <input type="hidden" name="{{ form.tipo_mascota.name }}" id="{{ form.tipo_mascota.id_for_label }}" value="{{ form.tipo_mascota.value }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.nombre_mascota.id_for_label }}">
+                        <span class="field-name">Nombre de tu mascota*</span>
+                        <span class="field-tip">Usa el nombre con el que le llamas habitualmente</span>
+                    </label>
+                    {{ form.nombre_mascota }}
+                    <div class="error-message" id="nombre-mascota-error">Este campo es obligatorio</div>
+                </div>
+
+                <div class="form-field" id="razasInfo">
+                    <label for="{{ form.raza.id_for_label }}">
+                        <span class="field-name">Raza*</span>
+                        <span class="field-tip">Selecciona la raza o mezcla de razas de tu mascota</span>
+                    </label>
+                    <div class="select-wrapper">
+                        {{ form.raza }}
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <div class="error-message" id="raza-error">Por favor selecciona una raza</div>
+                </div>
+
+                <div class="form-field">
+                    <label>
+                        <span class="field-name">Sexo*</span>
+                    </label>
+                    <div class="toggle-buttons">
+                        <button type="button" class="toggle-btn" id="btnMacho" data-gender="Macho">
+                            <i class="fa fa-mars"></i> Macho
+                        </button>
+                        <button type="button" class="toggle-btn" id="btnHembra" data-gender="Hembra">
+                            <i class="fa fa-venus"></i> Hembra
+                        </button>
+                    </div>
+                    <div class="error-message" id="sexo-error">Por favor selecciona el sexo de tu mascota</div>
+                    <input type="hidden" name="{{ form.sexo.name }}" id="{{ form.sexo.id_for_label }}" value="{{ form.sexo.value }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="{{ form.fecha_adopcion_nacimiento.id_for_label }}">
+                            <span class="field-name">Fecha de nacimiento*</span>
+                            <span class="field-tip">Aproximada si no la conoces</span>
+                        </label>
+                        {{ form.fecha_adopcion_nacimiento }}
+                        <div class="error-message" id="fecha-error">Este campo es obligatorio</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="{{ form.edad.id_for_label }}">
+                            <span class="field-name">Edad (años)*</span>
+                        </label>
+                        {{ form.edad }}
+                        <div class="error-message" id="edad-error">Este campo es obligatorio</div>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.peso.id_for_label }}">
+                        <span class="field-name">Peso (kg)*</span>
+                    </label>
+                    {{ form.peso }}
+                    <div class="error-message" id="peso-error">Este campo es obligatorio</div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn-next" id="btnNextSection1">Continuar <i class="fa fa-arrow-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Sección 2: Características -->
+            <section class="form-section hidden" data-section="2">
+                <div class="section-header">
+                    <h1 class="section-title">Características y comportamiento</h1>
+                    <p class="section-description">Ayúdanos a entender la personalidad de tu mascota</p>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.nivel_energia.id_for_label }}">
+                        <span class="field-name">Nivel de energía*</span>
+                        <span class="field-tip">¿Cuán activa es tu mascota?</span>
+                    </label>
+                    <div class="energy-selector">
+                        <div class="energy-option" id="lowEnergy" data-energy="Bajo">
+                            <i class="fa fa-battery-quarter"></i>
+                            <span>Bajo</span>
+                            <p class="option-description">Prefiere descansar, paseos cortos</p>
+                        </div>
+                        <div class="energy-option" id="mediumEnergy" data-energy="Medio">
+                            <i class="fa fa-battery-half"></i>
+                            <span>Medio</span>
+                            <p class="option-description">Equilibrado, activo y también tranquilo</p>
+                        </div>
+                        <div class="energy-option" id="highEnergy" data-energy="Alto">
+                            <i class="fa fa-battery-full"></i>
+                            <span>Alto</span>
+                            <p class="option-description">Muy activo, necesita mucho ejercicio</p>
+                        </div>
+                    </div>
+                    <div class="error-message" id="energia-error">Por favor selecciona un nivel de energía</div>
+                    <input type="hidden" name="{{ form.nivel_energia.name }}" id="{{ form.nivel_energia.id_for_label }}" value="{{ form.nivel_energia.value }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.horario_alimentacion.id_for_label }}">
+                        <span class="field-name">Horario principal de alimentación*</span>
+                    </label>
+                    <div class="meal-time-selector">
+                        <div class="meal-option" data-meal="Manana">
+                            <i class="fa fa-sun"></i>
+                            <span>Mañana</span>
+                        </div>
+                        <div class="meal-option" data-meal="Tarde">
+                            <i class="fa fa-cloud-sun"></i>
+                            <span>Tarde</span>
+                        </div>
+                        <div class="meal-option" data-meal="Noche">
+                            <i class="fa fa-moon"></i>
+                            <span>Noche</span>
+                        </div>
+                    </div>
+                    <div class="error-message" id="horario-error">Por favor selecciona un horario</div>
+                    <input type="hidden" name="{{ form.horario_alimentacion.name }}" id="{{ form.horario_alimentacion.id_for_label }}" value="{{ form.horario_alimentacion.value }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.puede_dejar_solo.id_for_label }}">
+                        <span class="field-name">¿Cuánto tiempo puede estar solo?*</span>
+                        <span class="field-tip">Sin supervisión constante</span>
+                    </label>
+                    <div class="time-alone-selector">
+                        <div class="time-option" data-time="1_2_horas">
+                            <span>1-2 horas</span>
+                        </div>
+                        <div class="time-option" data-time="2_4_horas">
+                            <span>2-4 horas</span>
+                        </div>
+                        <div class="time-option" data-time="4_12_horas">
+                            <span>4-12 horas</span>
+                        </div>
+                        <div class="time-option" data-time="12_24_horas">
+                            <span>12-24 horas</span>
+                        </div>
+                    </div>
+                    <div class="error-message" id="tiempo-solo-error">Por favor selecciona una opción</div>
+                    <input type="hidden" name="{{ form.puede_dejar_solo.name }}" id="{{ form.puede_dejar_solo.id_for_label }}" value="{{ form.puede_dejar_solo.value }}" required>
+                </div>
+
+                <div class="friendly-section">
+                    <h3>Convivencia</h3>
+                    
+                    <div class="toggle-switch-field">
+                        <label for="{{ form.amigable_con_ninos.id_for_label }}">
+                            <span>¿Amigable con niños?</span>
+                        </label>
+                        <label class="switch">
+                            {{ form.amigable_con_ninos }}
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-switch-field">
+                        <label for="{{ form.amigable_con_perros.id_for_label }}">
+                            <span>¿Amigable con otras mascotas?</span>
+                        </label>
+                        <label class="switch">
+                            {{ form.amigable_con_perros }}
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.sobre_tu_mascota.id_for_label }}">
+                        <span class="field-name">Cuéntanos sobre tu mascota*</span>
+                        <span class="field-tip">Personalidad, gustos, manías...</span>
+                    </label>
+                    {{ form.sobre_tu_mascota }}
+                    <div class="error-message" id="sobre-mascota-error">Este campo es obligatorio</div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn-back" id="btnPrevSection2"><i class="fa fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn-next" id="btnNextSection2">Continuar <i class="fa fa-arrow-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Sección 3: Salud -->
+            <section class="form-section hidden" data-section="3">
+                <div class="section-header">
+                    <h1 class="section-title">Información de salud</h1>
+                    <p class="section-description">Datos importantes para el cuidado de tu mascota</p>
+                </div>
+
+                <div class="health-cards">
+                    <div class="health-card">
+                        <div class="health-card-header">
+                            <div class="health-card-icon">
+                                <i class="fa fa-microchip"></i>
+                            </div>
+                            <span class="health-card-title">Microchip</span>
+                            <label class="switch">
+                                {{ form.con_microchip }}
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <div class="health-card-header">
+                            <div class="health-card-icon">
+                                <i class="fa fa-cut"></i>
+                            </div>
+                            <span class="health-card-title">Esterilizado/Castrado</span>
+                            <label class="switch">
+                                {{ form.esterilizado_castrado }}
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="health-card expandable" id="medicationCard">
+                        <div class="health-card-header">
+                            <div class="health-card-icon">
+                                <i class="fa fa-pills"></i>
+                            </div>
+                            <span class="health-card-title">Medicación</span>
+                            <label class="switch">
+                                {{ form.consume_medicacion }}
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="health-card-content hidden" id="medicationDetails">
+                            <div class="form-field">
+                                <label for="{{ form.medicamentos.id_for_label }}">
+                                    <span class="field-name">Nombre de medicamentos</span>
+                                </label>
+                                {{ form.medicamentos }}
+                            </div>
+
+                            <div class="form-field">
+                                <label for="{{ form.detalles_medicacion.id_for_label }}">
+                                    <span class="field-name">Detalles de administración</span>
+                                    <span class="field-tip">Dosis, horarios, instrucciones especiales</span>
+                                </label>
+                                {{ form.detalles_medicacion }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.informacion_veterinaria.id_for_label }}">
+                        <span class="field-name">Información veterinaria*</span>
+                        <span class="field-tip">Nombre, teléfono, dirección de tu veterinario</span>
+                    </label>
+                    {{ form.informacion_veterinaria }}
+                    <div class="error-message" id="info-vet-error">Este campo es obligatorio</div>
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.proveedor_seguro_mascotas.id_for_label }}">
+                        <span class="field-name">Seguro para mascotas</span>
+                        <span class="field-tip">Si tiene, indica la compañía</span>
+                    </label>
+                    {{ form.proveedor_seguro_mascotas }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.algo_mas_ninera_deba_saber.id_for_label }}">
+                        <span class="field-name">Información adicional importante*</span>
+                        <span class="field-tip">Condiciones especiales, cuidados específicos...</span>
+                    </label>
+                    {{ form.algo_mas_ninera_deba_saber }}
+                    <div class="error-message" id="info-adicional-error">Este campo es obligatorio</div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn-back" id="btnPrevSection3"><i class="fa fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn-next" id="btnNextSection3">Continuar <i class="fa fa-arrow-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Sección 4: Fotos -->
+            <section class="form-section hidden" data-section="4">
+                <div class="section-header">
+                    <h1 class="section-title">Galería de fotos</h1>
+                    <p class="section-description">Muestra a tu mascota al mundo</p>
+                </div>
+
+                <div class="photo-upload-area">
+                    <div class="photo-upload-header">
+                        <div class="upload-icon">
+                            <i class="fa fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Carga hasta 6 imágenes de tu mascota</h3>
+                        <p class="upload-tip">La primera será la foto principal. Formatos: JPG, PNG.</p>
+                    </div>
+
+                    <div class="custom-file-upload">
+                        <label for="id_galeria_fotos" class="file-upload-label">
+                            <i class="fa fa-camera"></i> Seleccionar fotos
+                        </label>
+                        {{ form.galeria_fotos }}
+                    </div>
+                    
+                    <div class="photo-preview-area" id="photoPreviewArea">
+                        <!-- Las imágenes se mostrarán aquí -->
+                    </div>
+                    
+                    <div class="upload-counter">
+                        <span id="uploadCount">0</span>/6 fotos
+                    </div>
+
+                    {% for error in form.galeria_fotos.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn-back" id="btnPrevSection4"><i class="fa fa-arrow-left"></i> Anterior</button>
+                    <button type="submit" class="btn-submit">
+                        <span>Completar perfil</span>
+                        <i class="fa fa-check"></i>
+                    </button>
+                </div>
+            </section>
+        </form>
+    </div>
+</div>
+
+<style>
+/* === Variables y estilos base === */
+.pet-profile-creator {
+    --primary-color: #dc0f63; /* Color rojo ABCPET */
+    --primary-light: #ffeef5;
+    --primary-dark: #b00c4f;
+    --secondary-color: #333333;
+    --text-dark: #1F2124;
+    --text-medium: #62686E;
+    --text-light: #8E959E;
+    --success-color: #32D296;
+    --warning-color: #FFA500;
+    --danger-color: #F0506E;
+    --background-color: #ffffff;
+    --card-background: #F8FAFC;
+    --border-color: #E2E8F0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --border-radius-sm: 0.25rem;
+    --border-radius: 0.5rem;
+    --border-radius-lg: 1rem;
+    --transition: all 0.3s ease;
+    
+    font-family: Arial, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.pet-profile-creator .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* === Progreso === */
+.progress-indicator {
+    margin-bottom: 3rem;
+}
+
+.progress {
+    height: 8px;
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: var(--border-radius);
+    transition: width 0.5s ease;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+}
+
+.step {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    transition: var(--transition);
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    transition: var(--transition);
+}
+
+.step.active .step-icon {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px var(--primary-light);
+}
+
+.step.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.step.completed .step-icon {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.step.completed span {
+    color: var(--success-color);
+}
+
+/* === Headers de sección === */
+.section-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: var(--text-medium);
+}
+
+/* === Formularios y campos === */
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.field-name {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.field-tip {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.form-field input[type="text"],
+.form-field input[type="number"],
+.form-field input[type="date"],
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    background-color: white;
+}
+
+.form-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Selector desplegable personalizado */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    padding-right: 2.5rem;
+}
+
+.select-wrapper i {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+}
+
+/* Layout para campos adyacentes */
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-field {
+    flex: 1;
+}
+
+/* === Selector de tipo de mascota === */
+.pet-type-selector {
+    margin-bottom: 2rem;
+}
+
+.pet-type-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.pet-type-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background-color: white;
+}
+
+.pet-type-card:hover {
+    border-color: var(--primary-light);
+    background-color: var(--primary-light);
+}
+
+.pet-type-card.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.pet-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+/* === Toggle Buttons === */
+.toggle-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.toggle-btn:hover {
+    border-color: var(--primary-light);
+    background-color: var(--primary-light);
+}
+
+.toggle-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* === Selector de energía === */
+.energy-selector {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.energy-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    background-color: white;
+}
+
+.energy-option:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.energy-option.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.energy-option i {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.energy-option span {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.option-description {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* === Selector de horario de alimentación === */
+.meal-time-selector {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.meal-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background-color: white;
+}
+
+.meal-option:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.meal-option.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.meal-option i {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+/* === Selector de tiempo solo === */
+.time-alone-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.time-option {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+    cursor: pointer;
+    background-color: white;
+}
+
+.time-option:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.time-option.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+/* === Sección amigable === */
+.friendly-section {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.friendly-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+/* === Toggle Switch === */
+.toggle-switch-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s;
+    border-radius: 28px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* === Health Cards === */
+.health-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.health-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.health-card-header {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+}
+
+.health-card-icon {
+    width: 36px;
+    height: 36px;
+    background-color: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    color: var(--primary-color);
+}
+
+.health-card-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.health-card-content {
+    padding: 0 1.25rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* === Photo Upload === */
+.photo-upload-area {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    border: 2px dashed var(--border-color);
+}
+
+.photo-upload-header {
+    margin-bottom: 1.5rem;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.upload-tip {
+    color: var(--text-medium);
+    margin-top: 0.5rem;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.file-upload-label:hover {
+    background-color: var(--primary-dark);
+}
+
+.form-field input[type="file"] {
+    display: none;
+}
+
+.photo-preview-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.photo-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-counter {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+/* === Botones de navegación === */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.btn-back, 
+.btn-next, 
+.btn-submit {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-back {
+    background-color: transparent;
+    color: var(--text-medium);
+    border: 1px solid var(--border-color);
+}
+
+.btn-back:hover {
+    background-color: var(--card-background);
+    color: var(--text-dark);
+}
+
+.btn-next, 
+.btn-submit {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-next:hover, 
+.btn-submit:hover {
+    background-color: var(--primary-dark);
+}
+
+/* === Mensajes de error === */
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 768px) {
+    .pet-profile-creator .container {
+        padding: 0 0.5rem;
+        margin: 1rem auto;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+    }
+
+    .pet-type-options,
+    .energy-selector,
+    .meal-time-selector {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .health-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-alone-selector {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentSection = 1;
+    
+    // Inicializar la barra de progreso
+    updateProgressBar(currentSection);
+    
+    // Configurar los botones de tipo de mascota
+    document.querySelectorAll('.pet-type-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const tipo = this.getAttribute('data-type');
+            
+            // Quitar selección de todos los tipos
+            document.querySelectorAll('.pet-type-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            
+            // Añadir selección al elemento actual
+            this.classList.add('selected');
+            
+            // Actualizar input oculto
+            document.getElementById('{{ form.tipo_mascota.id_for_label }}').value = tipo;
+            
+            // Ocultar mensaje de error si estaba visible
+            document.getElementById('tipo-mascota-error').classList.remove('show');
+            
+            // Cargar razas correspondientes
+            fetch(`/obtener_razas/?tipo_mascota=${tipo}`)
+                .then(response => response.json())
+                .then(data => {
+                    const razaSelect = document.getElementById('{{ form.raza.id_for_label }}');
+                    razaSelect.innerHTML = '';
+                    data.razas.forEach(raza => {
+                        const option = document.createElement('option');
+                        option.value = raza;
+                        option.textContent = raza;
+                        razaSelect.appendChild(option);
+                    });
+                });
+        });
+    });
+    
+    // Configurar los botones de género
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const gender = this.getAttribute('data-gender');
+            
+            // Quitar clase activa de todos los botones
+            document.querySelectorAll('.toggle-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            
+            // Añadir clase activa al botón seleccionado
+            this.classList.add('active');
+            
+            // Actualizar input oculto
+            document.getElementById('{{ form.sexo.id_for_label }}').value = gender;
+            
+            // Ocultar error si existía
+            document.getElementById('sexo-error').classList.remove('show');
+        });
+    });
+    
+    // Configurar los botones de nivel de energía
+    document.querySelectorAll('.energy-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const energy = this.getAttribute('data-energy');
+            
+            // Quitar selección de todos los niveles
+            document.querySelectorAll('.energy-option').forEach(o => {
+                o.classList.remove('selected');
+            });
+            
+            // Añadir selección al nivel actual
+            this.classList.add('selected');
+            
+            // Actualizar input oculto
+            document.getElementById('{{ form.nivel_energia.id_for_label }}').value = energy;
+            
+            // Ocultar error si existía
+            document.getElementById('energia-error').classList.remove('show');
+        });
+    });
+    
+    // Configurar los botones de horario de alimentación
+    document.querySelectorAll('.meal-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const meal = this.getAttribute('data-meal');
+            
+            // Quitar selección de todos los tiempos
+            document.querySelectorAll('.meal-option').forEach(o => {
+                o.classList.remove('selected');
+            });
+            
+            // Añadir selección al tiempo actual
+            this.classList.add('selected');
+            
+            // Actualizar input oculto
+            document.getElementById('{{ form.horario_alimentacion.id_for_label }}').value = meal;
+            
+            // Ocultar error si existía
+            document.getElementById('horario-error').classList.remove('show');
+        });
+    });
+    
+    // Configurar los botones de tiempo solo
+    document.querySelectorAll('.time-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const time = this.getAttribute('data-time');
+            
+            // Quitar selección de todos los tiempos
+            document.querySelectorAll('.time-option').forEach(o => {
+                o.classList.remove('selected');
+            });
+            
+            // Añadir selección al tiempo actual
+            this.classList.add('selected');
+            
+            // Actualizar input oculto
+            document.getElementById('{{ form.puede_dejar_solo.id_for_label }}').value = time;
+            
+            // Ocultar error si existía
+            document.getElementById('tiempo-solo-error').classList.remove('show');
+        });
+    });
+    
+    // Manejar visualización del detalle de medicación
+    document.getElementById('{{ form.consume_medicacion.id_for_label }}').addEventListener('change', function() {
+        const medicationDetails = document.getElementById('medicationDetails');
+        if (this.checked) {
+            medicationDetails.classList.remove('hidden');
+        } else {
+            medicationDetails.classList.add('hidden');
+            document.getElementById('{{ form.medicamentos.id_for_label }}').value = '';
+            document.getElementById('{{ form.detalles_medicacion.id_for_label }}').value = '';
+        }
+    });
+    
+    // Configurar la visualización previa de imágenes
+    document.getElementById('id_galeria_fotos').addEventListener('change', function(e) {
+        handleFileUpload(this.files);
+    });
+    
+    // Botón para avanzar a la siguiente sección - Sección 1
+    document.getElementById('btnNextSection1').addEventListener('click', function() {
+        if (validateSection(1)) {
+            nextSection(1);
+        }
+    });
+    
+    // Botón para avanzar a la siguiente sección - Sección 2
+    document.getElementById('btnNextSection2').addEventListener('click', function() {
+        if (validateSection(2)) {
+            nextSection(2);
+        }
+    });
+    
+    // Botón para avanzar a la siguiente sección - Sección 3
+    document.getElementById('btnNextSection3').addEventListener('click', function() {
+        if (validateSection(3)) {
+            nextSection(3);
+        }
+    });
+    
+    // Botón para volver a la sección anterior - Sección 2
+    document.getElementById('btnPrevSection2').addEventListener('click', function() {
+        prevSection(2);
+    });
+    
+    // Botón para volver a la sección anterior - Sección 3
+    document.getElementById('btnPrevSection3').addEventListener('click', function() {
+        prevSection(3);
+    });
+    
+    // Botón para volver a la sección anterior - Sección 4
+    document.getElementById('btnPrevSection4').addEventListener('click', function() {
+        prevSection(4);
+    });
+    
+    // Función para validar campos obligatorios de una sección
+    function validateSection(sectionNumber) {
+        const section = document.querySelector(`section[data-section="${sectionNumber}"]`);
+        let isValid = true;
+        
+        // Restablecer errores
+        section.querySelectorAll('.error-message').forEach(error => {
+            error.classList.remove('show');
+        });
+        
+        // Validación específica por sección
+        switch(sectionNumber) {
+            case 1:
+                // Validar tipo de mascota
+                if (!document.getElementById('{{ form.tipo_mascota.id_for_label }}').value) {
+                    document.getElementById('tipo-mascota-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar nombre mascota
+                if (!document.getElementById('{{ form.nombre_mascota.id_for_label }}').value.trim()) {
+                    document.getElementById('nombre-mascota-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar raza
+                if (!document.getElementById('{{ form.raza.id_for_label }}').value || 
+                    document.getElementById('{{ form.raza.id_for_label }}').value === 'Seleciona la raza de tu Perro' || 
+                    document.getElementById('{{ form.raza.id_for_label }}').value === 'Seleciona la raza de tu Gato') {
+                    document.getElementById('raza-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar sexo
+                if (!document.getElementById('{{ form.sexo.id_for_label }}').value) {
+                    document.getElementById('sexo-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar fecha
+                if (!document.getElementById('{{ form.fecha_adopcion_nacimiento.id_for_label }}').value) {
+                    document.getElementById('fecha-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar edad
+                if (!document.getElementById('{{ form.edad.id_for_label }}').value) {
+                    document.getElementById('edad-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar peso
+                if (!document.getElementById('{{ form.peso.id_for_label }}').value) {
+                    document.getElementById('peso-error').classList.add('show');
+                    isValid = false;
+                }
+                break;
+                
+            case 2:
+                // Validar nivel de energía
+                if (!document.getElementById('{{ form.nivel_energia.id_for_label }}').value) {
+                    document.getElementById('energia-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar horario de alimentación
+                if (!document.getElementById('{{ form.horario_alimentacion.id_for_label }}').value) {
+                    document.getElementById('horario-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar tiempo solo
+                if (!document.getElementById('{{ form.puede_dejar_solo.id_for_label }}').value) {
+                    document.getElementById('tiempo-solo-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar descripción mascota
+                if (!document.getElementById('{{ form.sobre_tu_mascota.id_for_label }}').value.trim()) {
+                    document.getElementById('sobre-mascota-error').classList.add('show');
+                    isValid = false;
+                }
+                break;
+                
+            case 3:
+                // Validar info veterinaria
+                if (!document.getElementById('{{ form.informacion_veterinaria.id_for_label }}').value.trim()) {
+                    document.getElementById('info-vet-error').classList.add('show');
+                    isValid = false;
+                }
+                
+                // Validar info adicional
+                if (!document.getElementById('{{ form.algo_mas_ninera_deba_saber.id_for_label }}').value.trim()) {
+                    document.getElementById('info-adicional-error').classList.add('show');
+                    isValid = false;
+                }
+                break;
+        }
+        
+        return isValid;
+    }
+    
+    // Función para avanzar a la siguiente sección
+    function nextSection(currentSectionNum) {
+        const nextSectionNum = currentSectionNum + 1;
+        
+        // Ocultar sección actual y mostrar siguiente
+        document.querySelector(`section[data-section="${currentSectionNum}"]`).classList.add('hidden');
+        document.querySelector(`section[data-section="${nextSectionNum}"]`).classList.remove('hidden');
+        
+        // Actualizar la variable global
+        currentSection = nextSectionNum;
+        
+        // Actualizar barra de progreso
+        updateProgressBar(nextSectionNum);
+        
+        // Scroll al inicio de la sección
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    
+    // Función para volver a la sección anterior
+    function prevSection(currentSectionNum) {
+        const prevSectionNum = currentSectionNum - 1;
+        
+        // Ocultar sección actual y mostrar anterior
+        document.querySelector(`section[data-section="${currentSectionNum}"]`).classList.add('hidden');
+        document.querySelector(`section[data-section="${prevSectionNum}"]`).classList.remove('hidden');
+        
+        // Actualizar la variable global
+        currentSection = prevSectionNum;
+        
+        // Actualizar barra de progreso
+        updateProgressBar(prevSectionNum);
+        
+        // Scroll al inicio de la sección
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    
+    // Función para actualizar la barra de progreso
+    function updateProgressBar(sectionNum) {
+        const totalSections = 4;
+        const progressPercent = ((sectionNum - 1) / (totalSections - 1)) * 100;
+        document.querySelector('.progress-bar').style.width = `${progressPercent}%`;
+        
+        // Actualizar los indicadores de paso
+        document.querySelectorAll('.step').forEach(step => {
+            const stepNum = parseInt(step.dataset.step);
+            step.classList.remove('active', 'completed');
+            
+            if (stepNum < sectionNum) {
+                step.classList.add('completed');
+            } else if (stepNum === sectionNum) {
+                step.classList.add('active');
+            }
+        });
+    }
+    
+    // Función para manejar la carga de archivos
+    function handleFileUpload(files) {
+        const previewArea = document.getElementById('photoPreviewArea');
+        const uploadCount = document.getElementById('uploadCount');
+        const maxFiles = 6;
+        
+        // Verificar si no excedemos el límite
+        const totalFiles = parseInt(uploadCount.textContent) + files.length;
+        if (totalFiles > maxFiles) {
+            alert(`Solo puedes subir un máximo de ${maxFiles} imágenes. Por favor, selecciona menos archivos.`);
+            return;
+        }
+        
+        // Procesar cada archivo
+        Array.from(files).forEach(file => {
+            // Validar que sea una imagen
+            if (!file.type.match('image.*')) {
+                alert('Por favor, sube solo archivos de imagen (jpg, png, etc.)');
+                return;
+            }
+            
+            // Crear elemento de vista previa
+            const preview = document.createElement('div');
+            preview.className = 'photo-preview';
+            
+            const img = document.createElement('img');
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+            preview.appendChild(img);
+            previewArea.appendChild(preview);
+        });
+        
+        // Actualizar contador
+        updatePhotoCount();
+    }
+    
+    // Función para actualizar contador de fotos
+    function updatePhotoCount() {
+        const count = document.querySelectorAll('.photo-preview').length;
+        document.getElementById('uploadCount').textContent = count;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Pet Project - Registro de Host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        /* Estilos CSS aquí */
+        body, html, p, h1, h2, h3, h4, h5, h6 {
+            font-family: 'Afacad', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            font-size: 15px;
+            margin: 30px; 
+        }
+        input::placeholder {
+            font-family: 'Afacad', sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        /* Resto de tu CSS... */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+        }
+        .flex-container {
+            display: flex;
+            height: 100%;
+        }
+        .half {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 50px; /* Ajusta el margen superior del texto adicional */
+        }
+        .form-side {
+            text-align: center;
+            margin-top: 50; 
+            
+            overflow: hidden;
+        }
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+            width: 80%;
+            margin-top: 10px;
+        }
+        button {
+            background-color: white;
+            color: black;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid black;
+            font-size: 16px;
+            cursor: pointer;
+            width: 330px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #000000;
+            color: white;
+        }
+        button.button-active {
+            background-color: #000000;
+            color: white;
+            border: 1px solid #000000;
+            font-weight: bold;
+        }
+
+        .logo {
+            width: 400px; /* Ajusta el tamaño de la imagen según sea necesario */
+            margin-bottom: 0; /* Eliminar el espacio entre el logo y el título */
+            margin-top: 10px; /* Ajustar el espacio entre el logo y la parte superior */
+        }
+        .navbar {
+            background-color: #e30a13;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .navbar-title {
+            color: white;
+            margin: 0;
+            font-size: 28px; /* Aumenta el tamaño del título */
+        }
+        .additional-text {
+            margin-bottom: 40px; /* Ajusta el margen inferior del texto adicional */
+            margin: 20px; 
+        }
+        /* Agregamos el margen solo al botón de la guardería */
+        button#daycareBtn {
+            margin-bottom: 50px;
+        }
+
+        .continuar-button {
+            background-color: #e30a13;
+            color: white;
+            border: none; /* Elimina el borde */
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 330px;
+            margin-top: 10px;
+        }
+        
+        .continuar-button:hover {
+            background-color: #b4080d;
+        }
+
+        /* Oculta el checkbox */
+        input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+
+
+        
+    </style>
+</head>
+<body>
+    <div class="navbar" style="display: flex; justify-content: flex-end; color: white;">
+        {% if user.is_authenticated %}
+            <div style="margin-right: 10px;">
+                <small><strong>{{ user.first_name }} {{ user.last_name }}</strong>  |</small>
+            </div>
+            <div id="rutContainer" style="margin-right: 10px; font-size: small;">
+                <small>{{ profile.rut }}</small>
+            </div>
+        {% else %}
+            <h1 class="navbar-title">Usuario no autenticado</h1>
+        {% endif %}
+    </div>
+    
+    <input type="hidden" name="step" value="1">
+    <div class="half form-side">
+        <img class="logo" src="{% static 'abcpet_app/images/super-amigo.png' %}" alt="Logo Super Amigo ABCPet">
+        <h1 style="font-size: 40px; margin-bottom: 5px;">Crea tu cuenta <span style="font-weight: 700;">Super Amigo ABCPet</span></h1> <!-- Aumenta el tamaño del título -->
+        <div class="additional-text">
+            Hola {{ user.first_name }}, para crear tu cuenta selecciona los servicios que deseas activar en tu cuenta ABCPet Super Amigo
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Campo oculto para el checkbox -->
+            {{ form.servicio_hotel }}
+            <!-- Botón de alternar -->
+            <button type="button" id="hotelBtn" onclick="toggleService('id_servicio_hotel')">Hotel para mascotas</button>
+            
+            {{ form.servicio_guarderia }}
+            <button type="button" id="guarderiaBtn" onclick="toggleService('id_servicio_guarderia')">Servicio de Guardería</button>
+            
+            <!-- Servicio de Paseo de la Mascota -->
+            {{ form.servicio_paseo_mascota }}
+            <button type="button" id="paseoBtn" onclick="toggleService('id_servicio_paseo_mascota')">Paseo para mascotas</button>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-button-container">
+                    <button type="submit">Continuar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+
+        var rutContainer = document.getElementById("rutContainer");
+        var rut = rutContainer.innerText;
+
+        // Ocultamos los últimos cuatro dígitos
+        var rutHidden = rut.substring(0, rut.length - 4) + "****";
+
+        // Actualizamos el contenido del contenedor con el RUT oculto
+        rutContainer.innerText = rutHidden;
+
+        // Función para alternar el estado de los servicios
+        function toggleService(checkboxId) {
+            var checkbox = document.getElementById(checkboxId);
+            var button = event.target; // El botón que activó la función
+            checkbox.checked = !checkbox.checked;
+            button.classList.toggle("button-active", checkbox.checked);
+        }
+
+        function disableAllCheckboxes() {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+        }
+    
+        // Llama a la función para desactivar todos los checkboxes cuando el DOM haya cargado completamente
+        document.addEventListener("DOMContentLoaded", function() {
+            disableAllCheckboxes();
+        });
+
+    </script>
+</body>
+</html>

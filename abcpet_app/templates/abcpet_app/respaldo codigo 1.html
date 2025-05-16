@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}  
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Mascota</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #fff;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .formulario-mascota .campo-tarifa {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            font-size: 16px;
+        }
+
+        .formulario-mascota .campo-tarifa::placeholder {
+            color: #888;
+        }
+
+        .formulario-mascota label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .boton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .boton:hover {
+            background-color: #0056b3;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .info-icon {
+            color: #007bff;
+            margin-right: 5px;
+        }
+
+        .tarifa-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .mensaje-informativo {
+            background-color: #f2f2f2; /* Gris claro */
+            border-radius: 10px; /* Bordes redondeados */
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .boton-guardar {
+            padding: 10px 20px;
+            background-color: #ff0000; /* Rojo */
+            color: white;
+            border: none;
+            border-radius: 20px; /* Bordes completamente redondeados */
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .boton-guardar:hover {
+            background-color: #cc0000; /* Rojo oscuro en hover */
+        }
+
+        /* Estilo para el texto "/ por noche" */
+        .tarifa-por-noche {
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
+        .ganancia-servicio {
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+            color: #888; /* Color gris */
+            margin-top: 5px; /* Menos espacio arriba para estar más cerca del campo de tarifa */
+        }
+
+
+        .tarifa-por-noche {
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+            color: #888; /* Color gris */
+            margin-left: 5px; /* Espacio a la izquierda para separar del campo de entrada */
+        }
+
+        hr {
+            border: 0,5 px solid #ccc; /* Define el grosor y el color de la línea */
+            margin: 25px 0; /* Añade margen arriba y abajo de la línea */
+        }
+    </style>
+</head>
+<body>
+    <div class="container crear-mascota-container">
+        <h2>Configuraciones de alojamiento</h2>
+    
+        <!-- Mensaje informativo con nuevo estilo -->
+        <div class="mensaje-informativo">
+            <span class="info-icon">i</span>
+            Hemos sugerido algunas configuraciones predeterminadas basadas en lo que funciona bien para los nuevos asientos y caminantes. Puedes editar ahora, o en cualquier momento en el futuro.
+        </div>
+    
+        <form method="post" action="{% url 'register_host' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group formulario-mascota">
+                <input type="hidden" id="tarifa_hospedaje_sin_formato" name="tarifa_hospedaje">
+
+                <label for="tarifa_hospedaje_visual">Tarifa base por noche:</label>
+
+                <input type="text" class="campo-tarifa" id="tarifa_hospedaje_visual" placeholder="$">
+                <span class="tarifa-por-noche">/ por noche</span><!-- Texto añadido -->
+                <div id="advertencia-tarifa" class="mensaje-informativo" style="display: none;">
+                    Nuestro algoritmo indica que una tarifa mayor a $<span id="tarifa-ingresada"></span> no es permitida para un funcionamiento correcto de ABCPet.
+                </div>
+                
+            </div>
+    
+            <div class="ganancia-servicio">
+                Lo que ganarás por dia segun este servicio: <span id="monto-recibir"</span>
+            </div>
+
+            <hr> 
+
+
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_cuidado_casa">Tarifa por cuidado en casa:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_cuidado_casa" name="tarifa_cuidado_casa" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_cuidado_casa"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_guarderia">Tarifa por guardería:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_guarderia" name="tarifa_guarderia" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_guarderia"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_paseo_perros">Tarifa por paseo de perros:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_paseo_perros" name="tarifa_paseo_perros" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_paseo_perros"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_vacaciones">Tarifa por vacaciones:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_vacaciones" name="tarifa_vacaciones" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_vacaciones"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_adicional_perros">Tarifa adicional para perros:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_adicional_perros" name="tarifa_adicional_perros" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_adicional_perros"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_adicional_gatos">Tarifa adicional para gatos:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_adicional_gatos" name="tarifa_adicional_gatos" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_adicional_gatos"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_estancia_prolongada">Tarifa por estancia prolongada:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_estancia_prolongada" name="tarifa_estancia_prolongada" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_estancia_prolongada"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_aseo">Tarifa por aseo:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_aseo" name="tarifa_aseo" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_aseo"></span> CLP</div>
+            </div>
+
+            <hr> 
+            
+            <div class="form-group formulario-mascota">
+                <label for="tarifa_recogida_entrega">Tarifa por recogida y entrega:</label>
+                <input type="text" class="campo-tarifa" id="tarifa_recogida_entrega" name="tarifa_recogida_entrega" placeholder="$">
+                <div class="ganancia-servicio">Lo que ganarás por dia segun este servicio: <span id="ganancia_recogida_entrega"></span> CLP</div>
+            </div>
+
+
+
+
+
+
+
+
+            <hr> 
+
+
+
+            {{ form.dias_disponibles.label_tag }} {{ form.dias_disponibles }} {{ form.dias_disponibles.errors }}
+            {{ form.tipos_mascotas.label_tag }} {{ form.tipos_mascotas }} {{ form.tipos_mascotas.errors }}
+            {{ form.tipo_vivienda.label_tag }} {{ form.tipo_vivienda }} {{ form.tipo_vivienda.errors }}
+            {{ form.tipo_jardin.label_tag }} {{ form.tipo_jardin }} {{ form.tipo_jardin.errors }}
+            {{ form.politica_cancelacion.label_tag }} {{ form.politica_cancelacion }} {{ form.politica_cancelacion.errors }}
+
+
+    
+            <!-- Botón de guardar cambios con nuevo estilo -->
+            <button type="submit" class="boton-guardar">Guardar cambios</button>
+        </form>
+    </div>
+
+    
+    
+    <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var $tarifaInputVisual = $('#tarifa_hospedaje_visual');
+            var $tarifaInput = $('#tarifa_hospedaje_sin_formato');
+            var $advertenciaTarifa = $('#advertencia-tarifa');
+            var $tarifaIngresadaSpan = $('#tarifa-ingresada');
+    
+            function actualizarMontoRecibir(value) {
+                var montoRecibir = value - (value * 0.3);
+                $('#monto-recibir').text(montoRecibir.toLocaleString('es-CL') + ' CLP');
+            }
+    
+            $tarifaInputVisual.on('input', function () {
+                var value = $(this).val().replace(/\./g, '');
+                if (!isNaN(value)) {
+                    value = parseInt(value, 10);
+                    if (value > 35000) {
+                        value = 35000;
+                        $tarifaIngresadaSpan.text(value.toLocaleString('es-CL'));
+                        $advertenciaTarifa.show();
+                    } else {
+                        $advertenciaTarifa.hide();
+                    }
+                    $(this).val(value.toLocaleString('es-CL'));
+                    $tarifaInput.val(value);  // Actualiza el campo oculto con el valor sin formato
+                    actualizarMontoRecibir(value);
+                }
+            });
+        });
+
+
+
+        function actualizarGananciaPorServicio() {
+            $('.campo-tarifa').each(function() {
+                var tarifa = parseInt($(this).val().replace(/\./g, ''), 10);
+                if (!isNaN(tarifa)) {
+                    var ganancia = tarifa - (tarifa * 0.3); // Calcula la ganancia después de la comisión
+                    var idGanancia = $(this).attr('id').replace('tarifa_', 'ganancia_');
+                    $('#' + idGanancia).text(ganancia.toLocaleString('es-CL'));
+                }
+            });
+        }
+        
+        $(document).ready(function () {
+            $('.campo-tarifa').on('input', function() {
+                // ... tu código existente ...
+                actualizarGananciaPorServicio(); // Llama a esta función para actualizar la ganancia
+            });
+        });
+    </script>
+    
+    
+        
+        
+</body>
+</html>

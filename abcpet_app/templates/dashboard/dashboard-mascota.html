@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Moderno</title>
+    
+    <!-- Enlace a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+
+</head>
+<body>
+    
+    <div class="dashboard">
+        <!-- Barra lateral de navegación -->
+        <nav class="sidebar">
+            <div class="logo">
+                <img class="logo-img" src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo">
+            </div>            
+            <ul class="nav-links">
+                <li class="nav-link active">
+                    <i class="fas fa-home fa-sm"></i>
+                    <span>Inicio</span>
+                </li>
+                <li class="nav-link">
+                    <i class="fas fa-chart-bar fa-sm"></i>
+                    <span>Detalle Mascota</span>
+                </li>
+                <li class="nav-link">
+                    <i class="fas fa-folder fa-sm"></i>
+                    <span>Archivos</span>
+                </li>
+                <li class="nav-link">
+                    <i class="fas fa-users fa-sm"></i>
+                    <span>Usuarios</span>
+                </li>
+                <!-- Agrega más enlaces de navegación según sea necesario -->
+            </ul>
+        </nav>
+
+        <!-- Contenido principal -->
+        <main class="content">
+            <header class="header">
+                <button id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Dashboard Moderno</h1>
+            </header>
+            <div class="container">
+                <!-- Contenido dinámico -->
+                <div class="main-content">
+                    <h2>Bienvenido al Dashboard</h2>
+                    <p>Selecciona una opción del menú lateral para empezar.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Enlace a FontAwesome para los iconos -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <!-- JavaScript para abrir/cerrar el menú lateral -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('minimized'); // Agrega o quita la clase "minimized" de la barra lateral
+        
+
+            // Muestra u oculta el texto de los elementos de navegación
+            navLinks.forEach((link) => {
+                const span = link.querySelector('span');
+                if (sidebar.classList.contains('minimized')) {
+                    span.style.display = 'none'; // Oculta el texto
+                } else {
+                    span.style.display = 'inline-block'; // Muestra el texto
+                }
+            });
+        });
+
+        
+
+        
+    </script>
+</body>
+</html>

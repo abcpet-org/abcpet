@@ -1,0 +1,285 @@
+{% extends 'abcpet_app/base.html' %}
+{% load static %}
+{% block title %}Detalle del Anfitrión{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+
+<style>
+    body, p, h1, h2, h3, h4, h5, h6 {
+        font-family: 'Afacad', sans-serif;
+    }
+
+    .floating-footer-container {
+        position: fixed;
+        bottom: -100px;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        border-top: 1px solid #ccc;
+        z-index: 1000;
+        transition: bottom 0.3s ease;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-details {
+        margin-left: 10px;
+    }
+
+    .user-details h5 {
+        margin-bottom: 5px;
+    }
+
+    .text-yellow {
+        color: #f7b815;
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .star-icon {
+        width: 20px;
+        margin-right: 5px;
+    }
+
+    .host-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .star-container {
+        background-color: #f7b815;
+        border-radius: 15px;
+        padding: 5px 10px;
+    }
+
+    .abcpet-amigo {
+        font-size: 12px; /* Puedes ajustar el tamaño según tus preferencias */
+    }
+
+
+
+
+    .host-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .icono-verificacion {
+        max-width: 20px;
+        max-height: 20px;
+        margin-left: 5px;
+    }
+    
+    .verificado-text {
+        color: green;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+    
+    .no-verificado-text {
+        color: red;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+    
+    .pendiente-text {
+        margin-left: 5px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mt-5">
+                <div class="card-body">
+                    {% if anfitrion %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if anfitrion.foto_perfil %}
+                                    <img src="{{ anfitrion.foto_perfil.url }}" alt="Foto Perfil" class="img-fluid rounded-circle mb-3">
+                                {% else %}
+                                    <img src="{% static 'abcpet_app/images/perfilindexnot.png' %}" alt="Imagen Predeterminada" class="img-fluid rounded-circle mb-3">
+                                {% endif %}
+                                <h4 class="text-center">{{ anfitrion.user.first_name }} {{ anfitrion.user.last_name|slice:":1" }}</h4>
+                                <p class="text-center">ABCPet Amigo</p>
+                                <p class="text-center text-yellow">Comuna: {{ anfitrion.comuna_host }}, Región Metropolitana</p>
+                                <div class="text-center">
+                                    <img src="{% static 'abcpet_app/images/star.png' %}" alt="Calificación" class="star-icon"> 5.0
+                                </div>
+                                <button class="btn btn-danger btn-block mt-3">Contactar a {{ anfitrion.user.first_name }} {{ anfitrion.user.last_name }}</button>
+                            </div>
+                            <div class="col-md-8">
+                                <h3>Detalles del Anfitrión</h3>
+                                <ul>
+                                    <li><strong>Servicios Disponibles:</strong>
+                                        <ul>
+                                            {% if anfitrion.servicio_hotel %}
+                                                <li>Hotel</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_en_casa_mascota %}
+                                                <li>En Casa de la Mascota</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_paseo_mascota %}
+                                                <li>Paseo de Mascotas</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_guarderia %}
+                                                <li>Guardería</li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                    <li><strong>Tarifas:</strong>
+                                        <ul>
+                                            {% if anfitrion.tarifa_hotel %}
+                                                <li>Hotel: ${{ anfitrion.tarifa_hotel }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_cuidado_casa %}
+                                                <li>Cuidado en Casa: ${{ anfitrion.tarifa_cuidado_casa }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_paseo_perros %}
+                                                <li>Paseo de Perros: ${{ anfitrion.tarifa_paseo_perros }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_guarderia %}
+                                                <li>Guardería: ${{ anfitrion.tarifa_guarderia }}</li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                    <!-- Agrega más detalles del anfitrión si es necesario -->
+                                </ul>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No se encontró el anfitrión.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mt-5">
+                <div class="card-body">
+                    {% if anfitrion %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if anfitrion.foto_perfil %}
+                                    <img src="{{ anfitrion.foto_perfil.url }}" alt="Foto Perfil" class="img-fluid rounded-circle mb-3">
+                                {% else %}
+                                    <img src="{% static 'abcpet_app/images/perfilindexnot.png' %}" alt="Imagen Predeterminada" class="img-fluid rounded-circle mb-3">
+                                {% endif %}
+                                <h4 class="text-center">{{ anfitrion.user.first_name }} {{ anfitrion.user.last_name|slice:":1" }}</h4>
+                                <p class="text-center">ABCPet Amigo</p>
+                                <p class="text-center text-yellow">Comuna: {{ anfitrion.comuna_host }}, Región Metropolitana</p>
+                                <div class="text-center">
+                                    <img src="{% static 'abcpet_app/images/star.png' %}" alt="Calificación" class="star-icon"> 5.0
+                                </div>
+                                <button class="btn btn-danger btn-block mt-3">Contactar a {{ anfitrion.user.first_name }} {{ anfitrion.user.last_name }}</button>
+                            </div>
+                            <div class="col-md-8">
+                                <h3>Detalles del Anfitrión</h3>
+                                <ul>
+                                    <li><strong>Servicios Disponibles:</strong>
+                                        <ul>
+                                            {% if anfitrion.servicio_hotel %}
+                                                <li>Hotel</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_en_casa_mascota %}
+                                                <li>En Casa de la Mascota</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_paseo_mascota %}
+                                                <li>Paseo de Mascotas</li>
+                                            {% endif %}
+                                            {% if anfitrion.servicio_guarderia %}
+                                                <li>Guardería</li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                    <li><strong>Tarifas:</strong>
+                                        <ul>
+                                            {% if anfitrion.tarifa_hotel %}
+                                                <li>Hotel: ${{ anfitrion.tarifa_hotel }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_cuidado_casa %}
+                                                <li>Cuidado en Casa: ${{ anfitrion.tarifa_cuidado_casa }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_paseo_perros %}
+                                                <li>Paseo de Perros: ${{ anfitrion.tarifa_paseo_perros }}</li>
+                                            {% endif %}
+                                            {% if anfitrion.tarifa_guarderia %}
+                                                <li>Guardería: ${{ anfitrion.tarifa_guarderia }}</li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                    <!-- Agrega más detalles del anfitrión si es necesario -->
+                                </ul>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No se encontró el anfitrión.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="floating-footer-container" id="floating-footer">
+    <div class="footer-content">
+        <div class="user-info" style="margin-left: 20%;">
+            <img src="{{ anfitrion.foto_perfil.url }}" alt="Foto Perfil" class="host-image">
+            <div class="user-details" style="display: flex; align-items: center; width: 80%;">
+                <div>
+                    <h5 style="white-space: nowrap;">{{ anfitrion.user.first_name }} {{ anfitrion.user.last_name }}</h5>
+                    <div style="display: flex; align-items: center;">
+                        <!-- Aquí agrega las insignias de verificación -->
+                        {% if anfitrion.estado_verificacion == 'si' %}
+                            <img src="{% static 'abcpet_app/images/icon_verificado.png' %}" alt="Verificado" class="icono-verificacion">
+                            <span class="verificado-text">Verificado</span>
+                        {% elif anfitrion.estado_verificacion == 'no' %}
+                            <img src="{% static 'abcpet_app/images/icon_blue.png' %}" alt="No Verificado" class="icono-verificacion">
+                            <span class="no-verificado-text">No Verificado</span>
+                        {% elif anfitrion.estado_verificacion == 'pendiente' %}
+                            <span class="pendiente-text">Perfil Pendiente de Verificación</span>
+                        {% endif %}
+                    </div>
+                    <div>{{ anfitrion.comuna_host }}, Región Metropolitana.</div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-danger btn-sm">Contactar a {{ anfitrion.user.first_name }} {{ anfitrion.user.last_name }}</button>
+    </div>
+</div>
+
+<script>
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("floating-footer").style.bottom = "0";
+        } else {
+            document.getElementById("floating-footer").style.bottom = "-100px";
+        }
+    }
+</script>
+{% endblock %}

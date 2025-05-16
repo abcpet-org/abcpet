@@ -1,0 +1,126 @@
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-mQ2TBUe9zCRaPdnXqLq8Xq6UZ99bdD3cUTTD70JU5xeg9HdL5fnfiidDEyRAt0uKSoi1z4eSj5neGwQDUKVeRQ==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+
+<style>
+    body {
+        background-color: #f0f0f0;
+        font-family: 'Afacad', sans-serif;
+    }
+
+    .container {
+        background-color: #ffffff;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+        background-color: #ffffff;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+    }
+
+    .dashboard-info h3 {
+        color: #3498db;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .user-info {
+        font-size: 16px;
+        color: #555555;
+        margin-bottom: 20px;
+    }
+
+    .edit-btn {
+        color: #3498db;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .editField {
+        border: 1px solid #d0f5d2;
+        background-color: #f2f2f2;
+        transition: border-color 0.3s, background-color 0.3s;
+        width: 100%; /* Asegura que el campo de edición ocupe todo el ancho */
+        padding: 8px; /* Espaciado interno para el campo de edición */
+        box-sizing: border-box; /* Incluye el relleno en el ancho total */
+        margin-bottom: 10px; /* Espaciado inferior entre campos */
+    }
+
+    .editField:focus {
+        outline: none;
+        border-color: #d9ffda;
+    }
+
+    .saveEdit {
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .saveEdit:hover {
+        background-color: #1f69a5;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <div class="dashboard-info">
+            <h3>Dashboard / <strong>Información Personal</strong></h3>
+            <p class="user-info">
+                {% if user.is_authenticated %}
+                    <span>{{ user.first_name }} {{ user.last_name }} - {{ user.email }}</span>
+                    <span><a href="{% url 'dashboard' %}" class="edit-btn">Volver al Dashboard</a></span>
+                {% else %}
+                    Usuario no autenticado.
+                {% endif %}
+            </p>
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="separation-line"></div>
+
+            <p class="mb-2">
+                <strong>Nombre Legal</strong>
+            </p>
+            <p class="mb-2 address-info first_nameValue" id="firstNameParagraph">
+                <span id="firstNameValue">
+                    {% if user.first_name %}
+                        {{ user.first_name }}
+                    {% else %}
+                        No proporcionado
+                    {% endif %}
+                </span>
+                <button class="btn btn-link edit-btn" data-field="first_name">Editar</button>
+            </p>
+            <form class="editForm" data-field="first_name" style="display: none;">
+                {% csrf_token %}
+                <label for="editFieldFirstName" class="edit-label">Ingresa tus nombres actualizados:</label>
+                <input type="text" id="editFieldFirstName" class="editField">
+                <button type="button" class="btn btn-link btn-sm saveEdit" data-field="first_name">Guardar</button>
+            </form>
+
+            <!-- Agrega más campos de seguridad según sea necesario -->
+
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    // Tu script JavaScript existente...
+</script>
+
+{% endblock %}

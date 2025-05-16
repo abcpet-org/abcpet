@@ -1,0 +1,7 @@
+<div id="pet-shipment-config-status">
+    {% if not is_pet_shipment_config_complete %}
+        <a href="/register_host">Ir a Configurar</a>
+    {% else %}
+        <button style="background-color: green; color: white; border: none;">(Completado)</button>
+    {% endif %}
+</div>

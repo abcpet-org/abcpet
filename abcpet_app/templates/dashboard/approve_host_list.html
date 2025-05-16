@@ -1,0 +1,20 @@
+<!-- approve_host_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Solicitudes de Anfitrión Pendientes</h2>
+
+{% if pending_hosts %}
+    <ul>
+    {% for host in pending_hosts %}
+        <li>
+            {{ host.user.username }} - 
+            <a href="{% url 'approve_individual_host' host.id %}">Aprobar</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay solicitudes pendientes.</p>
+{% endif %}
+
+{% endblock %}

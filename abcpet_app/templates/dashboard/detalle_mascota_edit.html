@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <style>
+    .galeria-foto {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .foto-container {
+      overflow: hidden;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+
+    .mascota-card {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      cursor: pointer;
+    }
+
+    .mascota-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .seleccionada {
+      background-color: #f8f9fa !important;
+      font-family: 'Afacad', sans-serif;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border: 2px solid #007bff; /* Añade un borde azul a la mascota seleccionada */
+    }
+
+    #informacionMascota {
+      backdrop-filter: blur(10px);
+    }
+
+    /* Estilo del nombre de la mascota */
+    .nombre-mascota {
+      font-family: 'Afacad', sans-serif;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    /* Estilo del tipo y edad de la mascota */
+    .tipo-edad {
+      font-family: 'Afacad', sans-serif;
+      font-size: 1rem;
+      color: #6c757d; /* Color gris oscuro para el texto de tipo y edad */
+    }
+  </style>
+
+  <div class="container mt-5">
+    <h1 class="mb-4">(Mis Mascotas)</h1>
+
+    <div class="row">
+      {% if mascotas %}
+        {% for mascota in mascotas %}
+          <div class="col-md-4">
+            <div class="mascota-card" onclick="mostrarInformacion(event, '{{ mascota.nombre_mascota }}', '{{ mascota.raza }}', '{{ mascota.edad }}', '{{ mascota.peso }}', '{{ mascota.sexo }}', '{{ mascota.con_microchip }}', '{{ mascota.esterilizado_castrado }}', '{{ mascota.amigable_con_ninos }}', '{{ mascota.amigable_con_perros }}', '{{ mascota.fecha_adopcion_nacimiento }}', '{{ mascota.sobre_tu_mascota }}', '{{ mascota.nivel_energia }}', '{{ mascota.horario_alimentacion }}', '{{ mascota.puede_dejar_solo }}', '{{ mascota.medicamentos }}', '{{ mascota.informacion_veterinaria }}', '{{ mascota.proveedor_seguro_mascotas }}', [{% for foto in mascota.mascotafoto_set.all %}'{{ foto.imagen.url }}',{% endfor %}])">
+              <!-- Contenido de la mascota -->
+              {% if mascota.mascotafoto_set.all %}
+                <div class="foto-container mx-auto my-3">
+                  <img class="galeria-foto" src="{{ mascota.mascotafoto_set.all.0.imagen.url }}" alt="{{ mascota.nombre_mascota }} - Foto">
+                </div>
+              {% endif %}
+
+              <h4 class="text-center nombre-mascota">{{ mascota.nombre_mascota }}</h4>
+                <p class="text-center text-muted mb-2 tipo-edad">{{ mascota.raza }} | {{ mascota.edad }} años</p>
+              <p class="text-center text-muted mb-2">{{ mascota.sexo }} | {{ mascota.peso }} kg</p>
+              <p class="text-center text-muted mb-2">Propietario: {{ user.first_name }} {{ user.last_name }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center">No tienes mascotas registradas.</p>
+      {% endif %}
+    </div>
+
+    <div id="informacionMascota" class="mt-4">
+      <!-- El contenido de la información de la mascota se mostrará aquí -->
+    </div>
+  </div>
+
+  <script>
+    function mostrarInformacion(event, nombre, raza, edad, peso, sexo, conMicrochip, esterilizadoCastrado, amigableConNinos, amigableConPerros, fechaAdopcion, sobreMascota, nivelEnergia, horarioAlimentacion, puedeDejarSolo, medicamentos, informacionVeterinaria, proveedorSeguro, fotos) {
+      // Construir el HTML de la información de la mascota
+      var informacionHTML = `
+        <div class="card seleccionada">
+          <div class="card-body">
+
+            <h4 class="nombre-mascota text-center">${nombre}</h4>
+            <div class="text-center">
+                <img class="galeria-foto mx-auto d-block" src="${fotos[0]}" alt="${nombre} - Foto">
+            </div>
+                
+            
+
+            <h5 class="card-subtitle mt-4" style="font-size: 1.5rem;">Información de la Mascota:</h5>
+            <p class="card-text" style="font-size: 1.2rem;">Peso: ${peso}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Sexo: ${sexo}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Con Microchip: ${conMicrochip}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Esterilizado - Castrado: ${esterilizadoCastrado}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Amigable con Niños: ${amigableConNinos}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Amigable con Perros: ${amigableConPerros}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Fecha de Adopción: ${fechaAdopcion}</p>
+
+            <h5 class="card-subtitle mt-4" style="font-size: 1.5rem;">Información de Cuidado:</h5>
+            <p class="card-text" style="font-size: 1.2rem;">Resumen de la Mascota: ${sobreMascota}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Nivel de Energía: ${nivelEnergia}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Horario de Alimentación: ${horarioAlimentacion}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Se Puede Dejar Solo: ${puedeDejarSolo}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Medicamentos: ${medicamentos}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Información Veterinaria: ${informacionVeterinaria}</p>
+            <p class="card-text" style="font-size: 1.2rem;">Proveedor de Seguro para Mascotas: ${proveedorSeguro}</p>
+
+            <h5 class="card-subtitle mt-4" style="font-size: 1.5rem;">Galería de Fotos:</h5>
+            <div class="row" id="galeriaFotos">`;
+
+      // Añadir dinámicamente las imágenes a la galería
+      for (var i = 0; i < fotos.length; i++) {
+        informacionHTML += `
+          <div class="col-4 mb-3">
+            <img class="galeria-foto" src="${fotos[i]}" alt="${nombre} - Foto">
+          </div>`;
+      }
+
+      informacionHTML += `
+            </div>
+          </div>
+        </div>`;
+
+      // Asignar el HTML al contenedor de información de la mascota
+      document.getElementById("informacionMascota").innerHTML = informacionHTML;
+
+      // Remover la clase de selección de todas las mascotas
+      var mascotaCards = document.querySelectorAll(".mascota-card");
+      mascotaCards.forEach(function(card) {
+        card.classList.remove("seleccionada");
+      });
+
+      // Agregar la clase de selección a la mascota actual
+      event.currentTarget.classList.add("seleccionada");
+    }
+  </script>
+{% endblock %}

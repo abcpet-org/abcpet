@@ -1,0 +1,78 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Datos de usuario -->
+    <h2>Datos de Usuario</h2>
+    {{ form.user }}
+
+    <!-- Servicios y tarifas -->
+    <h2>Servicios y Tarifas</h2>
+    {{ form.servicio_hotel }}
+    {{ form.tarifa_hotel }}
+    {{ form.servicio_en_casa_mascota }}
+    {{ form.tarifa_cuidado_casa }}
+    {{ form.servicio_paseo_mascota }}
+    {{ form.tarifa_paseo_perros }}
+    {{ form.servicio_guarderia }}
+    {{ form.tarifa_guarderia }}
+    <!-- Agrega más campos según sea necesario -->
+
+    <!-- Disponibilidad de paseo -->
+    <h2>Disponibilidad de Paseo</h2>
+    {{ form.dias_disponibles_paseo }}
+    {{ form.horarios_disponibles_paseo }}
+    {{ form.radio_servicio_paseo }}
+    {{ form.maximo_clientes_por_dia }}
+
+    <!-- Datos de localización y preferencias -->
+    <h2>Datos de Localización y Preferencias</h2>
+    {{ form.comuna_host }}
+    {{ form.direccion }}
+    {{ form.region }}
+    <!-- Agrega más campos según sea necesario -->
+
+    <!-- Preferencias adicionales -->
+    <h2>Preferencias Adicionales</h2>
+    {{ form.mascotas_varias_familias }}
+    {{ form.cachorros_menos_1_ano }}
+    {{ form.perros_sin_entrenar }}
+    <!-- Agrega más campos según sea necesario -->
+
+    <!-- Políticas y referencias -->
+    <h2>Políticas y Referencias</h2>
+    {{ form.politica_cancelacion }}
+    {{ form.email_referencia1 }}
+    {{ form.email_referencia2 }}
+    <!-- Agrega más campos según sea necesario -->
+
+    <!-- Experiencia y descripción personal -->
+    <h2>Experiencia y Descripción Personal</h2>
+    {{ form.anos_experiencia }}
+    {{ form.titular_atractivo }}
+    {{ form.experiencia_cuidado_mascotas }}
+    <!-- Agrega más campos según sea necesario -->
+
+    <!-- Fotos y verificación -->
+    <h2>Fotos y Verificación</h2>
+    {{ form.foto_perfil }}
+    {{ form.foto_identificacion }}
+    {{ form.comprobante_domicilio }}
+    {{ form.fotos_casa }}
+    {{ form.album_host_images }}
+
+    <!-- Botones de acción -->
+    <button type="button" onclick="addImageField()">Agregar otra imagen</button>
+    <button type="submit">Guardar</button>
+</form>
+
+<script>
+    function addImageField() {
+        var container = document.getElementById('image-container');
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'album_host_images';
+        input.accept = 'image/*';
+        input.multiple = true;
+        container.appendChild(input);
+    }
+</script>

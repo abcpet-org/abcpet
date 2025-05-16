@@ -1,0 +1,578 @@
+{% extends 'abcpet_app/base.html' %}
+{% load static %}
+
+{% block title %}ABC Pet - Resultados de Búsqueda{% endblock %}
+
+{% block content %}
+<!-- Estilo Airbnb con Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'airbnb': '#FF385C',
+          'primary': '#0b8a00',
+        },
+        fontFamily: {
+          sans: ['Circular', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Helvetica Neue', 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Estilo Airbnb */
+  .filter-btn {
+    border: 1px solid #DDDDDD;
+    border-radius: 30px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #222222;
+    background: white;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .filter-btn:hover {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+  }
+  
+  .active-filter {
+    background-color: #F7F7F7;
+  }
+  
+  /* Estilo para la barra lateral al estilo filtros de Airbnb */
+  .airbnb-filter-panel {
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+  }
+  
+  /* Estilo para las tarjetas de cuidadores */
+  .host-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .host-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+</style>
+
+<!-- Filters Bar Estilo Airbnb -->
+<div class="sticky top-0 bg-white z-10 border-b border-gray-200 py-4">
+  <div class="container mx-auto px-4 flex flex-wrap items-center">
+    <div class="overflow-x-auto flex items-center pb-2 w-full">
+      <button class="filter-btn active-filter">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        Filtros
+      </button>
+      <button class="filter-btn">Hotel</button>
+      <button class="filter-btn">En casa de mascota</button>
+      <button class="filter-btn">Paseo</button>
+      <button class="filter-btn">Guardería</button>
+      <button class="filter-btn">Con jardín</button>
+      <button class="filter-btn">Sin mascotas</button>
+      <button class="filter-btn">Sin niños</button>
+      <button class="filter-btn">Servicio a domicilio</button>
+    </div>
+  </div>
+</div>
+
+<div class="container mx-auto px-4 py-5">
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Filtros (Airbnb Style) -->
+    <div id="filters-panel" class="hidden lg:block lg:w-1/4">
+      <div class="airbnb-filter-panel bg-white p-6 sticky top-24">
+        <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+          <h2 class="text-xl font-bold">Filtros</h2>
+          <button class="text-airbnb hover:underline text-sm font-medium" id="reset-btn">Borrar todo</button>
+        </div>
+        
+        <!-- Precio -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Rango de precio</h3>
+          <div class="flex justify-between gap-4">
+            <div class="w-1/2">
+              <label class="block text-sm mb-2 text-gray-600">Mínimo</label>
+              <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                <span class="bg-gray-50 px-3 py-2 text-gray-500">$</span>
+                <input type="number" placeholder="0" class="w-full p-2 focus:outline-none text-sm">
+              </div>
+            </div>
+            <div class="w-1/2">
+              <label class="block text-sm mb-2 text-gray-600">Máximo</label>
+              <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                <span class="bg-gray-50 px-3 py-2 text-gray-500">$</span>
+                <input type="number" placeholder="50000" class="w-full p-2 focus:outline-none text-sm">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tipo de Servicio -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Tipo de servicio</h3>
+          <div class="space-y-3">
+            <label class="flex items-start">
+              <input type="checkbox" class="mt-1 mr-3">
+              <div>
+                <div class="font-medium">Hotel</div>
+                <div class="text-sm text-gray-500">Alojamiento en casa del cuidador</div>
+              </div>
+            </label>
+            <label class="flex items-start">
+              <input type="checkbox" class="mt-1 mr-3">
+              <div>
+                <div class="font-medium">En casa de la mascota</div>
+                <div class="text-sm text-gray-500">El cuidador se queda en tu casa</div>
+              </div>
+            </label>
+            <label class="flex items-start">
+              <input type="checkbox" class="mt-1 mr-3">
+              <div>
+                <div class="font-medium">Paseo</div>
+                <div class="text-sm text-gray-500">Paseos diarios para tu mascota</div>
+              </div>
+            </label>
+            <label class="flex items-start">
+              <input type="checkbox" class="mt-1 mr-3">
+              <div>
+                <div class="font-medium">Guardería</div>
+                <div class="text-sm text-gray-500">Cuidado diurno sin alojamiento</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Fechas -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Fechas</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm mb-2 text-gray-600">Llegada</label>
+              <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-sm mb-2 text-gray-600">Salida</label>
+              <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Condiciones de vivienda -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Tipo de vivienda</h3>
+          <div class="space-y-3">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Casa con jardín</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Apartamento</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Con acceso exterior</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Mascotas en hogar -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Mascotas en el hogar</h3>
+          <div class="space-y-3">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Sin mascotas</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Tiene perros</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Tiene gatos</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Niños -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Niños en el hogar</h3>
+          <div class="space-y-3">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Sin niños</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Con niños</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Servicios adicionales -->
+        <div class="mb-8">
+          <h3 class="text-base font-semibold mb-4">Servicios adicionales</h3>
+          <div class="space-y-3">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Administración de medicamentos</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Baño para mascota</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Transporte incluido</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-3">
+              <span>Servicio 24 horas</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Botones -->
+        <div class="flex justify-between mt-8">
+          <button class="px-6 py-3 border border-gray-300 rounded-lg hover:border-gray-400 transition-colors text-sm font-medium">
+            Cancelar
+          </button>
+          <button class="px-6 py-3 bg-airbnb text-white rounded-lg hover:bg-opacity-90 transition-colors text-sm font-medium">
+            Mostrar resultados
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resultados -->
+    <div class="lg:w-3/4">
+      <!-- Encabezado de resultados -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+            {% if resultados %}
+              {{ resultados|length }} cuidadores disponibles
+            {% else %}
+              Cuidadores disponibles
+            {% endif %}
+          </h1>
+          <p class="text-sm text-gray-500 mt-1">en tu área para las fechas seleccionadas</p>
+        </div>
+        
+        <div class="mt-2 md:mt-0 flex items-center">
+          <label class="mr-2 text-sm">Ordenar por:</label>
+          <select class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none">
+            <option>Recomendados</option>
+            <option>Menor precio</option>
+            <option>Mayor precio</option>
+            <option>Mejor valorados</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Mostrar resultados -->
+      <div>
+        {% if resultados %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for host in resultados %}
+            <div class="host-card border border-gray-200">
+              <div class="p-4">
+                <div class="flex gap-4">
+                  <!-- Foto y verificación -->
+                  <div class="relative h-24 w-24 flex-shrink-0">
+                    <div class="w-full h-full rounded-full overflow-hidden bg-gray-100">
+                      {% if host.user.userprofile.profile_picture %}
+                      <img src="{{ host.user.userprofile.profile_picture.url }}" alt="{{ host.user.username }}" class="w-full h-full object-cover">
+                      {% else %}
+                      <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      {% endif %}
+                    </div>
+                    
+                    {% if host.estado_verificacion == 'si' %}
+                    <div class="absolute -bottom-1 -right-1 bg-airbnb rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    {% elif host.estado_verificacion == 'no' %}
+                    <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Información -->
+                  <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h3 class="font-semibold">{{ host.user.first_name }} {{ host.user.last_name.0 }}.</h3>
+                        <div class="flex items-center text-sm text-gray-600">
+                          <svg class="w-4 h-4 text-gray-500 mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+                          </svg>
+                          {{ host.user.userprofile.comuna }}
+                        </div>
+                      </div>
+                      
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-airbnb" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="ml-1 font-medium">4.9</span>
+                        <span class="ml-1 text-gray-500 text-sm">({{ host.user.userprofile.opiniones.count }})</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Estado verificación -->
+                    {% if host.estado_verificacion == 'si' %}
+                    <p class="text-sm text-gray-600 mt-1">✓ Identidad verificada</p>
+                    {% elif host.estado_verificacion == 'pendiente' %}
+                    <p class="text-sm text-yellow-600 mt-1">⏱ Verificación pendiente</p>
+                    {% endif %}
+                    
+                    <!-- Descripción -->
+                    <p class="mt-2 text-sm text-gray-700 line-clamp-2">{{ host.user.userprofile.titular_atractivo }}</p>
+                    
+                    <!-- Servicios -->
+                    <div class="flex flex-wrap gap-2 mt-3">
+                      <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">Hotel</span>
+                      <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">Paseos</span>
+                      <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">Guardería</span>
+                    </div>
+                    
+                    <!-- Precio -->
+                    <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                      <div class="text-sm">
+                        <span class="font-semibold text-lg">$15.000</span>
+                        <span class="text-gray-600"> / noche</span>
+                      </div>
+                      
+                      <a href="/perfil_host/{{ host.id }}/" class="px-3 py-1.5 bg-airbnb text-white rounded-lg text-sm hover:bg-opacity-90 transition-colors">
+                        Ver perfil
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-16 bg-gray-50 rounded-lg border border-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-xl font-bold mb-2">No se encontraron cuidadores</h3>
+            <p class="text-gray-600 mb-6 max-w-md mx-auto">Intenta ajustar tus filtros de búsqueda o cambia las fechas para encontrar más opciones.</p>
+            <button onclick="location.reload()" class="bg-airbnb text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-colors">
+              Reiniciar búsqueda
+            </button>
+          </div>
+        {% endif %}
+        
+        <!-- Paginación estilo Airbnb -->
+        {% if resultados|length > 0 %}
+        <div class="mt-10 flex justify-center">
+          <div class="inline-flex items-center gap-2">
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </a>
+            
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-900 rounded-full bg-gray-900 text-white">1</a>
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">2</a>
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">3</a>
+            <span class="px-1">...</span>
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">8</a>
+            
+            <a href="#" class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Filter Button (Fixed) -->
+<div class="lg:hidden fixed bottom-4 left-0 right-0 flex justify-center z-20">
+  <button id="mobile-filter-btn" class="bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+    </svg>
+    Filtros
+  </button>
+</div>
+
+<!-- Mobile Filter Drawer -->
+<div id="mobile-filter-drawer" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden">
+  <div class="absolute right-0 top-0 bottom-0 w-full md:w-96 bg-white overflow-y-auto transform transition-transform duration-300 translate-x-full">
+    <div class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+      <button id="close-filter" class="p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h2 class="text-lg font-bold">Filtros</h2>
+      <div></div> <!-- Espacio para equilibrar -->
+    </div>
+    
+    <div class="p-6">
+      <!-- Contenido de filtros igual que en la barra lateral -->
+      <!-- Precio -->
+      <div class="mb-8">
+        <h3 class="text-base font-semibold mb-4">Rango de precio</h3>
+        <div class="flex justify-between gap-4">
+          <div class="w-1/2">
+            <label class="block text-sm mb-2 text-gray-600">Mínimo</label>
+            <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+              <span class="bg-gray-50 px-3 py-2 text-gray-500">$</span>
+              <input type="number" placeholder="0" class="w-full p-2 focus:outline-none text-sm">
+            </div>
+          </div>
+          <div class="w-1/2">
+            <label class="block text-sm mb-2 text-gray-600">Máximo</label>
+            <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+              <span class="bg-gray-50 px-3 py-2 text-gray-500">$</span>
+              <input type="number" placeholder="50000" class="w-full p-2 focus:outline-none text-sm">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tipo de Servicio -->
+      <div class="mb-8">
+        <h3 class="text-base font-semibold mb-4">Tipo de servicio</h3>
+        <div class="space-y-3">
+          <label class="flex items-start">
+            <input type="checkbox" class="mt-1 mr-3">
+            <div>
+              <div class="font-medium">Hotel</div>
+              <div class="text-sm text-gray-500">Alojamiento en casa del cuidador</div>
+            </div>
+          </label>
+          <label class="flex items-start">
+            <input type="checkbox" class="mt-1 mr-3">
+            <div>
+              <div class="font-medium">En casa de la mascota</div>
+              <div class="text-sm text-gray-500">El cuidador se queda en tu casa</div>
+            </div>
+          </label>
+          <label class="flex items-start">
+            <input type="checkbox" class="mt-1 mr-3">
+            <div>
+              <div class="font-medium">Paseo</div>
+              <div class="text-sm text-gray-500">Paseos diarios para tu mascota</div>
+            </div>
+          </label>
+          <label class="flex items-start">
+            <input type="checkbox" class="mt-1 mr-3">
+            <div>
+              <div class="font-medium">Guardería</div>
+              <div class="text-sm text-gray-500">Cuidado diurno sin alojamiento</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Resto de los filtros igual que en la barra lateral -->
+      <!-- ... -->
+      
+      <div class="py-4 px-6 border-t border-gray-200 sticky bottom-0 bg-white mt-6">
+        <div class="flex justify-between">
+          <button class="text-airbnb underline font-medium" id="mobile-reset-btn">Borrar todo</button>
+          <button class="px-6 py-3 bg-black text-white rounded-lg hover:bg-opacity-90">
+            Mostrar resultados
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de filtros para móvil
+    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+    const mobileFilterDrawer = document.getElementById('mobile-filter-drawer');
+    const closeFilterBtn = document.getElementById('close-filter');
+    const filterDrawerContent = mobileFilterDrawer.querySelector('.transform');
+    
+    mobileFilterBtn.addEventListener('click', function() {
+      mobileFilterDrawer.classList.remove('hidden');
+      setTimeout(() => {
+        filterDrawerContent.classList.remove('translate-x-full');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    });
+    
+    closeFilterBtn.addEventListener('click', closeFilterDrawer);
+    
+    mobileFilterDrawer.addEventListener('click', function(e) {
+      if (e.target === mobileFilterDrawer) {
+        closeFilterDrawer();
+      }
+    });
+    
+    function closeFilterDrawer() {
+      filterDrawerContent.classList.add('translate-x-full');
+      setTimeout(() => {
+        mobileFilterDrawer.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+    
+    // Resetear filtros
+    const resetBtn = document.getElementById('reset-btn');
+    const mobileResetBtn = document.getElementById('mobile-reset-btn');
+    
+    function resetFilters() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
+      const selects = document.querySelectorAll('select');
+      
+      checkboxes.forEach(cb => cb.checked = false);
+      inputs.forEach(input => input.value = '');
+      selects.forEach(select => select.selectedIndex = 0);
+    }
+    
+    resetBtn.addEventListener('click', resetFilters);
+    mobileResetBtn.addEventListener('click', resetFilters);
+    
+    // Botones de filtro rápido
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Evitar activar el primero que es para abrir el panel completo
+        if (this.textContent.trim() !== 'Filtros') {
+          this.classList.toggle('active-filter');
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

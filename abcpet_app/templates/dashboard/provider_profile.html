@@ -1,0 +1,254 @@
+{% extends 'abcpet_app/base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Proveedor</title>
+    <!-- Enlace a la fuente 'Afacad' -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
+    <!-- FontAwesome para íconos -->
+    <script src="https://kit.fontawesome.com/39477519d8.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Afacad', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .infoText {
+            color: #007bff;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .closeButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .closeButton:hover {
+            color: #555;
+        }
+
+        .config-options {
+            margin-top: 30px;
+        }
+
+        .config-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .config-text {
+            flex: 1;
+        }
+
+        .config-text p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .config-text small {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .config-info button, .config-info a {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .config-info button:hover, .config-info a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Crea tu cuenta Super Amigo ABCPet</h1>
+        <div class="infoText" id="infoText">
+            <i class="fas fa-question-circle"></i>¿Cómo funciona la aprobación de ABCPet?
+        </div>
+    </div>
+
+    <div id="infoPopup" class="modal">
+        <div class="modal-content">
+            <span class="closeButton" id="closeButton">&times;</span>
+            <h2>Completa los pasos necesarios para ser aprobado</h2>
+            <p><strong>¿Cómo funciona la aprobación de ABCPet?</strong> En ABCPet, el proceso de aprobación es sencillo y rápido. Durante su registro, selecciona un único servicio para ofrecer. Una vez aprobado, tendrá la flexibilidad de desactivarlo en cualquier momento si así lo desea, o incluso añadir servicios adicionales.</p>
+            <!-- Botón "Cerrar" dentro del modal -->
+            <button class="closeButtonModal" id="closeModalButton">Cerrar</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="config-options">
+            <h3>Configuración de perfil</h3>
+            <hr>
+            <div class="config-info">
+                <div class="config-text">
+                    <p>Configura tu perfil</p>
+                    <small>Configure su perfil para habilitar el paso de Configuración de servicios ABCPet </small>
+                </div>
+                <div id="profile-config-status">
+                    {% if not is_profile_complete %}
+                        <a href="/edit_profile">Ir a Configurar</a>
+                    {% else %}
+                        <button id="profile-config-button">(Configurado)</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="config-options">
+            <h3>Configuración de servicios</h3>
+            <hr>
+            <div class="config-info">
+                <div class="config-text">
+                    <p>Configuración de servicios para mascotas</p>
+                    <small>Configura tus servicios y vuélvete un super amigo ABCPet</small>
+                </div>
+                <div id="pet-shipment-config-status">
+                    {% if not is_pet_shipment_config_complete %}
+                        <a href="/register_host1" style="display: none;">Activar</a>
+                    {% else %}
+                        <a href="/register_host1">Ir a Configurar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="infoText" id="infoText2">
+            <i class="fas fa-question-circle"></i>¿Cómo puedo activar más servicios?
+        </div>
+    </div>
+
+    <div id="infoPopup2" class="modal">
+        <!-- Contenido del segundo modal omitido para mayor claridad -->
+    </div>
+
+    <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var profileConfigButton = document.getElementById("profile-config-button");
+            var petShipmentConfigButton = document.getElementById("pet-shipment-config-status").querySelector("a");
+        
+            function enablePetShipmentConfigButton() {
+                petShipmentConfigButton.style.display = "inline"; // Mostrar el botón
+            }
+        
+            function disablePetShipmentConfigButton() {
+                petShipmentConfigButton.style.display = "none"; // Ocultar el botón
+            }
+        
+            if (profileConfigButton.textContent.trim() === "(Configurado)") {
+                enablePetShipmentConfigButton();
+            } else {
+                disablePetShipmentConfigButton();
+            }
+        
+            profileConfigButton.addEventListener("click", function(event) {
+                if (profileConfigButton.textContent.trim() === "(Configurado)") {
+                    enablePetShipmentConfigButton();
+                }
+            });
+        
+            // Manejar el clic en el botón de activación de servicios para mascotas
+            petShipmentConfigButton.addEventListener("click", function(event) {
+                // Redirigir al usuario a la página de registro de hosts
+                window.location.href = "/register_host1";
+            });
+        });
+
+
+        var modal = document.getElementById("infoPopup");
+        var span = document.getElementsByClassName("closeButton")[0];
+        var closeModalButton = document.getElementById("closeModalButton");
+
+        // Evento para abrir el modal
+        infoText.onclick = function() {
+            modal.style.display = "block";
+        };
+
+        // Evento para cerrar el modal haciendo clic en el botón "Cerrar"
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+        
+        // Evento para cerrar el modal haciendo clic en el botón "Cerrar" dentro del modal
+        closeModalButton.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        // Cerrar el modal haciendo clic fuera de él
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+
+        
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,814 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <title>ABC Pet Project - Verificación de Correo</title>
+    <style>
+        /* Variables para consistencia del diseño */
+        :root {
+            --primary-color: #0b8a00;
+            --secondary-color: #000000;
+            --text-color: #333333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+            --border-radius: 5px;
+        }
+        
+        /* Reseteo básico y estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        /* Estructura principal */
+        .flex-container {
+            display: flex;
+            height: 100%;
+        }
+
+        .half {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Lado de la imagen */
+        .image-side {
+            background-image: url('{% static "abcpet_app/images/login-abcpet.png" %}');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logo {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 150px;
+            height: auto;
+            z-index: 2;
+            transition: transform var(--transition-speed);
+        }
+        
+        .logo:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .image-text {
+            position: relative;
+            color: white;
+            font-size: 32px;
+            text-align: center;
+            z-index: 2;
+            font-weight: 300;
+            max-width: 80%;
+            line-height: 1.3;
+        }
+
+        /* Lado del formulario */
+        .form-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .form-content {
+            max-width: 450px;
+            width: 100%;
+            margin-top: 10vh;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .additional-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .additional-logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        /* Indicadores de pasos */
+        .step-indicators {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--medium-gray);
+            margin: 0 6px;
+            transition: all var(--transition-speed);
+        }
+
+        .step-indicator.active {
+            background-color: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        /* Cabecera del formulario */
+        .form-side h1 {
+            font-weight: 700;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .email-badge {
+            display: inline-block;
+            background-color: var(--light-gray);
+            padding: 10px 15px;
+            border-radius: 30px;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            color: var(--secondary-color);
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            animation: fadeIn 1s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .email-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .email-badge strong {
+            font-weight: 600;
+        }
+
+        .additional-text {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-gray);
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 0 10px;
+        }
+
+        /* Botones */
+        .button-style {
+            background-color: var(--secondary-color);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--secondary-color);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+            margin-bottom: 15px;
+            outline: none;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .button-style:hover {
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .button-link {
+            background-color: white;
+            color: var(--secondary-color);
+            width: 100%;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--secondary-color);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-family: 'Lato', sans-serif;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .button-link:hover {
+            background-color: #f5f5f5;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transform: translateY(-2px);
+        }
+
+        /* Política de privacidad */
+        .privacy-policy {
+            color: var(--dark-gray);
+            font-size: 12px;
+            text-align: center;
+            margin-top: auto;
+            padding-top: 40px;
+            max-width: 90%;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+        
+        .privacy-policy a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s ease;
+            padding-bottom: 1px;
+        }
+
+        .privacy-policy a:hover {
+            color: #444;
+        }
+        
+        .privacy-policy a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--secondary-color);
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        
+        .privacy-policy a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .privacy-policy a strong {
+            font-weight: 600;
+        }
+
+        /* Popup mejorado */
+        .popup-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 750px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        
+        .popup-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #f0f0f0;
+            z-index: 2;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .popup-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--secondary-color);
+        }
+        
+        .popup-content {
+            padding: 0 30px 30px;
+        }
+        
+        .policy-section {
+            margin-bottom: 25px;
+        }
+        
+        .policy-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .policy-section p {
+            font-size: 14px;
+            font-weight: 300;
+            text-align: justify;
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: #444;
+        }
+        
+        .popup-footer {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            padding: 15px 30px;
+            border-top: 1px solid #f0f0f0;
+            text-align: right;
+            border-radius: 0 0 12px 12px;
+            z-index: 2;
+        }
+        
+        .close-popup-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-popup-btn:hover {
+            background-color: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+        
+        .close-button::before,
+        .close-button::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background-color: #888;
+            transition: background-color 0.3s ease;
+        }
+        
+        .close-button:hover::before,
+        .close-button:hover::after {
+            background-color: #000;
+        }
+        
+        .close-button::before {
+            transform: rotate(45deg);
+        }
+        
+        .close-button::after {
+            transform: rotate(-45deg);
+        }
+        
+        .animate-popup-in {
+            animation: popupIn 0.4s forwards;
+        }
+        
+        .animate-popup-out {
+            animation: popupOut 0.3s forwards;
+        }
+        
+        @keyframes popupIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @keyframes popupOut {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+        
+        .policy-toc {
+            background-color: #f9f9f9;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .policy-toc p {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .policy-toc ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .policy-toc li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .policy-toc a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .policy-toc a:hover {
+            color: #444;
+            text-decoration: underline;
+        }
+        
+        .effective-date {
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .effective-date strong {
+            color: var(--secondary-color);
+        }
+
+        /* Mensajes de alerta */
+        .messages {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #ef5350;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .alert-warning {
+            background-color: #fff8e1;
+            color: #ff8f00;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+        }
+
+        /* Responsividad */
+        @media screen and (max-width: 992px) {
+            .form-content {
+                margin-top: 5vh;
+            }
+            
+            .privacy-policy {
+                padding-top: 30px;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .half.image-side {
+                display: none;
+            }
+            
+            .form-side {
+                padding: 30px 20px;
+            }
+            
+            .additional-logo {
+                display: block;
+            }
+            
+            .form-content {
+                margin-top: 10px;
+            }
+        }
+
+        @media screen and (max-height: 700px) {
+            .privacy-policy {
+                padding-top: 20px;
+                font-size: 11px;
+            }
+            
+            .form-content {
+                margin-top: 5vh;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-container">
+        <!-- Lado de imagen -->
+        <div class="half image-side">
+            <div class="image-text">Verificación de correo</div>
+            <img class="logo" src="{% static 'abcpet_app/images/logo_white.png' %}" alt="Logo ABC Pet">
+        </div>
+        
+        <!-- Lado de formulario -->
+        <div class="half form-side">
+            <div class="form-content">
+                <!-- Logo para móviles -->
+                <div class="additional-logo">
+                    <img src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo ABC Pet">
+                </div>
+                
+                <!-- Indicadores de pasos -->
+                <div class="step-indicators">
+                    <div class="step-indicator active"></div>
+                    <div class="step-indicator active"></div>
+                    <div class="step-indicator"></div>
+                    <div class="step-indicator"></div>
+                    <div class="step-indicator"></div>
+                </div>
+                
+                <!-- Título y descripción -->
+                <h1>Verifica tu correo</h1>
+                
+                <div style="text-align: center;">
+                    <div class="email-badge">
+                        <strong>{{ email }}</strong>
+                    </div>
+                </div>
+                
+                <!-- Mensajes de Django -->
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="additional-text">
+                    Por favor verifica que este correo sea correcto, ya que lo usaremos para enviar tu código de verificación.
+                </div>
+                
+                <!-- Formulario de confirmación -->
+                <form method="post" action="{% url 'login_step2' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="button-style">Continuar</button>
+                </form>
+                
+                <a href="{% url 'login_step1' %}" class="button-link">Corregir correo</a>
+                
+                <!-- Política de privacidad -->
+                <div class="privacy-policy">
+                    Al registrarte en ABCPET, das tu consentimiento y estás de acuerdo con la 
+                    <a href="#" onclick="showPopup()">política de privacidad</a> 
+                    de ABCPET para almacenar, gestionar y procesar tu información personal. 
+                    Para más información, consulta nuestra 
+                    <a href="#" onclick="showPopup()"><strong>Política de Privacidad</strong></a>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de política de privacidad mejorado -->
+    <div class="popup-background" id="popup-background"></div>
+    <div class="popup" id="popup">
+        <div class="popup-header">
+            <h2>Política de Privacidad</h2>
+            <div class="close-button" onclick="closePopup()"></div>
+        </div>
+        
+        <div class="popup-content">
+            <p>En ABCPet, entendemos y valoramos la importancia de tu privacidad y la protección de tus datos personales. Esta política describe nuestras prácticas de recopilación y uso de información.</p>
+            
+            <div class="policy-toc">
+                <p>Contenido:</p>
+                <ul>
+                    <li><a href="#info-recopilada">Información que recopilamos</a></li>
+                    <li><a href="#uso-informacion">Uso de la información</a></li>
+                    <li><a href="#compartir-info">Compartición de la información</a></li>
+                    <li><a href="#proteccion">Protección de la información</a></li>
+                    <li><a href="#derechos">Tus derechos</a></li>
+                    <li><a href="#cambios">Cambios en la política</a></li>
+                </ul>
+            </div>
+            
+            <div id="info-recopilada" class="policy-section">
+                <h3>1. Información que Recopilamos</h3>
+                <p>Recopilamos información personal que nos proporcionas directamente, como tu nombre, dirección de correo electrónico, dirección postal, número de teléfono y cualquier otra información que decidas compartir con nosotros al registrarte en nuestra plataforma o utilizar nuestros servicios.</p>
+                
+                <p>También recopilamos información automáticamente a través de cookies y tecnologías similares cuando visitas nuestro sitio web. Esta información puede incluir tu dirección IP, tipo de navegador, páginas visitadas, tiempo de visita y otras estadísticas de uso.</p>
+            </div>
+            
+            <div id="uso-informacion" class="policy-section">
+                <h3>2. Uso de la Información</h3>
+                <p>Utilizamos la información recopilada para:</p>
+                <ul>
+                    <li>Brindarte nuestros servicios</li>
+                    <li>Procesar tus pedidos</li>
+                    <li>Comunicarnos contigo</li>
+                    <li>Personalizar tu experiencia en nuestra plataforma</li>
+                    <li>Mejorar nuestros servicios</li>
+                    <li>Prevenir actividades fraudulentas o maliciosas</li>
+                </ul>
+            </div>
+            
+            <div id="compartir-info" class="policy-section">
+                <h3>3. Compartición de la Información</h3>
+                <p>No vendemos, alquilamos ni compartimos tu información personal con terceros sin tu consentimiento, excepto en los casos descritos en esta Política de Privacidad o cuando la ley lo requiera.</p>
+                
+                <p>Podemos compartir tu información con proveedores de servicios de confianza que nos ayudan a operar nuestro negocio y brindar nuestros servicios, así como con autoridades gubernamentales u otras partes en respuesta a solicitudes legales válidas.</p>
+            </div>
+            
+            <div id="proteccion" class="policy-section">
+                <h3>4. Protección de la Información</h3>
+                <p>Tomamos medidas de seguridad adecuadas para proteger tu información contra accesos no autorizados, divulgación, alteración o destrucción. Sin embargo, debes tener en cuenta que ninguna transmisión de datos por Internet o almacenamiento electrónico es completamente segura, y no podemos garantizar la seguridad absoluta de tus datos.</p>
+            </div>
+            
+            <div id="derechos" class="policy-section">
+                <h3>5. Tus Derechos</h3>
+                <p>Tienes derecho a acceder, corregir, actualizar o eliminar tu información personal en cualquier momento. También puedes optar por no recibir comunicaciones promocionales nuestras siguiendo las instrucciones de cancelación de suscripción incluidas en nuestros correos electrónicos.</p>
+            </div>
+            
+            <div id="cambios" class="policy-section">
+                <h3>6. Cambios en la Política de Privacidad</h3>
+                <p>Nos reservamos el derecho de actualizar o modificar esta Política de Privacidad en cualquier momento. Te recomendamos que revises periódicamente esta página para estar al tanto de cualquier cambio. El uso continuado de nuestros servicios después de la publicación de cambios en esta Política de Privacidad constituirá tu aceptación de dichos cambios.</p>
+            </div>
+            
+            <div class="effective-date">
+                <strong>Fecha de entrada en vigencia:</strong> 7 de Mayo de 2025
+            </div>
+        </div>
+        
+        <div class="popup-footer">
+            <button class="close-popup-btn" onclick="closePopup()">Aceptar y Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Añadir efecto pulse al email después de cargar la página
+        window.onload = function() {
+            setTimeout(function() {
+                var emailBadge = document.querySelector('.email-badge');
+                emailBadge.style.animation = 'pulse 2s infinite';
+                
+                // Detener la animación después de pulsar 3 veces
+                setTimeout(function() {
+                    emailBadge.style.animation = 'none';
+                }, 6000);
+            }, 1000);
+        };
+        
+        // Funciones del popup mejorado
+        function showPopup() {
+            var popupBackground = document.getElementById('popup-background');
+            var popup = document.getElementById('popup');
+            
+            // Mostrar el fondo primero
+            popupBackground.style.display = 'block';
+            setTimeout(function() {
+                popupBackground.style.opacity = '1';
+            }, 10);
+            
+            // Luego mostrar el popup con animación
+            popup.style.display = 'block';
+            setTimeout(function() {
+                popup.classList.add('animate-popup-in');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePopup() {
+            var popupBackground = document.getElementById('popup-background');
+            var popup = document.getElementById('popup');
+            
+            // Animar la salida del popup
+            popup.classList.remove('animate-popup-in');
+            popup.classList.add('animate-popup-out');
+            popupBackground.style.opacity = '0';
+            
+            // Ocultar los elementos después de la animación
+            setTimeout(function() {
+                popup.style.display = 'none';
+                popupBackground.style.display = 'none';
+                popup.classList.remove('animate-popup-out');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Navegar a las secciones de la política
+        document.querySelectorAll('.policy-toc a').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                var targetId = this.getAttribute('href');
+                var targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // Cerrar popup al hacer clic en el fondo
+        document.getElementById('popup-background').addEventListener('click', closePopup);
+        
+        // Evitar que clic dentro del popup cierre el popup
+        document.getElementById('popup').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>

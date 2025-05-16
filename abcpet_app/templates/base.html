@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ABC Pet Project{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-H+9IqQ+vjfu+O6yo1BY4BDv5C4IAIbyU4FsyWcq0zvU2qGb20q2/KJg+LaSquEyY2BSl2I7MPRd86YK8d9b4xg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <!-- Estilos y script específicos para intl-tel-input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.min.css" integrity="sha384-pz5abXYw2LU5h41KrVjTbo8t8+9TJSRtRsERUN7r4LPb7lfg2D5sz75wAYa/ZFDa" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js" integrity="sha384-RZyKB2NIDT/rTRJQIprM5eZFA9G8FGIy0HPhSo5Ic3LmnY5ffoIblE6g16/KtNT8" crossorigin="anonymous"></script>
+
+    <!-- Estilos CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background-color: #fff;
+            height: 50px;
+        }
+
+        .logo {
+            width: 80px; /* Ajusta el tamaño del logo según sea necesario */
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .user-info p {
+            margin: 0;
+            margin-right: 10px;
+        }
+
+        .user-info a {
+            color: #ffcc00;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+
+        .user-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .user-info:hover .user-menu {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-menu a {
+            color: #333;
+            padding: 12px;
+            text-decoration: none;
+        }
+
+        .user-menu a:hover {
+            background-color: #f4f4f4;
+        }
+
+        section {
+            margin-top: 20px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Nav -->
+    <nav>
+        <img class="logo" src="{% static 'abcpet_app/images/logo.png' %}" alt="Logo">
+        <div class="user-info">
+            {% block user_info %}
+                <p>Hola, <strong>{{ user.username }}</strong>.</p>
+                <div class="user-menu">
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'mi_perfil' %}">Mi Perfil</a>
+                    <a href="{% url 'edit_profile' %}">Editar perfil</a>
+                    <a href="#">Inbox</a>
+                    <a href="#">Configuración</a>
+                    <a href="{% url 'logout' %}">Cerrar sesión</a>
+                </div>
+            {% endblock %}
+        </div>
+    </nav>
+
+    <!-- Contenido específico de cada página -->
+    <section>
+        {% block content %}{% endblock %}
+    </section>
+
+    <!-- Bootstrap JS (al final del cuerpo) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+<!-- approve_host.html -->
+{% extends 'abcpet_app/base.html' %}
+
+{% block content %}
+<h2>Aprobar Solicitud de Anfitrión</h2>
+
+<!-- Mostrar información relevante de la solicitud -->
+<div>
+    <h3>Información del Usuario</h3>
+    <p>Nombre de usuario: {{ host_application.user.username }}</p>
+    <p>Email: {{ host_application.user.email }}</p>
+    <!-- Agrega aquí más campos que desees mostrar -->
+</div>
+
+<!-- Formulario de aprobación -->
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Aprobar</button>
+    <a href="{% url 'alguna_url_cancelar' %}" class="btn btn-danger">Cancelar</a>
+</form>
+
+{% endblock %}
