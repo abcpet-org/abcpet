@@ -1,254 +1,1265 @@
 {% extends 'abcpet_app/base.html' %}
+{% load static %}
+
+{% block title %}Configuración de Servicios | ABCPet Amigo{% endblock %}
+
+{% block extra_css %}
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Alpine.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: {
+            50: '#fef2f2',
+            100: '#fee2e2',
+            200: '#fecaca',
+            300: '#fca5a5',
+            400: '#f87171',
+            500: '#ef4444',
+            600: '#E41E26', // ABCPet primary
+            700: '#b91c1c',
+            800: '#991b1b',
+            900: '#7f1d1d',
+          }
+        },
+        fontFamily: {
+          sans: ['Inter var', 'sans-serif'],
+          display: ['Montserrat', 'sans-serif'],
+        },
+      }
+    }
+  };
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');
+  
+  [x-cloak] { display: none !important; }
+  
+  /* Estilos personalizados */
+  .progress-step {
+    position: relative;
+  }
+  
+  .progress-step::after {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 2px;
+    background-color: #e5e7eb;
+    z-index: -1;
+  }
+  
+  .progress-step:last-child::after {
+    display: none;
+  }
+  
+  .progress-step.completed .step-circle {
+    background-color: #E41E26;
+    border-color: #E41E26;
+    color: white;
+  }
+  
+  .progress-step.completed::after {
+    background-color: #E41E26;
+  }
+  
+  .progress-step.active .step-circle {
+    border-color: #E41E26;
+    color: #E41E26;
+    box-shadow: 0 0 0 3px rgba(228, 30, 38, 0.2);
+  }
+  
+  /* Switch personalizado */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #E41E26;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #E41E26;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  /* Efecto de brillante */
+  @keyframes shine {
+    0% { background-position: -100px; }
+    100% { background-position: 400px; }
+  }
+  
+  .shine-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shine-effect::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    transform: rotate(30deg);
+    background: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(
+      to right, 
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shine 3s infinite;
+  }
+  
+  .animate-float {
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  @keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  /* Estrellas de calificación */
+  .rating-stars input {
+    display: none;
+  }
+  
+  .rating-stars label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    float: right;
+    color: #ddd;
+    transition: color 0.3s;
+  }
+  
+  .rating-stars label:before {
+    content: '★';
+    font-size: 1.5rem;
+  }
+  
+  .rating-stars input:checked ~ label,
+  .rating-stars:not(:checked) > label:hover,
+  .rating-stars:not(:checked) > label:hover ~ label {
+    color: #FFD700;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil de Proveedor</title>
-    <!-- Enlace a la fuente 'Afacad' -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Afacad&display=swap">
-    <!-- FontAwesome para íconos -->
-    <script src="https://kit.fontawesome.com/39477519d8.js" crossorigin="anonymous"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Afacad', sans-serif;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-size: 16px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h1, h2, h3 {
-            text-align: center;
-            margin-top: 0;
-        }
-
-        .infoText {
-            color: #007bff;
-            cursor: pointer;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 90%;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
-            position: relative;
-        }
-
-        .closeButton {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            color: #888;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .closeButton:hover {
-            color: #555;
-        }
-
-        .config-options {
-            margin-top: 30px;
-        }
-
-        .config-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .config-text {
-            flex: 1;
-        }
-
-        .config-text p {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .config-text small {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .config-info button, .config-info a {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .config-info button:hover, .config-info a:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Crea tu cuenta Super Amigo ABCPet</h1>
-        <div class="infoText" id="infoText">
-            <i class="fas fa-question-circle"></i>¿Cómo funciona la aprobación de ABCPet?
+<div class="bg-neutral-100 min-h-screen" x-data="setupWizard()">
+  <!-- Encabezado de página -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Configuración de tu perfil ABCPet Amigo</h1>
+          <p class="text-sm text-gray-500 mt-1">Configura tus servicios para mascotas y comienza a ganar dinero</p>
         </div>
-    </div>
-
-    <div id="infoPopup" class="modal">
-        <div class="modal-content">
-            <span class="closeButton" id="closeButton">&times;</span>
-            <h2>Completa los pasos necesarios para ser aprobado</h2>
-            <p><strong>¿Cómo funciona la aprobación de ABCPet?</strong> En ABCPet, el proceso de aprobación es sencillo y rápido. Durante su registro, selecciona un único servicio para ofrecer. Una vez aprobado, tendrá la flexibilidad de desactivarlo en cualquier momento si así lo desea, o incluso añadir servicios adicionales.</p>
-            <!-- Botón "Cerrar" dentro del modal -->
-            <button class="closeButtonModal" id="closeModalButton">Cerrar</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="config-options">
-            <h3>Configuración de perfil</h3>
-            <hr>
-            <div class="config-info">
-                <div class="config-text">
-                    <p>Configura tu perfil</p>
-                    <small>Configure su perfil para habilitar el paso de Configuración de servicios ABCPet </small>
-                </div>
-                <div id="profile-config-status">
-                    {% if not is_profile_complete %}
-                        <a href="/edit_profile">Ir a Configurar</a>
-                    {% else %}
-                        <button id="profile-config-button">(Configurado)</button>
-                    {% endif %}
-                </div>
+        <div class="flex items-center space-x-4">
+          <!-- Estado del perfil -->
+          <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+            <span class="animate-pulse inline-block h-2 w-2 rounded-full bg-yellow-500 mr-1"></span>
+            En configuración
+          </span>
+          
+          <!-- Avatar y nombre de usuario -->
+          <div class="flex items-center">
+            <div class="relative">
+              <img class="h-10 w-10 rounded-full object-cover border-2 border-primary-600" src="{% static 'abcpet_app/images/testimonials/testimonial-1.jpg' %}" alt="Foto de perfil">
+              <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-white"></span>
             </div>
+            <span class="ml-2 text-sm font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</span>
+          </div>
         </div>
+      </div>
+      
+      <!-- Barra de progreso -->
+      <div class="mt-8">
+        <div class="flex items-center justify-center space-x-4 md:space-x-12">
+          <div class="progress-step" :class="{'completed': currentStep > 1, 'active': currentStep === 1}">
+            <div class="flex flex-col items-center">
+              <div class="step-circle w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white font-semibold text-gray-500 mb-2">
+                <span x-show="currentStep <= 1">1</span>
+                <svg x-show="currentStep > 1" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p class="text-xs font-medium text-gray-500">Servicios</p>
+            </div>
+          </div>
+          
+          <div class="progress-step" :class="{'completed': currentStep > 2, 'active': currentStep === 2}">
+            <div class="flex flex-col items-center">
+              <div class="step-circle w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white font-semibold text-gray-500 mb-2">
+                <span x-show="currentStep <= 2">2</span>
+                <svg x-show="currentStep > 2" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p class="text-xs font-medium text-gray-500">Fotos</p>
+            </div>
+          </div>
+          
+          <div class="progress-step" :class="{'completed': currentStep > 3, 'active': currentStep === 3}">
+            <div class="flex flex-col items-center">
+              <div class="step-circle w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white font-semibold text-gray-500 mb-2">
+                <span x-show="currentStep <= 3">3</span>
+                <svg x-show="currentStep > 3" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p class="text-xs font-medium text-gray-500">Precios</p>
+            </div>
+          </div>
+          
+          <div class="progress-step" :class="{'completed': currentStep > 4, 'active': currentStep === 4}">
+            <div class="flex flex-col items-center">
+              <div class="step-circle w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white font-semibold text-gray-500 mb-2">4</div>
+              <p class="text-xs font-medium text-gray-500">Confirmar</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Contenido principal -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Paso 1: Servicios -->
+    <div x-show="currentStep === 1" class="animate__animated animate__fadeIn">
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">Configuración de servicios para mascotas</h2>
+          <p class="text-sm text-gray-500 mt-1">Selecciona los servicios que deseas ofrecer a los dueños de mascotas</p>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Describiendo tus servicios -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">¿Por qué quieres ser un ABCPet Amigo?</h3>
+            <textarea 
+              x-model="services.description" 
+              class="w-full h-32 rounded-lg border border-gray-300 focus:ring-primary-600 focus:border-primary-600 p-3"
+              placeholder="Cuéntanos sobre tu experiencia con mascotas, tu espacio y por qué te gustaría ser ABCPet Amigo..."
+            ></textarea>
+          </div>
+          
+          <!-- Servicios disponibles -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">Servicios disponibles</h3>
+            <p class="text-sm text-gray-500">Selecciona los servicios que deseas ofrecer y configura los detalles específicos</p>
+            
+            <!-- Hospedaje -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="mr-4 p-2 bg-primary-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900">Hospedaje para mascotas</h4>
+                    <p class="text-sm text-gray-500">Aloja mascotas en tu casa por noches o días completos</p>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" x-model="services.boarding">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <!-- Opciones de hospedaje -->
+              <div x-show="services.boarding" class="mt-4 pl-14 space-y-4 animate__animated animate__fadeIn">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de espacio</label>
+                    <select 
+                      x-model="services.boardingDetails.spaceType" 
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600"
+                    >
+                      <option value="house">Casa</option>
+                      <option value="apartment">Departamento</option>
+                      <option value="house_with_yard">Casa con patio</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">¿Cuántas mascotas puedes alojar?</label>
+                    <select 
+                      x-model="services.boardingDetails.petCapacity" 
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600"
+                    >
+                      <option value="1">1 mascota</option>
+                      <option value="2">2 mascotas</option>
+                      <option value="3">3 mascotas</option>
+                      <option value="4">4 o más mascotas</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tamaños de mascotas que aceptas</label>
+                  <div class="flex flex-wrap gap-3">
+                    <label class="inline-flex items-center px-3 py-2 rounded-full border border-gray-200 cursor-pointer transition-all"
+                           :class="services.boardingDetails.petSizes.includes('small') ? 'bg-primary-100 border-primary-600 text-primary-800' : 'bg-white text-gray-700 hover:bg-gray-50'">
+                      <input type="checkbox" class="hidden" value="small" @click="toggleSize('small')">
+                      <span class="text-sm">0-7 kg</span>
+                    </label>
+                    <label class="inline-flex items-center px-3 py-2 rounded-full border border-gray-200 cursor-pointer transition-all"
+                           :class="services.boardingDetails.petSizes.includes('medium') ? 'bg-primary-100 border-primary-600 text-primary-800' : 'bg-white text-gray-700 hover:bg-gray-50'">
+                      <input type="checkbox" class="hidden" value="medium" @click="toggleSize('medium')">
+                      <span class="text-sm">7-18 kg</span>
+                    </label>
+                    <label class="inline-flex items-center px-3 py-2 rounded-full border border-gray-200 cursor-pointer transition-all"
+                           :class="services.boardingDetails.petSizes.includes('large') ? 'bg-primary-100 border-primary-600 text-primary-800' : 'bg-white text-gray-700 hover:bg-gray-50'">
+                      <input type="checkbox" class="hidden" value="large" @click="toggleSize('large')">
+                      <span class="text-sm">18-45 kg</span>
+                    </label>
+                    <label class="inline-flex items-center px-3 py-2 rounded-full border border-gray-200 cursor-pointer transition-all"
+                           :class="services.boardingDetails.petSizes.includes('giant') ? 'bg-primary-100 border-primary-600 text-primary-800' : 'bg-white text-gray-700 hover:bg-gray-50'">
+                      <input type="checkbox" class="hidden" value="giant" @click="toggleSize('giant')">
+                      <span class="text-sm">+45 kg</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Cuidado a domicilio -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="mr-4 p-2 bg-primary-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900">Cuidado a domicilio</h4>
+                    <p class="text-sm text-gray-500">Visita los hogares de los clientes para cuidar a sus mascotas</p>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" x-model="services.houseSitting">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <!-- Opciones de cuidado a domicilio -->
+              <div x-show="services.houseSitting" class="mt-4 pl-14 space-y-4 animate__animated animate__fadeIn">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">¿Cuántos años de experiencia tienes?</label>
+                  <select 
+                    x-model="services.houseSittingDetails.experience" 
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600"
+                  >
+                    <option value="<1">Menos de 1 año</option>
+                    <option value="1-3">1-3 años</option>
+                    <option value="3-5">3-5 años</option>
+                    <option value=">5">Más de 5 años</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Servicios adicionales que ofreces</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="flex items-center">
+                      <input id="watering_plants" type="checkbox" x-model="services.houseSittingDetails.additionalServices" value="watering_plants"
+                             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-600">
+                      <label for="watering_plants" class="ml-2 text-sm text-gray-700">Regar plantas</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input id="mail_collection" type="checkbox" x-model="services.houseSittingDetails.additionalServices" value="mail_collection"
+                             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-600">
+                      <label for="mail_collection" class="ml-2 text-sm text-gray-700">Recoger correspondencia</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input id="home_security" type="checkbox" x-model="services.houseSittingDetails.additionalServices" value="home_security"
+                             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-600">
+                      <label for="home_security" class="ml-2 text-sm text-gray-700">Vigilancia del hogar</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input id="medication" type="checkbox" x-model="services.houseSittingDetails.additionalServices" value="medication"
+                             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-600">
+                      <label for="medication" class="ml-2 text-sm text-gray-700">Administrar medicamentos</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Paseo de perros -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="mr-4 p-2 bg-primary-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900">Paseo de perros</h4>
+                    <p class="text-sm text-gray-500">Ofrece paseos individuales o grupales para perros</p>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" x-model="services.dogWalking">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <!-- Opciones de paseo de perros -->
+              <div x-show="services.dogWalking" class="mt-4 pl-14 space-y-4 animate__animated animate__fadeIn">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de paseo</label>
+                    <select 
+                      x-model="services.dogWalkingDetails.walkType" 
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600"
+                    >
+                      <option value="individual">Paseos individuales</option>
+                      <option value="group">Paseos grupales</option>
+                      <option value="both">Individuales y grupales</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración promedio del paseo</label>
+                    <select 
+                      x-model="services.dogWalkingDetails.walkDuration" 
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600"
+                    >
+                      <option value="30">30 minutos</option>
+                      <option value="60">60 minutos</option>
+                      <option value="90">90 minutos</option>
+                      <option value="custom">Personalizado</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">¿Cuántos perros puedes pasear a la vez?</label>
+                  <div class="flex items-center">
+                    <button 
+                      type="button"
+                      class="p-1 rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"
+                      :disabled="services.dogWalkingDetails.maxDogs <= 1"
+                      @click="services.dogWalkingDetails.maxDogs = Math.max(1, services.dogWalkingDetails.maxDogs - 1)"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <span class="w-10 text-center text-lg font-semibold" x-text="services.dogWalkingDetails.maxDogs"></span>
+                    <button 
+                      type="button"
+                      class="p-1 rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"
+                      :disabled="services.dogWalkingDetails.maxDogs >= 5"
+                      @click="services.dogWalkingDetails.maxDogs = Math.min(5, services.dogWalkingDetails.maxDogs + 1)"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mascotas que aceptas -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">Mascotas que aceptas</h3>
+            <p class="text-sm text-gray-500">Selecciona los tipos de mascotas con los que tienes experiencia</p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <label class="relative cursor-pointer">
+                <input type="checkbox" x-model="services.acceptedPets.dogs" class="sr-only peer">
+                <div class="flex flex-col items-center p-4 rounded-lg border-2 peer-checked:border-primary-600 peer-checked:bg-primary-50 border-gray-200 hover:bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 peer-checked:text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span class="text-sm font-medium">Perros</span>
+                  <span class="peer-checked:block hidden absolute top-2 right-2 text-primary-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+              
+              <label class="relative cursor-pointer">
+                <input type="checkbox" x-model="services.acceptedPets.cats" class="sr-only peer">
+                <div class="flex flex-col items-center p-4 rounded-lg border-2 peer-checked:border-primary-600 peer-checked:bg-primary-50 border-gray-200 hover:bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 peer-checked:text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span class="text-sm font-medium">Gatos</span>
+                  <span class="peer-checked:block hidden absolute top-2 right-2 text-primary-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+              
+              <label class="relative cursor-pointer">
+                <input type="checkbox" x-model="services.acceptedPets.birds" class="sr-only peer">
+                <div class="flex flex-col items-center p-4 rounded-lg border-2 peer-checked:border-primary-600 peer-checked:bg-primary-50 border-gray-200 hover:bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 peer-checked:text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span class="text-sm font-medium">Aves</span>
+                  <span class="peer-checked:block hidden absolute top-2 right-2 text-primary-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+              
+              <label class="relative cursor-pointer">
+                <input type="checkbox" x-model="services.acceptedPets.small" class="sr-only peer">
+                <div class="flex flex-col items-center p-4 rounded-lg border-2 peer-checked:border-primary-600 peer-checked:bg-primary-50 border-gray-200 hover:bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 peer-checked:text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span class="text-sm font-medium">Pequeños</span>
+                  <span class="peer-checked:block hidden absolute top-2 right-2 text-primary-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 px-6 py-4 flex justify-end">
+          <button 
+            type="button" 
+            class="ml-3 inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none"
+            @click="goToNextStep()"
+          >
+            Continuar a Fotos
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Mensaje inspirador -->
+      <div class="mt-8 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg shadow-lg overflow-hidden">
+        <div class="flex flex-col md:flex-row items-center">
+          <div class="p-6 md:w-2/3">
+            <h3 class="text-xl font-bold mb-2">¡Vuélvete un ABCPet Amigo y gana hasta $980.000 al mes!</h3>
+            <p class="text-white/90">Configura tu perfil, destácate entre los demás y comienza a recibir solicitudes de cuidado de mascotas. Nuestras herramientas te ayudarán a convertirte en el cuidador favorito de tu zona.</p>
+          </div>
+          <div class="md:w-1/3 p-6">
+            <img src="{% static 'abcpet_app/images/testimonials/testimonial-1.jpg' %}" alt="ABCPet Amigo" class="rounded-lg shadow-lg mx-auto animate-float">
+          </div>
+        </div>
+      </div>
     </div>
     
-    <div class="container">
-        <div class="config-options">
-            <h3>Configuración de servicios</h3>
-            <hr>
-            <div class="config-info">
-                <div class="config-text">
-                    <p>Configuración de servicios para mascotas</p>
-                    <small>Configura tus servicios y vuélvete un super amigo ABCPet</small>
-                </div>
-                <div id="pet-shipment-config-status">
-                    {% if not is_pet_shipment_config_complete %}
-                        <a href="/register_host1" style="display: none;">Activar</a>
-                    {% else %}
-                        <a href="/register_host1">Ir a Configurar</a>
-                    {% endif %}
-                </div>
+    <!-- Resto de pasos (simulados para este ejemplo) -->
+    <div x-show="currentStep === 2" class="animate__animated animate__fadeIn">
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">Fotos de tu espacio</h2>
+          <p class="text-sm text-gray-500 mt-1">Sube fotos de tu hogar y espacio para mascotas</p>
+        </div>
+        
+        <div class="p-6">
+          <div class="space-y-6">
+            <!-- Área de subida de fotos -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">Sube fotos de tu espacio</h3>
+              <p class="mt-1 text-sm text-gray-500">Las fotos de buena calidad aumentan tus posibilidades de recibir solicitudes</p>
+              <div class="mt-6">
+                <label class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Subir fotos
+                  <input type="file" class="sr-only" multiple>
+                </label>
+              </div>
             </div>
+            
+            <!-- Consejos para fotos -->
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-blue-800">Consejos para tus fotos</h3>
+                  <div class="mt-2 text-sm text-blue-700">
+                    <ul class="list-disc space-y-1 pl-5">
+                      <li>Asegúrate de que las fotos estén bien iluminadas</li>
+                      <li>Muestra las áreas donde las mascotas pueden jugar y descansar</li>
+                      <li>Incluye fotos de tu patio o área exterior si tienes</li>
+                      <li>Fotos con mascotas previas que hayas cuidado son un plus</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-
-    <div class="container">
-        <div class="infoText" id="infoText2">
-            <i class="fas fa-question-circle"></i>¿Cómo puedo activar más servicios?
+        
+        <div class="bg-gray-50 px-6 py-4 flex justify-between">
+          <button 
+            type="button" 
+            class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+            @click="goToPrevStep()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Volver
+          </button>
+          <button 
+            type="button" 
+            class="ml-3 inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none"
+            @click="goToNextStep()"
+          >
+            Continuar a Precios
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
         </div>
+      </div>
     </div>
-
-    <div id="infoPopup2" class="modal">
-        <!-- Contenido del segundo modal omitido para mayor claridad -->
+    
+    <div x-show="currentStep === 3" class="animate__animated animate__fadeIn">
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">Precios de tus servicios</h2>
+          <p class="text-sm text-gray-500 mt-1">Establece tus tarifas para cada servicio que ofreces</p>
+        </div>
+        
+        <div class="p-6 space-y-8">
+          <div x-show="services.boarding" class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">Hospedaje para mascotas</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Precio por noche</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="25000"
+                      min="15000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tarifas adicionales por mascota</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="10000"
+                      min="5000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div x-show="services.houseSitting" class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">Cuidado a domicilio</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Precio por visita</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="15000"
+                      min="10000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Visita prolongada (más de 1 hora)</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="22000"
+                      min="15000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div x-show="services.dogWalking" class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">Paseo de perros</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Precio por paseo (30 min)</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="12000"
+                      min="8000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Precio por hora adicional</label>
+                  <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      $
+                    </span>
+                    <input 
+                      type="number" 
+                      class="flex-1 block w-full focus:ring-primary-600 focus:border-primary-600 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                      value="8000"
+                      min="5000"
+                      step="1000"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recomendaciones de precios -->
+          <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Recomendaciones para tus precios</h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                  <p>En tu zona, el precio promedio para hospedaje es <span class="font-semibold">$24.500 por noche</span>. Establece precios competitivos pero que reflejen la calidad de tu servicio. Los ABCPet Amigos con mejores valoraciones pueden cobrar hasta un 20% más que el promedio.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 px-6 py-4 flex justify-between">
+          <button 
+            type="button" 
+            class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+            @click="goToPrevStep()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Volver
+          </button>
+          <button 
+            type="button" 
+            class="ml-3 inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none"
+            @click="goToNextStep()"
+          >
+            Revisar y Confirmar
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
+    
+    <div x-show="currentStep === 4" class="animate__animated animate__fadeIn">
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">Confirma tu perfil</h2>
+          <p class="text-sm text-gray-500 mt-1">Revisa tus servicios y confirma tu perfil</p>
+        </div>
+        
+        <div class="p-6 space-y-8">
+          <!-- Vista previa del perfil -->
+          <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0">
+                <div class="relative">
+                  <img class="h-16 w-16 rounded-full object-cover border-2 border-primary-600" src="{% static 'abcpet_app/images/testimonials/testimonial-1.jpg' %}" alt="Foto de perfil">
+                  <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</h3>
+                <div class="flex items-center mt-1">
+                  <div class="flex">
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <span class="text-sm text-gray-500 ml-2">(Nuevo ABCPet Amigo)</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm text-gray-500" x-text="services.description || 'Amante de las mascotas con experiencia en cuidado y entrenamiento. Tengo un espacio amplio y seguro para que las mascotas se sientan como en casa.'"></span>
+            </div>
+          </div>
+          <div class="flex-shrink-0 text-right">
+            <span class="text-sm text-gray-500">Se unió el</span>
+            <p class="text-sm font-medium text-gray-900">16 mayo, 2025</p>
+          </div>
+        </div>
+        
+        <!-- Servicios activos -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h4 class="text-base font-medium text-gray-900 mb-4">Servicios disponibles</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center" x-show="services.boarding">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Hospedaje para mascotas - <span class="font-medium">$25.000</span>/noche</span>
+            </div>
+            <div class="flex items-center" x-show="services.houseSitting">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Cuidado a domicilio - <span class="font-medium">$15.000</span>/visita</span>
+            </div>
+            <div class="flex items-center" x-show="services.dogWalking">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Paseo de perros - <span class="font-medium">$12.000</span>/paseo</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mascotas aceptadas -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h4 class="text-base font-medium text-gray-900 mb-4">Mascotas aceptadas</h4>
+          <div class="flex flex-wrap gap-2">
+            <span x-show="services.acceptedPets.dogs" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Perros
+            </span>
+            <span x-show="services.acceptedPets.cats" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Gatos
+            </span>
+            <span x-show="services.acceptedPets.birds" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Aves
+            </span>
+            <span x-show="services.acceptedPets.small" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Mascotas pequeñas
+            </span>
+          </div>
+        </div>
+        
+        <!-- Verificación y confianza -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h4 class="text-base font-medium text-gray-900 mb-4">Verificación y confianza</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <div class="text-sm font-medium text-gray-900">Identidad verificada</div>
+                <p class="text-xs text-gray-500">La identidad ha sido verificada con documentos oficiales</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <div class="text-sm font-medium text-gray-900">Contacto verificado</div>
+                <p class="text-xs text-gray-500">El correo electrónico y número de teléfono están verificados</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Términos y condiciones -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Términos y condiciones para ABCPet Amigos</h3>
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-40 overflow-y-auto custom-scrollbar">
+          <p class="text-sm text-gray-600">Al activar tu perfil como ABCPet Amigo, aceptas los siguientes términos:</p>
+          <ul class="list-disc text-sm text-gray-600 space-y-2 pl-5 mt-2">
+            <li>Mantener una comunicación responsable y oportuna con los dueños de mascotas.</li>
+            <li>Proporcionar un entorno seguro y adecuado para las mascotas bajo tu cuidado.</li>
+            <li>Seguir las instrucciones específicas proporcionadas por los dueños de mascotas.</li>
+            <li>Informar inmediatamente cualquier emergencia o situación anormal relacionada con la mascota.</li>
+            <li>Aceptar revisiones de verificación de antecedentes cuando sea necesario.</li>
+            <li>Mantener actualizada la información en tu perfil.</li>
+            <li>ABCPet cobra una comisión del 15% por cada servicio contratado a través de la plataforma.</li>
+          </ul>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <input id="terms-checkbox" name="terms-checkbox" type="checkbox" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="terms-checkbox" class="font-medium text-gray-700">Acepto los términos y condiciones</label>
+            <p class="text-gray-500">Al marcar esta casilla, confirmo que he leído y acepto todos los términos y condiciones para convertirme en ABCPet Amigo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 px-6 py-4 flex justify-between">
+      <button 
+        type="button" 
+        class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+        @click="goToPrevStep()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+        </svg>
+        Volver
+      </button>
+      <button 
+        type="button" 
+        class="ml-3 shine-effect inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none"
+        @click="activateProfile()"
+        id="activateButton"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Activar mi perfil de ABCPet Amigo
+      </button>
+    </div>
+  </div>
+</div>
 
-    <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var profileConfigButton = document.getElementById("profile-config-button");
-            var petShipmentConfigButton = document.getElementById("pet-shipment-config-status").querySelector("a");
+<!-- Confirmación exitosa (modal) -->
+<div 
+  x-show="showSuccessModal" 
+  class="fixed z-10 inset-0 overflow-y-auto" 
+  aria-labelledby="modal-title" 
+  role="dialog" 
+  aria-modal="true"
+>
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div 
+      x-show="showSuccessModal" 
+      x-transition:enter="ease-out duration-300" 
+      x-transition:enter-start="opacity-0" 
+      x-transition:enter-end="opacity-100" 
+      x-transition:leave="ease-in duration-200" 
+      x-transition:leave-start="opacity-100" 
+      x-transition:leave-end="opacity-0" 
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+      aria-hidden="true"
+    ></div>
+
+    <!-- Modal content -->
+    <div 
+      x-show="showSuccessModal" 
+      x-transition:enter="ease-out duration-300" 
+      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+      x-transition:leave="ease-in duration-200" 
+      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+      class="relative inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+    >
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4" id="modal-title">¡Felicidades! Tu perfil ha sido activado</h3>
+        <div class="mt-3">
+          <p class="text-sm text-gray-500">Tu perfil de ABCPet Amigo está ahora disponible para recibir solicitudes de cuidado de mascotas. Te notificaremos cuando lleguen nuevas solicitudes.</p>
+        </div>
         
-            function enablePetShipmentConfigButton() {
-                petShipmentConfigButton.style.display = "inline"; // Mostrar el botón
-            }
+        <!-- Estadísticas de ABCPet Amigo -->
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">Estadísticas de ABCPet Amigos</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-2xl font-bold text-primary-600">$980.000</p>
+              <p class="text-xs text-gray-500">Ingreso mensual promedio de ABCPet Amigos destacados</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-primary-600">94%</p>
+              <p class="text-xs text-gray-500">Tasa de satisfacción de clientes con ABCPet Amigos</p>
+            </div>
+          </div>
+        </div>
         
-            function disablePetShipmentConfigButton() {
-                petShipmentConfigButton.style.display = "none"; // Ocultar el botón
-            }
+        <!-- Valoración post-activación -->
+        <div class="mt-6">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">¿Cómo valoras tu experiencia de configuración?</h4>
+          <div class="rating-stars flex justify-center">
+            <input type="radio" id="star5" name="rating" value="5"/><label for="star5"></label>
+            <input type="radio" id="star4" name="rating" value="4"/><label for="star4"></label>
+            <input type="radio" id="star3" name="rating" value="3"/><label for="star3"></label>
+            <input type="radio" id="star2" name="rating" value="2"/><label for="star2"></label>
+            <input type="radio" id="star1" name="rating" value="1"/><label for="star1"></label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-center">
+        <button 
+          type="button" 
+          class="inline-flex justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm"
+          @click="window.location.href = '{% url 'dashboard' %}'"
+        >
+          Ir a mi dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Mensaje inspirador -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 animate__animated animate__fadeIn" x-show="currentStep !== 4">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden p-6 border border-gray-200">
+  <div class="flex flex-col md:flex-row md:items-center">
+    <div class="md:w-2/3 mb-6 md:mb-0">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Por qué convertirte en ABCPet Amigo?</h3>
+      <div class="space-y-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <p class="ml-2 text-sm text-gray-600"><span class="font-medium text-gray-900">Ingresos Flexibles</span> - Gana hasta $980.000 al mes mientras haces lo que amas</p>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <p class="ml-2 text-sm text-gray-600"><span class="font-medium text-gray-900">Horario Flexible</span> - Tú decides cuándo y con quién trabajar</p>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <p class="ml-2 text-sm text-gray-600"><span class="font-medium text-gray-900">Seguridad y Apoyo</span> - Cobertura de seguro y soporte dedicado 24/7</p>
+        </div>
+      </div>
+    </div>
+    <div class="md:w-1/3 md:pl-8">
+      <img src="{% static 'abcpet_app/images/benefits/benefit1.jpg' %}" alt="ABCPet Amigo con mascota" class="rounded-lg shadow-lg w-full h-48 object-cover">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Botón de activación con efecto brillante
+const activateBtn = document.getElementById('activateButton');
+if (activateBtn) {
+  activateBtn.addEventListener('mouseover', function() {
+    this.classList.add('shine-effect');
+  });
+  
+  activateBtn.addEventListener('mouseout', function() {
+    this.classList.remove('shine-effect');
+  });
+}
+});
+
+// Función para Alpine.js
+function setupWizard() {
+return {
+  currentStep: 1,
+  showSuccessModal: false,
+  services: {
+    description: '',
+    boarding: true,
+    boardingDetails: {
+      spaceType: 'house',
+      petCapacity: '2',
+      petSizes: ['small', 'medium']
+    },
+    houseSitting: false,
+    houseSittingDetails: {
+      experience: '1-3',
+      additionalServices: []
+    },
+    dogWalking: false,
+    dogWalkingDetails: {
+      walkType: 'individual',
+      walkDuration: '60',
+      maxDogs: 2
+    },
+    acceptedPets: {
+      dogs: true,
+      cats: true,
+      birds: false,
+      small: false
+    }
+  },
+  
+  toggleSize(size) {
+    const index = this.services.boardingDetails.petSizes.indexOf(size);
+    if (index === -1) {
+      this.services.boardingDetails.petSizes.push(size);
+    } else {
+      this.services.boardingDetails.petSizes.splice(index, 1);
+    }
+  },
+  
+  goToNextStep() {
+    if (this.currentStep < 4) {
+      this.currentStep += 1;
+    }
+  },
+  
+  goToPrevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep -= 1;
+    }
+  },
+  
+  activateProfile() {
+    // Simulación de activación de perfil
+    const termsCheckbox = document.getElementById('terms-checkbox');
+    if (!termsCheckbox || termsCheckbox.checked) {
+      // Simular tiempo de carga
+      setTimeout(() => {
+        this.showSuccessModal = true;
         
-            if (profileConfigButton.textContent.trim() === "(Configurado)") {
-                enablePetShipmentConfigButton();
-            } else {
-                disablePetShipmentConfigButton();
-            }
-        
-            profileConfigButton.addEventListener("click", function(event) {
-                if (profileConfigButton.textContent.trim() === "(Configurado)") {
-                    enablePetShipmentConfigButton();
-                }
-            });
-        
-            // Manejar el clic en el botón de activación de servicios para mascotas
-            petShipmentConfigButton.addEventListener("click", function(event) {
-                // Redirigir al usuario a la página de registro de hosts
-                window.location.href = "/register_host1";
-            });
+        // Iniciar confetti para celebrar la activación
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 }
         });
-
-
-        var modal = document.getElementById("infoPopup");
-        var span = document.getElementsByClassName("closeButton")[0];
-        var closeModalButton = document.getElementById("closeModalButton");
-
-        // Evento para abrir el modal
-        infoText.onclick = function() {
-            modal.style.display = "block";
-        };
-
-        // Evento para cerrar el modal haciendo clic en el botón "Cerrar"
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-        
-        // Evento para cerrar el modal haciendo clic en el botón "Cerrar" dentro del modal
-        closeModalButton.onclick = function() {
-            modal.style.display = "none";
-        };
-
-        // Cerrar el modal haciendo clic fuera de él
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-
-
-        
-    </script>
-</body>
-</html>
+      }, 500);
+    } else {
+      alert("Por favor acepta los términos y condiciones para activar tu perfil.");
+    }
+  }
+}
+}
+</script>
 {% endblock %}
