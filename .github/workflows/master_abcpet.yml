@@ -34,6 +34,8 @@ jobs:
             echo "manage.py not found, skipping collectstatic"
           fi
           
+      # Optional: Add step to run tests here
+      
       - name: Clean up before zipping
         run: |
           # Eliminar entornos virtuales y archivos de caché
@@ -59,6 +61,9 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write  # Necesario para OIDC
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -66,13 +71,28 @@ jobs:
         with:
           name: python-app
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: 84f00e77-3356-4190-b231-8fa4c917d733
+          tenant-id: 9631a7f7-6b63-447f-bf60-8077cbcbb706
+          subscription-id: e6f9c130-4130-4e1f-bddb-30e31c028335
+          
+      - name: Configure Azure App Service settings
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            # Desactivar la construcción durante el despliegue
+            az webapp config appsettings set --name abcpet --resource-group abcpet-rg --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+            # Asegurar que se realiza un despliegue completo
+            az webapp config appsettings set --name abcpet --resource-group abcpet-rg --settings WEBSITE_RUN_FROM_PACKAGE=1
+
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'abcpet'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_YOUR_SECRET_NAME }}
           package: release.zip
-          clean: true
+          clean: true  # Indica que se debe realizar un despliegue limpio
           restart: true
