@@ -34,15 +34,6 @@ jobs:
             echo "manage.py not found, skipping collectstatic"
           fi
           
-      # Optional: Add step to run tests here
-      
-      - name: Log repository size
-        run: |
-          echo "Repository size before cleanup:"
-          du -sh .
-          echo "Largest directories:"
-          du -h --max-depth=2 . | sort -hr | head -10
-          
       - name: Clean up before zipping
         run: |
           # Eliminar entornos virtuales y archivos de caché
@@ -52,19 +43,9 @@ jobs:
           if [ -d "abcpet_app/nuevo_env" ]; then
             rm -rf abcpet_app/nuevo_env
           fi
-          # Lista los directorios más grandes
-          echo "Repository size after cleanup:"
-          du -sh .
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
-
-      - name: Check zip size
-        run: |
-          echo "Zip file size:"
-          du -sh release.zip
-          echo "Number of files in zip:"
-          unzip -l release.zip | tail -1
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -78,9 +59,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write  # Necesario para OIDC
-      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -88,59 +66,13 @@ jobs:
         with:
           name: python-app
 
-      - name: Verify download
-        run: |
-          echo "Downloaded artifact size:"
-          du -sh release.zip
-          echo "Verifying zip integrity:"
-          unzip -t release.zip | tail -2
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: 84f00e77-3356-4190-b231-8fa4c917d733
-          tenant-id: 9631a7f7-6b63-447f-bf60-8077cbcbb706
-          subscription-id: e6f9c130-4130-4e1f-bddb-30e31c028335
-          
-      - name: Check Azure App Service status
-        run: |
-          echo "Checking App Service status before deployment:"
-          az webapp show --name abcpet --resource-group abcpet-rg --query state
-          
-      - name: Configure Azure App Service settings
-        uses: azure/cli@v1
-        with:
-          inlineScript: |
-            # Desactivar la construcción durante el despliegue
-            az webapp config appsettings set --name abcpet --resource-group abcpet-rg --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
-            # Asegurar que se realiza un despliegue completo
-            az webapp config appsettings set --name abcpet --resource-group abcpet-rg --settings WEBSITE_RUN_FROM_PACKAGE=1
-            # Aumentar el tiempo de espera para el despliegue
-            az webapp config set --name abcpet --resource-group abcpet-rg --generic-configurations "{'deploymentDependent':false}"
-            # Comprobar la configuración actual
-            echo "App Service current settings:"
-            az webapp config show --name abcpet --resource-group abcpet-rg --query "{scmType:scmType,alwaysOn:alwaysOn,http20Enabled:http20Enabled,ftpsState:ftpsState}"
-
-      - name: Log deployment start time
-        run: echo "Deployment started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'abcpet'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_YOUR_SECRET_NAME }}
           package: release.zip
-          clean: true  # Indica que se debe realizar un despliegue limpio
+          clean: true
           restart: true
-          timeout: 1800  # Aumentar el tiempo de espera a 30 minutos en segundos
-
-      - name: Log deployment end time
-        run: echo "Deployment finished at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-        
-      - name: Check App Service status after deployment
-        run: |
-          echo "Checking App Service status after deployment:"
-          az webapp show --name abcpet --resource-group abcpet-rg --query state
-          echo "Recent deployment operations:"
-          az webapp deployment list --resource-group abcpet-rg --name abcpet --query "[].{id:id,status:status,message:message,author:author,deployer:deployer,complete:complete}" --output table
