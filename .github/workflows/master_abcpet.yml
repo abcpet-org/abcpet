@@ -77,3 +77,6 @@ jobs:
         with:
           app-name: 'abcpet'
           slot-name: 'Production'
+          package: release.zip
+          # Agregar una opción para usar un método de despliegue específico
+          deployment-method: 'RunFromPackage'
