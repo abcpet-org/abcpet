@@ -44,20 +44,8 @@ jobs:
             rm -rf abcpet_app/nuevo_env
           fi
 
-      - name: Log repository size
-        run: |
-          echo "Repository size before zip:"
-          du -sh .
-          echo "Largest directories:"
-          du -h --max-depth=2 . | sort -hr | head -10
-
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
-
-      - name: Check zip size
-        run: |
-          echo "Zip file size:"
-          du -sh release.zip
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -78,12 +66,9 @@ jobs:
         with:
           name: python-app
 
-      - name: Log deployment start time
-        run: echo "Deployment started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'abcpet'
           slot-name: 'Production'
@@ -91,6 +76,4 @@ jobs:
           package: release.zip
           clean: true
           restart: true
-
-      - name: Log deployment end time
-        run: echo "Deployment finished at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          type: zip
