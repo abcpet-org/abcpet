@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Python app to Azure Web App - abcpet
 
 on:
@@ -18,7 +21,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10.17'
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
@@ -34,15 +37,7 @@ jobs:
             echo "manage.py not found, skipping collectstatic"
           fi
           
-      - name: Clean up before zipping
-        run: |
-          # Eliminar entornos virtuales y archivos de caché
-          find . -type d -name __pycache__ -exec rm -rf {} +
-          find . -type f -name "*.pyc" -delete
-          # Si tienes un entorno virtual en nuevo_env, elimínalo
-          if [ -d "abcpet_app/nuevo_env" ]; then
-            rm -rf abcpet_app/nuevo_env
-          fi
+      # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -59,6 +54,9 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -66,12 +64,19 @@ jobs:
         with:
           name: python-app
 
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_882DE41F0AB24395949DB4D1C329E3E9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_72438A53720F4FA0A600F4F91CE342AA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E46C103A786744CF8F4F6D17D6A233CA }}
+
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'abcpet'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: release.zip
-          type: zip
