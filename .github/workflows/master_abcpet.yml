@@ -55,7 +55,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write
+      id-token: write  # Necesario para OIDC
       contents: read
 
     steps:
@@ -70,9 +70,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_882DE41F0AB24395949DB4D1C329E3E9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_72438A53720F4FA0A600F4F91CE342AA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E46C103A786744CF8F4F6D17D6A233CA }}
+          client-id: 84f00e77-3356-4190-b231-8fa4c917d733
+          tenant-id: 9631a7f7-6b63-447f-bf60-8077cbcbb706
+          subscription-id: e6f9c130-4130-4e1f-bddb-30e31c028335
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
